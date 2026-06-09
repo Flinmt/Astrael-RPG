@@ -1,37 +1,616 @@
+.astrael-rpg {
+  --astrael-panel: #151c20;
+  --astrael-panel-2: #1d2529;
+  --astrael-line: #4a5960;
+  --astrael-text: #ece4d3;
+  --astrael-muted: #aeb2aa;
+  --astrael-dim: #778087;
+  --astrael-gold: #c17539;
+  --astrael-gold-bright: #d69a55;
+  --astrael-red: #883531;
+  --astrael-red-bright: #a2443e;
+  --astrael-blue: #3b6474;
+  --astrael-blue-bright: #4d7187;
+  --astrael-black: #0b0c0d;
+  --astrael-shadow: rgba(0, 0, 0, 0.58);
+  color: var(--astrael-text);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.application.astrael-rpg .window-content {
+  padding: 0;
+  overflow: hidden;
+  background: var(--astrael-panel);
+}
+
 .astrael-rpg.sheet.actor {
-  min-width: 520px;
-  min-height: 360px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.astrael-rpg .sheet-frame button,
+.astrael-rpg .sheet-frame input,
+.astrael-rpg .sheet-frame textarea {
+  font: inherit;
+}
+
+.astrael-rpg .sheet-shell {
+  width: 100%;
+  min-width: 0;
+}
+
+.astrael-rpg .sheet-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--astrael-line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 220px),
+    linear-gradient(145deg, rgba(182, 138, 58, 0.08), transparent 40%),
+    var(--astrael-panel);
+  box-shadow: 0 28px 80px var(--astrael-shadow), inset 0 0 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.astrael-rpg .sheet-frame::before,
+.astrael-rpg .sheet-frame::after {
+  content: "";
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border: 1px solid rgba(182, 138, 58, 0.12);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+.astrael-rpg .sheet-frame::before {
+  top: -96px;
+  left: -96px;
+}
+
+.astrael-rpg .sheet-frame::after {
+  right: -96px;
+  bottom: -96px;
 }
 
 .astrael-rpg .sheet-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  position: relative;
+  padding: 14px 16px 16px;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.24), transparent 42%, rgba(0, 0, 0, 0.24)),
+    linear-gradient(180deg, #26231f, #191918);
+}
+
+.astrael-rpg .identity-grid {
+  display: grid;
+  grid-template-columns: minmax(210px, 1fr) 176px minmax(250px, 1.1fr);
+  grid-template-rows: repeat(3, 72px);
+  gap: 10px;
+}
+
+.astrael-rpg .portrait-cell {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(182, 138, 58, 0.28);
+  background:
+    radial-gradient(circle, rgba(182, 138, 58, 0.13), transparent 62%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.16));
+}
+
+.astrael-rpg .portrait-ring {
+  display: grid;
+  place-items: center;
+  width: 140px;
+  height: 140px;
+  padding: 0;
+  border: 2px solid var(--astrael-gold);
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle, #2d2922 0 54%, #0d0e0f 55% 100%);
+  box-shadow: 0 0 0 8px rgba(11, 12, 13, 0.75), 0 0 0 9px rgba(182, 138, 58, 0.32), inset 0 0 28px rgba(0, 0, 0, 0.65);
+  cursor: pointer;
 }
 
 .astrael-rpg .profile-img {
-  flex: 0 0 96px;
-  width: 96px;
-  height: 96px;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 50%;
   object-fit: cover;
-  border: 1px solid var(--color-border-light-tertiary);
 }
 
-.astrael-rpg .header-fields {
-  flex: 1;
+.astrael-rpg .field-card,
+.astrael-rpg .resource-card,
+.astrael-rpg .rouse-check-card {
+  position: relative;
+  min-width: 0;
+  padding: 9px 11px;
+  border: 1px solid rgba(90, 80, 68, 0.86);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.18)), var(--astrael-panel-2);
 }
 
-.astrael-rpg .character-name input {
+.astrael-rpg .field-card,
+.astrael-rpg .resource-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.astrael-rpg .field-card::before,
+.astrael-rpg .resource-card::before,
+.astrael-rpg .rouse-check-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 38px;
+  height: 2px;
+  background: var(--astrael-gold);
+}
+
+.astrael-rpg .field-card span {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .field-card input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(182, 138, 58, 0.34);
+  outline: 0;
+  color: var(--astrael-text);
+  background: transparent;
+}
+
+.astrael-rpg .field-name input {
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.astrael-rpg .resource-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  color: var(--astrael-muted);
+  font-family: "Cinzel", Georgia, serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .resource-title strong {
+  color: var(--astrael-text);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 16px;
+}
+
+.astrael-rpg .resource-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 38px;
+  gap: 8px;
+  min-width: 0;
+}
+
+.astrael-rpg .damage-controls {
+  display: grid;
+  align-self: center;
+  grid-template-rows: 28px 28px;
+  gap: 6px;
+  min-width: 0;
+}
+
+.astrael-rpg .damage-card {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 1px solid rgba(214, 154, 85, 0.7);
+  color: var(--astrael-text);
+  background:
+    linear-gradient(180deg, rgba(214, 154, 85, 0.28), rgba(193, 117, 57, 0.12)),
+    rgba(11, 12, 13, 0.46);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.astrael-rpg .damage-card:hover {
+  color: var(--astrael-text);
+  border-color: var(--astrael-gold-bright);
+  background:
+    linear-gradient(180deg, rgba(214, 154, 85, 0.46), rgba(193, 117, 57, 0.22)),
+    rgba(11, 12, 13, 0.46);
+}
+
+.astrael-rpg .box-track {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.astrael-rpg .resource-box {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid rgba(229, 221, 204, 0.35);
+  background: #101112;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.astrael-rpg .health-card .resource-box.filled {
+  border-color: rgba(208, 168, 90, 0.45);
+  background: linear-gradient(180deg, var(--astrael-red-bright), #5d201e);
+}
+
+.astrael-rpg .will-card .resource-box.filled {
+  border-color: rgba(208, 168, 90, 0.45);
+  background: linear-gradient(180deg, var(--astrael-blue-bright), #243f50);
+}
+
+.astrael-rpg .resource-box.superficial::after,
+.astrael-rpg .resource-box.aggravated::before,
+.astrael-rpg .resource-box.aggravated::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 2px;
+  background: var(--astrael-gold-bright);
+  transform-origin: center;
+}
+
+.astrael-rpg .resource-box.superficial::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.astrael-rpg .resource-box.aggravated::before {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.astrael-rpg .resource-box.aggravated::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.astrael-rpg .health-card .resource-box.superficial::after,
+.astrael-rpg .health-card .resource-box.aggravated::before,
+.astrael-rpg .health-card .resource-box.aggravated::after {
+  background: #cf6a62;
+}
+
+.astrael-rpg .will-card .resource-box.superficial::after,
+.astrael-rpg .will-card .resource-box.aggravated::before,
+.astrael-rpg .will-card .resource-box.aggravated::after {
+  background: #72a9bc;
+}
+
+.astrael-rpg .rouse-check-card {
+  display: grid;
+  align-self: stretch;
+  justify-self: stretch;
+  place-items: center;
+  grid-template-rows: 1fr auto;
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--astrael-text);
+  cursor: pointer;
+  border-color: rgba(193, 117, 57, 0.68);
+  background:
+    linear-gradient(135deg, var(--astrael-gold-bright) 0 12px, transparent 12px) top left / 30px 30px no-repeat,
+    linear-gradient(315deg, var(--astrael-gold) 0 12px, transparent 12px) bottom right / 30px 30px no-repeat,
+    linear-gradient(90deg, rgba(193, 117, 57, 0.18), transparent 34%, rgba(193, 117, 57, 0.08)),
+    linear-gradient(180deg, #171513, #0d0f10);
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 228, 211, 0.035),
+    inset 0 0 28px rgba(193, 117, 57, 0.08);
+}
+
+.astrael-rpg .rouse-check-card:hover {
+  border-color: rgba(214, 154, 85, 0.78);
+  background:
+    linear-gradient(135deg, var(--astrael-gold-bright) 0 12px, transparent 12px) top left / 30px 30px no-repeat,
+    linear-gradient(315deg, var(--astrael-gold) 0 12px, transparent 12px) bottom right / 30px 30px no-repeat,
+    radial-gradient(circle at center, rgba(214, 154, 85, 0.14), transparent 68%),
+    linear-gradient(90deg, rgba(193, 117, 57, 0.24), transparent 38%, rgba(193, 117, 57, 0.12)),
+    linear-gradient(180deg, #1f1a15, #0d0f10);
+}
+
+.astrael-rpg .rouse-die {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 42px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.astrael-rpg .rouse-die-icon {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(193, 117, 57, 0.42));
+}
+
+.astrael-rpg .rouse-label {
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+@media (max-width: 940px) {
+  .astrael-rpg .identity-grid {
+    grid-template-columns: minmax(190px, 1fr) 150px minmax(230px, 1fr);
+    grid-template-rows: repeat(3, 70px);
+    gap: 8px;
+  }
+
+  .astrael-rpg .portrait-ring {
+    width: 124px;
+    height: 124px;
+  }
+
+  .astrael-rpg .profile-img {
+    width: 96px;
+    height: 96px;
+  }
+
+  .astrael-rpg .field-name input {
+    font-size: 20px;
+  }
+
+  .astrael-rpg .resource-box {
+    width: 15px;
+    height: 15px;
+  }
+}
+
+@media (max-width: 720px) {
+  .astrael-rpg .identity-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+
+  .astrael-rpg .portrait-cell {
+    grid-column: auto;
+    grid-row: auto;
+    min-height: 160px;
+  }
+}
+
+.astrael-chat-card {
+  --astrael-chat-panel: #151c20;
+  --astrael-chat-panel-dark: #0d0f10;
+  --astrael-chat-line: #4a5960;
+  --astrael-chat-text: #ece4d3;
+  --astrael-chat-muted: #aeb2aa;
+  --astrael-chat-dim: #778087;
+  --astrael-chat-gold: #c17539;
+  --astrael-chat-gold-bright: #d69a55;
+  --astrael-chat-red: #883531;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid rgba(193, 117, 57, 0.58);
+  color: var(--astrael-chat-text);
+  background:
+    linear-gradient(135deg, var(--astrael-chat-gold-bright) 0 10px, transparent 10px) top left / 26px 26px no-repeat,
+    linear-gradient(315deg, var(--astrael-chat-gold) 0 10px, transparent 10px) bottom right / 26px 26px no-repeat,
+    linear-gradient(90deg, rgba(193, 117, 57, 0.16), transparent 46%),
+    linear-gradient(180deg, #171513, var(--astrael-chat-panel-dark));
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 228, 211, 0.035),
+    inset 0 0 28px rgba(193, 117, 57, 0.08);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.chat-message:has(.astrael-chat-card) {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.chat-message:has(.astrael-chat-card) .message-header {
+  display: none;
+}
+
+.chat-message:has(.astrael-chat-card) .message-content {
+  margin: 0;
   width: 100%;
 }
 
-.astrael-rpg .sheet-body {
-  display: grid;
-  gap: 0.75rem;
+.astrael-chat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 42px;
+  height: 2px;
+  background: var(--astrael-chat-gold);
 }
 
-.astrael-rpg .form-group {
+.astrael-chat-header {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.62);
+}
+
+.astrael-chat-kicker {
+  display: block;
+  color: var(--astrael-chat-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.astrael-chat-header h2 {
+  margin: 2px 0 0;
+  color: var(--astrael-chat-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 18px;
+  letter-spacing: 0.07em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.astrael-chat-header p {
+  margin: 4px 0 0;
+  color: var(--astrael-chat-muted);
+  font-size: 12px;
+}
+
+.astrael-chat-result {
+  position: relative;
   display: grid;
-  gap: 0.25rem;
+  place-items: center;
+  gap: 4px;
+  margin: 10px 0;
+  padding: 14px 8px 16px;
+  border: 1px solid rgba(193, 117, 57, 0.7);
+  color: var(--astrael-chat-gold-bright);
+  background:
+    radial-gradient(circle at center, rgba(214, 154, 85, 0.14), transparent 70%),
+    linear-gradient(180deg, rgba(193, 117, 57, 0.12), rgba(11, 12, 13, 0.38));
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 228, 211, 0.035),
+    0 0 18px rgba(193, 117, 57, 0.1);
+}
+
+.astrael-chat-result::before,
+.astrael-chat-result::after {
+  content: "";
+  position: absolute;
+  width: 32px;
+  height: 1px;
+  background: var(--astrael-chat-gold);
+}
+
+.astrael-chat-result::before {
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.astrael-chat-result::after {
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.astrael-chat-result span {
+  color: var(--astrael-chat-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.astrael-chat-result strong {
+  color: var(--astrael-chat-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 46px;
+  line-height: 0.95;
+  text-shadow: 0 0 14px rgba(214, 154, 85, 0.24);
+}
+
+.astrael-chat-dice-footer {
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(90, 80, 68, 0.62);
+}
+
+.astrael-chat-dice-label {
+  cursor: pointer;
+  list-style: none;
+  color: var(--astrael-chat-dim);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-chat-dice-label::-webkit-details-marker {
+  display: none;
+}
+
+.astrael-chat-dice-label::marker {
+  content: "";
+}
+
+.astrael-chat-dice-footer[open] .astrael-chat-dice-label {
+  color: var(--astrael-chat-gold-bright);
+}
+
+.astrael-chat-dice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.astrael-chat-die {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(229, 221, 204, 0.2);
+  color: rgba(174, 178, 170, 0.7);
+  background: rgba(11, 12, 13, 0.68);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.32);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.astrael-chat-die.success {
+  border-color: rgba(214, 154, 85, 0.48);
+  color: var(--astrael-chat-text);
+  background: rgba(193, 117, 57, 0.3);
+}
+
+.astrael-chat-die.critical {
+  border-color: var(--astrael-chat-gold-bright);
+  color: #fff4d9;
+  background: rgba(193, 117, 57, 0.48);
+}
+
+.astrael-chat-die.paired-critical {
+  border-color: #fff4d9;
+  color: #fff4d9;
+  background:
+    radial-gradient(circle at center, rgba(214, 154, 85, 0.48), transparent 72%),
+    linear-gradient(180deg, #d69a55, #6b2c24);
+  box-shadow: 0 0 10px rgba(214, 154, 85, 0.34), inset 0 0 0 1px rgba(0, 0, 0, 0.24);
+}
+
+.astrael-chat-die.failure {
+  border-color: rgba(119, 128, 135, 0.26);
+  color: rgba(174, 178, 170, 0.52);
+  background: rgba(11, 12, 13, 0.68);
 }

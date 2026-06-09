@@ -1,0 +1,23 @@
+<section class="astrael-chat-card astrael-dice-pool-card">
+  <header class="astrael-chat-header">
+    <span class="astrael-chat-kicker">{{kicker}}</span>
+    <h2>{{title}}</h2>
+    <p>{{actorName}}</p>
+  </header>
+
+  <div class="astrael-chat-result" aria-label="Resultado da rolagem">
+    <span>Sucessos</span>
+    <strong>{{successes}}</strong>
+  </div>
+
+  <details class="astrael-chat-dice-footer">
+    <summary class="astrael-chat-dice-label">Clique para Mostrar Dados Rolados</summary>
+    <div class="astrael-chat-dice" aria-label="Dados rolados">
+    {{#each dice as |die|}}
+      <span class="astrael-chat-die {{die.type}}" title="{{die.label}}">
+        {{die.value}}
+      </span>
+    {{/each}}
+    </div>
+  </details>
+</section>

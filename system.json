@@ -18,7 +18,13 @@
   "styles": [
     "styles/astrael-rpg.css"
   ],
-  "languages": [],
+  "languages": [
+    {
+      "lang": "pt-BR",
+      "name": "Portugues Brasileiro",
+      "path": "lang/pt-BR.json"
+    }
+  ],
   "packs": [],
   "socket": false,
   "manifest": "",

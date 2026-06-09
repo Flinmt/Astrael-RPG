@@ -1,33 +1,73 @@
 <form class="{{cssClass}} astrael-rpg sheet actor" autocomplete="off">
-  <header class="sheet-header">
-    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" alt="{{actor.name}}">
-    <div class="header-fields">
-      <h1 class="character-name">
-        <input name="name" type="text" value="{{actor.name}}" placeholder="Nome do personagem">
-      </h1>
-      <p>Tipo: {{actor.type}}</p>
-    </div>
-  </header>
+  <main class="sheet-shell">
+    <section class="sheet-frame">
+      <header class="sheet-header">
+        <div class="identity-grid">
+          <label class="field-card field-name">
+            <span>Nome</span>
+            <input name="name" type="text" value="{{actor.name}}" placeholder="Nome do personagem">
+          </label>
 
-  <section class="sheet-body">
-    <div class="form-group">
-      <label>Conceito</label>
-      <input name="system.details.concept" type="text" value="{{system.details.concept}}">
-    </div>
+          <div class="portrait-cell" aria-label="Retrato do personagem">
+            <button class="portrait-ring" type="button" data-action="editImage" title="Alterar retrato">
+              <img class="profile-img" src="{{actor.img}}" alt="{{actor.name}}">
+            </button>
+          </div>
 
-    <div class="form-group">
-      <label>Cronica</label>
-      <input name="system.details.chronicle" type="text" value="{{system.details.chronicle}}">
-    </div>
+          <div class="resource-row health-row">
+            <section class="resource-card health-card" data-resource="health">
+              <div class="resource-title">
+                <span>Vida</span>
+                <strong>{{system.resources.health.active}}</strong>
+              </div>
+              <div class="box-track" aria-label="Marcadores de Vida">
+                {{#each system.resources.health.boxes as |box|}}
+                  <button class="resource-box {{box.state}}" type="button" data-resource="health" data-index="{{box.index}}" data-state="{{box.state}}" title="Clique para alterar"></button>
+                {{/each}}
+              </div>
+            </section>
+            <div class="damage-controls" aria-label="Controles de dano de Vida">
+              <button class="damage-card superficial-damage" type="button" data-damage="superficial" data-resource="health" title="Dano superficial">/</button>
+              <button class="damage-card aggravated-damage" type="button" data-damage="aggravated" data-resource="health" title="Dano agravado">X</button>
+            </div>
+          </div>
 
-    <div class="form-group">
-      <label>Jogador</label>
-      <input name="system.details.player" type="text" value="{{system.details.player}}">
-    </div>
+          <label class="field-card">
+            <span>Ambicao</span>
+            <input name="system.details.ambition" type="text" value="{{system.details.ambition}}" placeholder="Objetivo amplo do personagem">
+          </label>
 
-    <div class="form-group">
-      <label>Descricao</label>
-      <textarea name="system.description" rows="6">{{system.description}}</textarea>
-    </div>
-  </section>
+          <div class="resource-row will-row">
+            <section class="resource-card will-card" data-resource="willpower">
+              <div class="resource-title">
+                <span>Vontade</span>
+                <strong>{{system.resources.willpower.active}}</strong>
+              </div>
+              <div class="box-track" aria-label="Marcadores de Vontade">
+                {{#each system.resources.willpower.boxes as |box|}}
+                  <button class="resource-box {{box.state}}" type="button" data-resource="willpower" data-index="{{box.index}}" data-state="{{box.state}}" title="Clique para alterar"></button>
+                {{/each}}
+              </div>
+            </section>
+            <div class="damage-controls" aria-label="Controles de dano de Vontade">
+              <button class="damage-card superficial-damage" type="button" data-damage="superficial" data-resource="willpower" title="Dano superficial">/</button>
+              <button class="damage-card aggravated-damage" type="button" data-damage="aggravated" data-resource="willpower" title="Dano agravado">X</button>
+            </div>
+          </div>
+
+          <label class="field-card">
+            <span>Desejo</span>
+            <input name="system.details.desire" type="text" value="{{system.details.desire}}" placeholder="Objetivo imediato do personagem">
+          </label>
+
+          <button class="rouse-check-card" type="button" data-action="rouseCheck" title="Rolar Teste de Queima">
+            <span class="rouse-die" aria-hidden="true">
+              <img class="rouse-die-icon" src="systems/astrael-rpg/assets/icons/d10.svg" alt="">
+            </span>
+            <span class="rouse-label">Teste de Queima</span>
+          </button>
+        </div>
+      </header>
+    </section>
+  </main>
 </form>

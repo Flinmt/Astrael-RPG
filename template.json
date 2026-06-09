@@ -15,7 +15,27 @@
       "details": {
         "concept": "",
         "chronicle": "",
-        "player": ""
+        "player": "",
+        "ambition": "",
+        "desire": ""
+      },
+      "resources": {
+        "health": {
+          "max": 8,
+          "active": 4,
+          "superficial": 0,
+          "aggravated": 0
+        },
+        "willpower": {
+          "max": 10,
+          "active": 2,
+          "superficial": 0,
+          "aggravated": 0
+        },
+        "future": {
+          "label": "Modulo Futuro",
+          "description": "Espaco reservado para um recurso ainda indefinido."
+        }
       }
     }
   },
