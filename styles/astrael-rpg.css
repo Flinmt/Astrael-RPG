@@ -1,0 +1,37 @@
+.astrael-rpg.sheet.actor {
+  min-width: 520px;
+  min-height: 360px;
+}
+
+.astrael-rpg .sheet-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.astrael-rpg .profile-img {
+  flex: 0 0 96px;
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border: 1px solid var(--color-border-light-tertiary);
+}
+
+.astrael-rpg .header-fields {
+  flex: 1;
+}
+
+.astrael-rpg .character-name input {
+  width: 100%;
+}
+
+.astrael-rpg .sheet-body {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.astrael-rpg .form-group {
+  display: grid;
+  gap: 0.25rem;
+}

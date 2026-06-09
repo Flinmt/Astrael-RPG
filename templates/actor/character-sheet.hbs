@@ -1,0 +1,33 @@
+<form class="{{cssClass}} astrael-rpg sheet actor" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" alt="{{actor.name}}">
+    <div class="header-fields">
+      <h1 class="character-name">
+        <input name="name" type="text" value="{{actor.name}}" placeholder="Nome do personagem">
+      </h1>
+      <p>Tipo: {{actor.type}}</p>
+    </div>
+  </header>
+
+  <section class="sheet-body">
+    <div class="form-group">
+      <label>Conceito</label>
+      <input name="system.details.concept" type="text" value="{{system.details.concept}}">
+    </div>
+
+    <div class="form-group">
+      <label>Cronica</label>
+      <input name="system.details.chronicle" type="text" value="{{system.details.chronicle}}">
+    </div>
+
+    <div class="form-group">
+      <label>Jogador</label>
+      <input name="system.details.player" type="text" value="{{system.details.player}}">
+    </div>
+
+    <div class="form-group">
+      <label>Descricao</label>
+      <textarea name="system.description" rows="6">{{system.description}}</textarea>
+    </div>
+  </section>
+</form>

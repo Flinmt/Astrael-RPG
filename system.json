@@ -1,0 +1,35 @@
+{
+  "id": "astrael-rpg",
+  "title": "Astrael RPG",
+  "description": "Sistema Astrael RPG para Foundry Virtual Tabletop.",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Astrael RPG"
+    }
+  ],
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14"
+  },
+  "esmodules": [
+    "scripts/astrael-rpg.js"
+  ],
+  "styles": [
+    "styles/astrael-rpg.css"
+  ],
+  "languages": [],
+  "packs": [],
+  "socket": false,
+  "manifest": "",
+  "download": "",
+  "templateVersion": 1,
+  "documentTypes": {
+    "Actor": [
+      "character"
+    ],
+    "Item": [
+      "trait"
+    ]
+  }
+}

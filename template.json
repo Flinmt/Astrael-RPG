@@ -1,0 +1,38 @@
+{
+  "Actor": {
+    "types": [
+      "character"
+    ],
+    "templates": {
+      "common": {
+        "description": ""
+      }
+    },
+    "character": {
+      "templates": [
+        "common"
+      ],
+      "details": {
+        "concept": "",
+        "chronicle": "",
+        "player": ""
+      }
+    }
+  },
+  "Item": {
+    "types": [
+      "trait"
+    ],
+    "templates": {
+      "common": {
+        "description": ""
+      }
+    },
+    "trait": {
+      "templates": [
+        "common"
+      ],
+      "value": 0
+    }
+  }
+}
