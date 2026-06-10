@@ -213,6 +213,7 @@ async function showRerollDialog(actor, originalValues, useCriticals, card, msg) 
           for (const idx of selected) {
             newValues[idx] = (await new Roll("1d10").evaluate()).total;
           }
+          game.audio.play(CONFIG.sounds.dice, { context: game.audio.interface });
 
           const wp = actor.system.resources.willpower;
           const resource = { active: wp.active, superficial: wp.superficial, aggravated: wp.aggravated };
