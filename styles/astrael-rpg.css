@@ -1502,3 +1502,89 @@
   background: rgba(193, 117, 57, 0.08);
 }
 
+.astrael-rpg .custom-roll-card {
+  margin-top: 16px;
+}
+
+.astrael-rpg .custom-roll-card .section-title {
+  cursor: pointer;
+  list-style: none;
+}
+
+.astrael-rpg .custom-roll-card .section-title::-webkit-details-marker {
+  display: none;
+}
+
+.astrael-rpg .custom-roll-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.astrael-rpg .custom-roll-add {
+  display: grid;
+  place-items: center;
+  min-height: 50px;
+  border: 1px dashed rgba(90, 80, 68, 0.62);
+  color: var(--astrael-dim);
+  font-size: 18px;
+  font-weight: 700;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.astrael-rpg .custom-roll-add:hover {
+  border-color: var(--astrael-gold);
+  color: var(--astrael-gold-bright);
+  background: rgba(193, 117, 57, 0.08);
+}
+
+.astrael-rpg .custom-roll-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid rgba(90, 80, 68, 0.48);
+  background: rgba(11, 12, 13, 0.2);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.astrael-rpg .custom-roll-entry:hover {
+  border-color: rgba(193, 117, 57, 0.4);
+}
+
+.astrael-rpg .custom-roll-name {
+  flex: 1;
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-rpg .custom-roll-gear {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  color: var(--astrael-dim);
+  font-size: 13px;
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.astrael-rpg .custom-roll-gear:hover {
+  color: var(--astrael-gold-bright);
+  opacity: 1;
+}
+

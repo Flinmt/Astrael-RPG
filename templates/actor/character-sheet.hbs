@@ -404,6 +404,22 @@
               <button type="button" class="specialty-add" data-action="add-specialty">+</button>
             </div>
           </details>
+
+          <details class="section-card custom-roll-card">
+            <summary class="section-title">
+              <h2>Rolagens Personalizadas</h2>
+              <span>Clique para Expandir ou Recolher</span>
+            </summary>
+            <div class="custom-roll-grid">
+              {{#each system.customRolls as |roll|}}
+              <div class="custom-roll-entry" data-index="{{@index}}">
+                <span class="custom-roll-name">{{roll.name}}</span>
+                <button type="button" class="custom-roll-gear" data-action="edit-custom-roll" data-index="{{@index}}"><i class="fas fa-cog"></i></button>
+              </div>
+              {{/each}}
+              <button type="button" class="custom-roll-add" data-action="add-custom-roll">+</button>
+            </div>
+          </details>
         </div>
         <div class="tab-panel" data-tab="advantages"></div>
         <div class="tab-panel" data-tab="hemomancy"></div>

@@ -322,6 +322,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       }
     }
     context.system.specialties = Array.isArray(context.system.specialties) ? context.system.specialties : [];
+    context.system.customRolls = Array.isArray(context.system.customRolls) ? context.system.customRolls : [];
     context.system.specialties = context.system.specialties.map(spec => ({
       ...spec,
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
@@ -368,6 +369,13 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       el.addEventListener("click", this.#onEditSpecialty.bind(this));
     });
 
+    this.element.querySelector("[data-action='add-custom-roll']")?.addEventListener("click", this.#onAddCustomRoll.bind(this));
+    this.element.querySelectorAll("[data-action='edit-custom-roll']").forEach((el) => {
+      el.addEventListener("click", this.#onEditCustomRoll.bind(this));
+    });
+    this.element.querySelectorAll(".custom-roll-entry").forEach((el) => {
+      el.addEventListener("click", this.#onCustomRollClick.bind(this));
+    });
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
   }
@@ -877,6 +885,427 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         html.closest(".app").find(".dialog-button.delete").addClass("delete");
       }
     }, { classes: ["astrael-dialog"], jQuery: true }).render(true);
+  }
+
+  async #onAddCustomRoll(event) {
+    event.preventDefault();
+
+    const allAttrOptions = ATTRIBUTE_KEYS.map((k) =>
+      `<option value="${k}">${game.i18n.localize(LOCALIZE_ATTR[k])}</option>`
+    ).join("");
+
+    const allSkillOptions = SKILL_KEYS.map((k) =>
+      `<option value="${k}">${game.i18n.localize(LOCALIZE_SKILL[k])}</option>`
+    ).join("");
+
+    const content = `
+      <form class="astrael-dialog-form">
+        <div class="form-group">
+          <label>Nome da Rolagem</label>
+          <input type="text" name="rollName" placeholder="Ex: Ataque com espada">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Atributo</label>
+            <select name="attribute">${allAttrOptions}</select>
+          </div>
+          <div class="form-group mode-group">
+            <div class="mode-header">
+              <button type="button" class="mode-arrow" data-dir="prev">&#9664;</button>
+              <span class="mode-label">Perícia</span>
+              <button type="button" class="mode-arrow" data-dir="next">&#9654;</button>
+            </div>
+            <select name="second">${allSkillOptions}</select>
+            <input type="hidden" name="mode" value="skill">
+          </div>
+        </div>
+        <div class="pool-preview">
+          <span class="pool-total"></span>
+        </div>
+        <div class="bottom-row">
+          <div class="form-group modifier-group">
+            <label>Modificador</label>
+            <input type="number" name="modifier" value="0" step="1">
+          </div>
+          <div class="form-group specialty-group">
+            <label>Especialidade</label>
+            <select name="specialty">
+              <option value="">Nenhuma</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    `;
+
+    const ROLL_MODES = [
+      { key: "skill", label: "Perícia" },
+      { key: "attribute", label: "Atributo" }
+    ];
+
+    return new Dialog({
+      title: "Nova Rolagem Personalizada",
+      content,
+      buttons: {
+        save: {
+          label: "Salvar",
+          callback: async (html) => {
+            const name = html.find("[name='rollName']").val()?.trim();
+            if (!name) {
+              ui.notifications.warn("Defina um nome para a rolagem.");
+              return false;
+            }
+            const modeKey = html.find("[name='mode']").val();
+            const data = {
+              name,
+              attribute: html.find("[name='attribute']").val(),
+              secondKey: html.find("[name='second']").val(),
+              mode: modeKey,
+              modifier: Number(html.find("[name='modifier']").val()) || 0,
+              specialty: modeKey === "skill" ? html.find("[name='specialty']").val() : ""
+            };
+            const actorData = this.actor.toObject();
+            const rolls = Array.isArray(actorData.system.customRolls) ? [...actorData.system.customRolls] : [];
+            rolls.push(data);
+            return this.actor.update({ "system.customRolls": rolls });
+          }
+        }
+      },
+      default: "save",
+      render: (html) => {
+        let modeIndex = 0;
+
+        const buildOptions = (modeKey, excludeAttr) => {
+          if (modeKey === "attribute") {
+            return ATTRIBUTE_KEYS
+              .filter((k) => k !== excludeAttr)
+              .map((k) => `<option value="${k}">${game.i18n.localize(LOCALIZE_ATTR[k])}</option>`)
+              .join("");
+          }
+          return SKILL_KEYS
+            .map((k) => `<option value="${k}">${game.i18n.localize(LOCALIZE_SKILL[k])}</option>`)
+            .join("");
+        };
+
+        const switchMode = (dir) => {
+          modeIndex = (modeIndex + dir + ROLL_MODES.length) % ROLL_MODES.length;
+          const mode = ROLL_MODES[modeIndex];
+          const attrKey = html.find("[name='attribute']").val();
+          const options = buildOptions(mode.key, mode.key === "attribute" ? attrKey : null);
+          html.find(".mode-label").text(mode.label);
+          html.find("[name='mode']").val(mode.key);
+          html.find("[name='second']").html(options);
+          html.find("[name='second'] option:first").prop("selected", true);
+          html.find(".specialty-group").toggle(mode.key === "skill");
+          if (mode.key === "skill") populateSpecialties(html.find("[name='second']").val());
+          updatePreview();
+        };
+
+        const populateSpecialties = (skillKey) => {
+          const select = html.find("[name='specialty']");
+          const actorData = this.actor.toObject();
+          const specialties = Array.isArray(actorData.system.specialties) ? actorData.system.specialties : [];
+          const filtered = specialties.filter(s => s.skill === skillKey);
+          let opts = '<option value="">Nenhuma</option>';
+          filtered.forEach(s => {
+            opts += `<option value="${s.description}">${s.description}</option>`;
+          });
+          select.html(opts);
+          select.prop("disabled", filtered.length === 0);
+        };
+
+        const updatePreview = () => {
+          const attrKey = html.find("[name='attribute']").val();
+          const secondKey = html.find("[name='second']").val();
+          const modeKey = html.find("[name='mode']").val();
+          const modifier = Number(html.find("[name='modifier']").val()) || 0;
+          const specialtyBonus = modeKey === "skill" && html.find("[name='specialty']").val() ? 1 : 0;
+          const system = this.actor.system;
+
+          const attrVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${attrKey}.value`)) || 1);
+          let secondVal;
+          if (modeKey === "skill") {
+            secondVal = Math.max(0, Number(foundry.utils.getProperty(system, `skills.${secondKey}.value`)) || 0);
+          } else {
+            secondVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${secondKey}.value`)) || 1);
+          }
+
+          html.find(".pool-total").text(`${Math.max(1, attrVal + secondVal + modifier + specialtyBonus)} dados`);
+        };
+
+        html.find(".mode-arrow").on("click", (e) => {
+          const dir = $(e.currentTarget).data("dir") === "next" ? 1 : -1;
+          switchMode(dir);
+        });
+
+        html.find("[name='attribute']").on("change", () => {
+          if (html.find("[name='mode']").val() === "attribute") {
+            const attrKey = html.find("[name='attribute']").val();
+            const currentVal = html.find("[name='second']").val();
+            const options = buildOptions("attribute", attrKey);
+            html.find("[name='second']").html(options);
+            if (html.find(`[name='second'] option[value="${currentVal}"]`).length) {
+              html.find("[name='second']").val(currentVal);
+            } else {
+              html.find("[name='second'] option:first").prop("selected", true);
+            }
+          }
+          updatePreview();
+        });
+
+        html.find("[name='second']").on("change", function() {
+          if (html.find("[name='mode']").val() === "skill") {
+            populateSpecialties($(this).val());
+          }
+        });
+
+        html.find("[name='second'], [name='modifier']").on("change input", updatePreview);
+        html.find("[name='specialty']").on("change", updatePreview);
+        updatePreview();
+      }
+    }, { classes: ["astrael-dialog"] }).render(true);
+  }
+
+  async #onEditCustomRoll(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const actorData = this.actor.toObject();
+    const rolls = Array.isArray(actorData.system.customRolls) ? [...actorData.system.customRolls] : [];
+    const roll = rolls[index];
+    if (!roll) return;
+
+    const allAttrOptions = ATTRIBUTE_KEYS.map((k) =>
+      `<option value="${k}" ${k === roll.attribute ? "selected" : ""}>${game.i18n.localize(LOCALIZE_ATTR[k])}</option>`
+    ).join("");
+
+    let allSecondOptions;
+    if (roll.mode === "skill") {
+      allSecondOptions = SKILL_KEYS.map((k) =>
+        `<option value="${k}" ${k === roll.secondKey ? "selected" : ""}>${game.i18n.localize(LOCALIZE_SKILL[k])}</option>`
+      ).join("");
+    } else {
+      allSecondOptions = ATTRIBUTE_KEYS
+        .filter((k) => k !== roll.attribute)
+        .map((k) =>
+          `<option value="${k}" ${k === roll.secondKey ? "selected" : ""}>${game.i18n.localize(LOCALIZE_ATTR[k])}</option>`
+        ).join("");
+    }
+
+    const content = `
+      <form class="astrael-dialog-form">
+        <div class="form-group">
+          <label>Nome da Rolagem</label>
+          <input type="text" name="rollName" value="${roll.name}">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Atributo</label>
+            <select name="attribute">${allAttrOptions}</select>
+          </div>
+          <div class="form-group mode-group">
+            <div class="mode-header">
+              <button type="button" class="mode-arrow" data-dir="prev">&#9664;</button>
+              <span class="mode-label">${roll.mode === "skill" ? "Perícia" : "Atributo"}</span>
+              <button type="button" class="mode-arrow" data-dir="next">&#9654;</button>
+            </div>
+            <select name="second">${allSecondOptions}</select>
+            <input type="hidden" name="mode" value="${roll.mode}">
+          </div>
+        </div>
+        <div class="pool-preview">
+          <span class="pool-total"></span>
+        </div>
+        <div class="bottom-row">
+          <div class="form-group modifier-group">
+            <label>Modificador</label>
+            <input type="number" name="modifier" value="${roll.modifier || 0}" step="1">
+          </div>
+          <div class="form-group specialty-group">
+            <label>Especialidade</label>
+            <select name="specialty">
+              <option value="">Nenhuma</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    `;
+
+    const ROLL_MODES = [
+      { key: "skill", label: "Perícia" },
+      { key: "attribute", label: "Atributo" }
+    ];
+
+    return new Dialog({
+      title: "Editar Rolagem Personalizada",
+      content,
+      buttons: {
+        save: {
+          label: "Salvar",
+          callback: async (html) => {
+            const name = html.find("[name='rollName']").val()?.trim();
+            if (!name) {
+              ui.notifications.warn("Defina um nome para a rolagem.");
+              return false;
+            }
+            const modeKey = html.find("[name='mode']").val();
+            const data = {
+              name,
+              attribute: html.find("[name='attribute']").val(),
+              secondKey: html.find("[name='second']").val(),
+              mode: modeKey,
+              modifier: Number(html.find("[name='modifier']").val()) || 0,
+              specialty: modeKey === "skill" ? html.find("[name='specialty']").val() : ""
+            };
+            const actorData = this.actor.toObject();
+            const rolls = Array.isArray(actorData.system.customRolls) ? [...actorData.system.customRolls] : [];
+            rolls[index] = data;
+            return this.actor.update({ "system.customRolls": rolls });
+          }
+        },
+        delete: {
+          icon: '<i class="fas fa-trash"></i>',
+          label: "Deletar",
+          condition: true,
+          callback: async () => {
+            const data = this.actor.toObject();
+            const list = Array.isArray(data.system.customRolls) ? [...data.system.customRolls] : [];
+            list.splice(index, 1);
+            return this.actor.update({ "system.customRolls": list });
+          }
+        }
+      },
+      default: "save",
+      render: (html) => {
+        let modeIndex = roll.mode === "attribute" ? 1 : 0;
+
+        const buildOptions = (modeKey, excludeAttr) => {
+          if (modeKey === "attribute") {
+            return ATTRIBUTE_KEYS
+              .filter((k) => k !== excludeAttr)
+              .map((k) => `<option value="${k}">${game.i18n.localize(LOCALIZE_ATTR[k])}</option>`)
+              .join("");
+          }
+          return SKILL_KEYS
+            .map((k) => `<option value="${k}">${game.i18n.localize(LOCALIZE_SKILL[k])}</option>`)
+            .join("");
+        };
+
+        const switchMode = (dir) => {
+          modeIndex = (modeIndex + dir + ROLL_MODES.length) % ROLL_MODES.length;
+          const mode = ROLL_MODES[modeIndex];
+          const attrKey = html.find("[name='attribute']").val();
+          const options = buildOptions(mode.key, mode.key === "attribute" ? attrKey : null);
+          html.find(".mode-label").text(mode.label);
+          html.find("[name='mode']").val(mode.key);
+          html.find("[name='second']").html(options);
+          html.find("[name='second'] option:first").prop("selected", true);
+          html.find(".specialty-group").toggle(mode.key === "skill");
+          if (mode.key === "skill") populateSpecialties(html.find("[name='second']").val());
+          updatePreview();
+        };
+
+        const populateSpecialties = (skillKey) => {
+          const select = html.find("[name='specialty']");
+          const actorData = this.actor.toObject();
+          const specialties = Array.isArray(actorData.system.specialties) ? actorData.system.specialties : [];
+          const filtered = specialties.filter(s => s.skill === skillKey);
+          let opts = '<option value="">Nenhuma</option>';
+          filtered.forEach(s => {
+            opts += `<option value="${s.description}" ${s.description === roll.specialty ? "selected" : ""}>${s.description}</option>`;
+          });
+          select.html(opts);
+          select.prop("disabled", filtered.length === 0);
+        };
+
+        const updatePreview = () => {
+          const attrKey = html.find("[name='attribute']").val();
+          const secondKey = html.find("[name='second']").val();
+          const modeKey = html.find("[name='mode']").val();
+          const modifier = Number(html.find("[name='modifier']").val()) || 0;
+          const specialtyBonus = modeKey === "skill" && html.find("[name='specialty']").val() ? 1 : 0;
+          const system = this.actor.system;
+
+          const attrVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${attrKey}.value`)) || 1);
+          let secondVal;
+          if (modeKey === "skill") {
+            secondVal = Math.max(0, Number(foundry.utils.getProperty(system, `skills.${secondKey}.value`)) || 0);
+          } else {
+            secondVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${secondKey}.value`)) || 1);
+          }
+
+          html.find(".pool-total").text(`${Math.max(1, attrVal + secondVal + modifier + specialtyBonus)} dados`);
+        };
+
+        html.find(".mode-arrow").on("click", (e) => {
+          const dir = $(e.currentTarget).data("dir") === "next" ? 1 : -1;
+          switchMode(dir);
+        });
+
+        html.find("[name='attribute']").on("change", () => {
+          if (html.find("[name='mode']").val() === "attribute") {
+            const attrKey = html.find("[name='attribute']").val();
+            const currentVal = html.find("[name='second']").val();
+            const options = buildOptions("attribute", attrKey);
+            html.find("[name='second']").html(options);
+            if (html.find(`[name='second'] option[value="${currentVal}"]`).length) {
+              html.find("[name='second']").val(currentVal);
+            } else {
+              html.find("[name='second'] option:first").prop("selected", true);
+            }
+          }
+          updatePreview();
+        });
+
+        html.find("[name='second']").on("change", function() {
+          if (html.find("[name='mode']").val() === "skill") {
+            populateSpecialties($(this).val());
+          }
+        });
+
+        html.find("[name='second'], [name='modifier']").on("change input", updatePreview);
+        html.find("[name='specialty']").on("change", updatePreview);
+
+        if (roll.mode === "attribute") {
+          html.find(".specialty-group").hide();
+        } else {
+          populateSpecialties(roll.secondKey);
+        }
+        updatePreview();
+        html.closest(".app").find(".dialog-button.delete").addClass("delete");
+      }
+    }, { classes: ["astrael-dialog"], jQuery: true }).render(true);
+  }
+
+  async #onCustomRollClick(event) {
+    if (event.target.closest("[data-action='edit-custom-roll']")) return;
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const system = this.actor.system;
+    const rolls = Array.isArray(system.customRolls) ? system.customRolls : [];
+    const roll = rolls[index];
+    if (!roll) return;
+
+    const attrValue = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${roll.attribute}.value`)) || 1);
+    let secondValue;
+    if (roll.mode === "skill") {
+      secondValue = Math.max(0, Number(foundry.utils.getProperty(system, `skills.${roll.secondKey}.value`)) || 0);
+    } else {
+      secondValue = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${roll.secondKey}.value`)) || 1);
+    }
+    const specialtyBonus = roll.specialty ? 1 : 0;
+    const diceCount = Math.max(1, attrValue + secondValue + (roll.modifier || 0) + specialtyBonus);
+
+    const titleLeft = roll.mode === "skill"
+      ? game.i18n.localize(LOCALIZE_SKILL[roll.secondKey]) || roll.secondKey
+      : game.i18n.localize(LOCALIZE_ATTR[roll.secondKey]) || roll.secondKey;
+    const titleRight = game.i18n.localize(LOCALIZE_ATTR[roll.attribute]) || roll.attribute;
+    const titleSuffix = roll.specialty ? ` (${roll.specialty})` : "";
+
+    return createDicePoolMessage({
+      actor: this.actor,
+      title: `${roll.name}${titleSuffix}`,
+      kicker: "Rolagem Personalizada",
+      diceCount
+    });
   }
 }
 
