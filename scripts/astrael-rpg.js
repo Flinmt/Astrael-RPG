@@ -622,11 +622,20 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     if (!resource) return;
 
-    if (resource.aggravated > 0) {
-      resource.aggravated -= 1;
-      resource.superficial += 1;
-    } else if (resource.superficial > 0) {
-      resource.superficial -= 1;
+    if (damageType === "superficial") {
+      if (resource.superficial > 0) {
+        resource.superficial -= 1;
+      } else if (resource.aggravated > 0) {
+        resource.aggravated -= 1;
+        resource.superficial += 1;
+      }
+    } else if (damageType === "aggravated") {
+      if (resource.aggravated > 0) {
+        resource.aggravated -= 1;
+        resource.superficial += 1;
+      } else if (resource.superficial > 0) {
+        resource.superficial -= 1;
+      }
     }
 
     return this.#updateResource(resourceId, resource);
