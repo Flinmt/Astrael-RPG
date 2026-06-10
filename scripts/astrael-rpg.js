@@ -244,7 +244,10 @@ async function showRerollDialog(actor, originalValues, useCriticals, card, msg) 
             dice,
             ...summary
           });
-          return msg.update({ content: newContent });
+          const wrapper = document.createElement('div');
+          wrapper.innerHTML = newContent;
+          wrapper.querySelector('.astrael-chat-card')?.setAttribute('data-rerolled-values', newValues.join(','));
+          return msg.update({ content: wrapper.innerHTML });
         }
       }
     },
@@ -993,8 +996,12 @@ Hooks.once("ready", () => {
       const msgEl = card?.closest("[data-message-id]");
       const msg = msgEl ? game.messages.get(msgEl.dataset.messageId) : null;
       if (!msg?.rolls?.length) return;
-      const roll = msg.rolls[0];
-      const originalValues = getRollValues(roll);
+      let originalValues;
+      if (card.dataset.rerolledValues) {
+        originalValues = card.dataset.rerolledValues.split(',').map(Number);
+      } else {
+        originalValues = getRollValues(msg.rolls[0]);
+      }
       const useCriticals = card.dataset.useCriticals !== "false";
       const actor = game.actors.get(card.dataset.actorId);
       if (!actor) return;
