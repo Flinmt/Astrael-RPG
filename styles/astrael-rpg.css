@@ -205,6 +205,11 @@
   outline: 0;
 }
 
+.astrael-rpg .xp-slot input[readonly] {
+  color: var(--astrael-dim);
+  cursor: default;
+}
+
 .astrael-rpg .xp-slot:nth-child(3) input {
   color: var(--astrael-gold-bright);
 }

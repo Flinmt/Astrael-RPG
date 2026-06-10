@@ -30,7 +30,16 @@
       "path": "lang/pt-BR.json"
     }
   ],
-  "packs": [],
+  "packs": [
+    {
+      "name": "gm-macros",
+      "label": "GM MACROS",
+      "type": "Macro",
+      "system": "astrael-rpg",
+      "path": "packs/gm-macros",
+      "private": false
+    }
+  ],
   "socket": false,
   "manifest": "",
   "download": "",

@@ -324,6 +324,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
     }));
     context.system.xp ??= { total: 0, current: 0, spent: 0 };
+    context.system.xp.total = Math.max(0, context.system.xp.total || 0);
+    context.system.xp.current = Math.max(0, context.system.xp.total - (context.system.xp.spent || 0));
     context.cssClass = this.isEditable ? "editable" : "locked";
 
     return context;
@@ -892,6 +894,97 @@ Hooks.once("init", () => {
 
 Hooks.once("ready", () => {
   console.log("Astrael RPG | Ready");
+
+  game.astrael = {
+    ...(game.astrael || {}),
+    distributeXP() {
+      const actors = game.actors?.filter(a => a.type === "character" && a.hasPlayerOwner) || [];
+      if (!actors.length) {
+        ui.notifications.warn("Nenhuma ficha de personagem encontrada.");
+        return;
+      }
+
+      const optionsHtml = actors.map(a =>
+        `<option value="${a.id}">${a.name}</option>`
+      ).join("");
+
+      const content = `
+        <form class="astrael-dialog-form">
+          <div class="form-group">
+            <label>Personagem</label>
+            <select name="target">
+              <option value="all">Todos os Personagens</option>
+              ${optionsHtml}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Valor de XP</label>
+            <input type="number" name="xp-value" value="0" step="1">
+          </div>
+        </form>
+      `;
+
+      return new Dialog({
+        title: "Distribuir XP",
+        content,
+        buttons: {
+          distribute: {
+            label: "Distribuir",
+            callback: async (html) => {
+              const value = Math.floor(Number(html.find("[name='xp-value']").val())) || 0;
+              if (value === 0) {
+                ui.notifications.warn("Informe um valor de XP diferente de zero.");
+                return false;
+              }
+              const target = html.find("[name='target']").val();
+              const list = target === "all" ? actors : [game.actors.get(target)].filter(Boolean);
+              if (!list.length) {
+                ui.notifications.warn("Nenhum personagem válido selecionado.");
+                return false;
+              }
+              for (const actor of list) {
+                const total = Math.max(0, (actor.system?.xp?.total || 0) + value);
+                await actor.update({ "system.xp.total": total });
+              }
+              const sign = value > 0 ? "+" : "";
+              ui.notifications.info(`XP ${sign}${value} para ${list.length} personagem(ns).`);
+            }
+          }
+        },
+        default: "distribute",
+        render: () => {}
+      }, { classes: ["astrael-dialog"] }).render(true);
+    }
+  };
+
+  (async () => {
+    const pack = game.packs.get("astrael-rpg.gm-macros");
+    if (!pack) return;
+    const XP_ICON = "systems/astrael-rpg/assets/icons/xp-up.svg";
+    try {
+      const existing = pack.index.find(e => e.name === "Distribuir XP");
+      await pack.configure({ locked: false });
+      if (existing) {
+        if (existing.img !== XP_ICON) {
+          const macro = await pack.getDocument(existing._id);
+          await macro.update({ img: XP_ICON });
+          console.log("Astrael RPG | Ícone da macro 'Distribuir XP' atualizado");
+        }
+      } else {
+        await Macro.create({
+          name: "Distribuir XP",
+          type: "script",
+          command: "game.astrael?.distributeXP?.()",
+          scope: "global",
+          img: XP_ICON
+        }, { pack: "astrael-rpg.gm-macros" });
+        console.log("Astrael RPG | Macro 'Distribuir XP' criada no compendium");
+      }
+      await pack.configure({ locked: true });
+    } catch(err) {
+      console.warn("Astrael RPG | Erro ao gerenciar macro 'Distribuir XP':", err);
+    }
+  })();
 
   document.body.addEventListener("click", (event) => {
     const rerollBtn = event.target.closest(".astrael-reroll-btn");

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="XP up">
+  <defs>
+    <linearGradient id="xp-edge" x1="28" y1="8" x2="100" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f0b86a"/>
+      <stop offset="0.48" stop-color="#c17539"/>
+      <stop offset="1" stop-color="#6b2c24"/>
+    </linearGradient>
+    <radialGradient id="xp-core" cx="64" cy="58" r="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#273035"/>
+      <stop offset="0.7" stop-color="#151c20"/>
+      <stop offset="1" stop-color="#0b0c0d"/>
+    </radialGradient>
+  </defs>
+  <path d="M64 7 111 35 96 105 64 121 32 105 17 35Z" fill="url(#xp-core)" stroke="url(#xp-edge)" stroke-width="5" stroke-linejoin="round"/>
+  <path d="M64 7v114M17 35l47 23 47-23M32 105l32-47 32 47" fill="none" stroke="#d69a55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.72"/>
+  <circle cx="64" cy="62" r="25" fill="#0b0c0d" stroke="#c17539" stroke-width="2.5" opacity="0.92"/>
+  <text x="64" y="70" text-anchor="middle" font-family="Cinzel, Georgia, serif" font-size="42" font-weight="700" fill="#d69a55">XP</text>
+  <path d="M64 6 56 20h5v9h6v-9h5Z" fill="#d69a55" stroke="#c17539" stroke-width="1"/>
+</svg>
