@@ -115,7 +115,6 @@ function classifyDie(value, { useCriticals = true } = {}) {
 
 function summarizeDicePool(values, { useCriticals = true } = {}) {
   const totalBase = values.reduce((total, value) => {
-    if (useCriticals && value === 10) return total + 2;
     if (value >= 6) return total + 1;
     return total;
   }, 0);
