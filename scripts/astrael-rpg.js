@@ -153,15 +153,25 @@ async function renderAstraelTemplate(path, data) {
   return renderer(path, data);
 }
 
-async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriticals = true }) {
-  const roll = await new Roll(`${diceCount}d10`).evaluate();
-  const values = getRollValues(roll);
+async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriticals = true, preRolledValues = null }) {
+  let values;
+  let roll;
+  if (preRolledValues) {
+    values = preRolledValues;
+  } else {
+    roll = await new Roll(`${diceCount}d10`).evaluate();
+    values = getRollValues(roll);
+  }
   const summary = summarizeDicePool(values, { useCriticals });
   const dice = prepareDicePoolResults(values, { useCriticals });
+  const isRouseCheck = !useCriticals && diceCount === 1;
   const content = await renderAstraelTemplate(DICE_POOL_CHAT_TEMPLATE, {
     title,
     kicker,
     actorName: actor.name,
+    actorId: actor.id,
+    useCriticals,
+    isRouseCheck,
     dice,
     ...summary
   });
@@ -169,7 +179,7 @@ async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriti
   return ChatMessage.create({
     speaker: ChatMessage.getSpeaker({ actor }),
     content,
-    rolls: [roll]
+    rolls: roll ? [roll] : []
   });
 }
 
@@ -647,6 +657,101 @@ Hooks.once("ready", () => {
 
     event.preventDefault();
     diceFooter.open = !diceFooter.open;
+  });
+
+  Hooks.on("getChatLogEntryContext", (html, entries) => {
+    entries.push({
+      name: game.i18n.localize("ASTRAEL.Chat.WillpowerReroll"),
+      icon: '<i class="fas fa-redo"></i>',
+      condition: (li) => {
+        const el = li instanceof Element ? li : li[0];
+        if (!el) return false;
+        const card = el.querySelector(".astrael-chat-card.astrael-dice-pool-card");
+        if (!card) return false;
+        if (card.dataset.isRouseCheck === "true") return false;
+        if (!el.dataset.messageId) return false;
+        const msg = game.messages.get(el.dataset.messageId);
+        if (!msg?.rolls?.length) return false;
+        const actorId = card.dataset.actorId;
+        const actor = game.actors?.get(actorId);
+        if (!actor) return false;
+        const wp = actor.system.resources?.willpower;
+        if (!wp) return false;
+        return wp.active > RESOURCE_MINIMUMS.willpower;
+      },
+      callback: async (li) => {
+        const el = li instanceof Element ? li : li[0];
+        const card = el.querySelector(".astrael-chat-card.astrael-dice-pool-card");
+        const msg = game.messages.get(el.dataset.messageId);
+        const roll = msg.rolls[0];
+        const originalValues = getRollValues(roll);
+        const useCriticals = card.dataset.useCriticals !== "false";
+        const actor = game.actors.get(card.dataset.actorId);
+
+        const diceHtml = originalValues.map((v, i) => {
+          const cls = v >= 10 ? "critical" : v >= 6 ? "success" : "failure";
+          return `<span class="reroll-die ${cls}" data-index="${i}">${v}</span>`;
+        }).join("");
+
+        const rerollPrompt = game.i18n.localize("ASTRAEL.Chat.RerollPrompt");
+        const rerollLimit = game.i18n.localize("ASTRAEL.Chat.RerollLimit");
+
+        new Dialog({
+          title: game.i18n.localize("ASTRAEL.Chat.WillpowerReroll"),
+          content: `
+            <form class="reroll-form">
+              <p>${rerollPrompt}</p>
+              <div class="reroll-grid">${diceHtml}</div>
+              <p class="reroll-hint">${rerollLimit}</p>
+            </form>
+          `,
+          buttons: {
+            reroll: {
+              label: game.i18n.localize("ASTRAEL.Chat.WillpowerReroll"),
+              callback: async (html) => {
+                const selected = html.find(".reroll-die.selected").map((i, el) => Number($(el).data("index"))).get();
+                if (selected.length < 1 || selected.length > 3) {
+                  ui.notifications.warn(rerollLimit);
+                  return false;
+                }
+                const newValues = [...originalValues];
+                for (const idx of selected) {
+                  newValues[idx] = (await new Roll("1d10").evaluate()).total;
+                }
+                const wp = actor.system.resources.willpower;
+                await actor.update({
+                  "system.resources.willpower.active": Math.max(
+                    RESOURCE_MINIMUMS.willpower,
+                    (wp.active ?? 2) - 1
+                  )
+                });
+                const msgTitle = msg.content ? $(msg.content).find(".astrael-chat-header h2").text() : "";
+                const msgKicker = msg.content ? $(msg.content).find(".astrael-chat-kicker").text() : "";
+                return createDicePoolMessage({
+                  actor,
+                  title: msgTitle.trim() || game.i18n.localize("ASTRAEL.Chat.WillpowerReroll"),
+                  kicker: msgKicker.trim() || "Rerrolar",
+                  diceCount: newValues.length,
+                  useCriticals,
+                  preRolledValues: newValues
+                });
+              }
+            }
+          },
+          default: "reroll",
+          render: (html) => {
+            html.find(".reroll-die").on("click", function() {
+              const selectedCount = html.find(".reroll-die.selected").length;
+              if ($(this).hasClass("selected")) {
+                $(this).removeClass("selected");
+              } else if (selectedCount < 3) {
+                $(this).addClass("selected");
+              }
+            });
+          }
+        }, { classes: ["astrael-dialog"] }).render(true);
+      }
+    });
   });
 });
 

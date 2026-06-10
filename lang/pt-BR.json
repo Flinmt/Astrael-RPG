@@ -52,5 +52,8 @@
   "ASTRAEL.Skill.Science": "Ciência",
   "ASTRAEL.Skill.Technology": "Engenharia",
   "TYPES.Actor.character": "Personagem",
-  "TYPES.Item.trait": "Caracteristica"
+  "TYPES.Item.trait": "Caracteristica",
+  "ASTRAEL.Chat.WillpowerReroll": "Rerrolar (Força de Vontade)",
+  "ASTRAEL.Chat.RerollPrompt": "Clique nos dados que deseja rerrolar (até 3):",
+  "ASTRAEL.Chat.RerollLimit": "Mín. 1, máx. 3 dados."
 }

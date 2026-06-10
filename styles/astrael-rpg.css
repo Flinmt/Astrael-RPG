@@ -1167,3 +1167,103 @@
   border-bottom: 1px solid rgba(90, 80, 68, 0.62);
   background: linear-gradient(90deg, rgba(0, 0, 0, 0.24), transparent 42%, rgba(0, 0, 0, 0.24)), linear-gradient(180deg, #26231f, #191918);
 }
+
+#context-menu {
+  --background-color: #1d2529;
+  --border-color: rgba(193, 117, 57, 0.58);
+  --text-color: #aeb2aa;
+  --hover-text-color: #ece4d3;
+  --hover-entry-border: rgba(193, 117, 57, 0.46);
+  --hover-entry-background: rgba(193, 117, 57, 0.14);
+  --group-separator: rgba(90, 80, 68, 0.62);
+  border-radius: 0;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+}
+
+#context-menu li.context-item {
+  padding: 7px 10px;
+  letter-spacing: 0.05em;
+}
+
+#context-menu li.context-item:hover {
+  color: var(--hover-text-color);
+  background: var(--hover-entry-background);
+  border-color: var(--hover-entry-border);
+}
+
+#context-menu li.context-item > i {
+  color: var(--astrael-gold);
+  width: 16px;
+  text-align: center;
+}
+
+.reroll-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+}
+
+.reroll-form p {
+  margin: 0;
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  text-align: center;
+}
+
+.reroll-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.reroll-die {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid rgba(119, 128, 135, 0.26);
+  color: rgba(174, 178, 170, 0.52);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  background: rgba(11, 12, 13, 0.68);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  user-select: none;
+}
+
+.reroll-die.success {
+  border-color: rgba(214, 154, 85, 0.48);
+  color: var(--astrael-text);
+  background: rgba(193, 117, 57, 0.3);
+}
+
+.reroll-die.critical {
+  border-color: var(--astrael-gold-bright);
+  color: #fff4d9;
+  background: rgba(193, 117, 57, 0.48);
+}
+
+.reroll-die:hover {
+  border-color: var(--astrael-gold);
+  transform: scale(1.1);
+}
+
+.reroll-die.selected {
+  border-color: var(--astrael-gold-bright);
+  background: rgba(193, 117, 57, 0.48);
+  color: #fff4d9;
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(214, 154, 85, 0.4);
+}
+
+.reroll-hint {
+  color: var(--astrael-dim) !important;
+  font-size: 10px !important;
+}
