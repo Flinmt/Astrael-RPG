@@ -1,7 +1,4 @@
 /ficha
 AGENTS.md
 # Foundry VTT LevelDB
-packs/**/LOCK
-packs/**/LOG
-packs/**/LOG.old
-packs/**/*.log
+/packs
