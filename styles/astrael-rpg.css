@@ -26,6 +26,25 @@
   overflow: auto;
   border-radius: 0;
   background: var(--astrael-panel);
+  scrollbar-width: thin;
+  scrollbar-color: var(--astrael-dim) transparent;
+}
+
+.application.astrael-rpg .window-content::-webkit-scrollbar {
+  width: 7px;
+}
+
+.application.astrael-rpg .window-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.application.astrael-rpg .window-content::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: var(--astrael-dim);
+}
+
+.application.astrael-rpg .window-content::-webkit-scrollbar-thumb:hover {
+  background: var(--astrael-gold);
 }
 
 .astrael-rpg.sheet.actor {
@@ -862,6 +881,16 @@
   font-weight: 600;
 }
 
+.astrael-rpg .trait-row span.rollable {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.astrael-rpg .trait-row span.rollable:hover {
+  color: var(--astrael-gold-bright);
+  text-decoration: underline;
+}
+
 .astrael-rpg .dot-track {
   --filled-width: 0;
   position: relative;
@@ -912,4 +941,229 @@
 
 .astrael-rpg .skill-columns .trait-row {
   min-height: 27px;
+}
+
+.astrael-rpg .tab-panel {
+  scrollbar-width: thin;
+  scrollbar-color: var(--astrael-dim) transparent;
+}
+
+.astrael-rpg .tab-panel::-webkit-scrollbar {
+  width: 7px;
+}
+
+.astrael-rpg .tab-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.astrael-rpg .tab-panel::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: var(--astrael-dim);
+}
+
+.astrael-rpg .tab-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--astrael-gold);
+}
+
+.astrael-dialog {
+  --astrael-panel: #151c20;
+  --astrael-panel-2: #1d2529;
+  --astrael-line: #4a5960;
+  --astrael-text: #ece4d3;
+  --astrael-muted: #aeb2aa;
+  --astrael-dim: #778087;
+  --astrael-gold: #c17539;
+  --astrael-gold-bright: #d69a55;
+}
+
+.astrael-dialog .window-content {
+  padding: 0;
+  background: var(--astrael-panel);
+  color: var(--astrael-text);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.astrael-dialog .dialog-buttons {
+  padding: 10px 14px;
+  border-top: 1px solid rgba(90, 80, 68, 0.62);
+  background: rgba(11, 12, 13, 0.32);
+}
+
+.astrael-dialog .dialog-buttons button {
+  padding: 6px 18px;
+  border: 1px solid var(--astrael-gold);
+  color: var(--astrael-text);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, rgba(193, 117, 57, 0.28), rgba(193, 117, 57, 0.12));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
+}
+
+.astrael-dialog .dialog-buttons button:hover {
+  border-color: var(--astrael-gold-bright);
+  background: linear-gradient(180deg, rgba(214, 154, 85, 0.46), rgba(193, 117, 57, 0.22));
+}
+
+.astrael-dialog .astrael-dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+}
+
+.astrael-dialog .pool-preview {
+  display: grid;
+  place-items: center;
+  padding: 22px 10px;
+  border: 1px solid rgba(90, 80, 68, 0.84);
+  background: rgba(11, 12, 13, 0.42);
+}
+
+.astrael-dialog .pool-total {
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  text-shadow: 0 0 12px rgba(214, 154, 85, 0.2);
+}
+
+.astrael-dialog .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.astrael-dialog .bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.astrael-dialog .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.astrael-dialog .form-group label {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-dialog .form-group select,
+.astrael-dialog .form-group input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(90, 80, 68, 0.84);
+  color: var(--astrael-text);
+  font-size: 12px;
+  background: rgba(11, 12, 13, 0.68);
+  outline: 0;
+}
+
+.astrael-dialog .form-group select option {
+  color: var(--astrael-text);
+  background: #1d2529;
+}
+
+.astrael-dialog .form-group select option:hover,
+.astrael-dialog .form-group select option:checked {
+  background: rgba(193, 117, 57, 0.34);
+}
+
+.astrael-dialog .form-group select::-webkit-scrollbar {
+  width: 7px;
+}
+
+.astrael-dialog .form-group select::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.astrael-dialog .form-group select::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: var(--astrael-dim);
+}
+
+.astrael-dialog .form-group select::-webkit-scrollbar-thumb:hover {
+  background: var(--astrael-gold);
+}
+
+.astrael-dialog .form-group select:hover,
+.astrael-dialog .form-group input:hover {
+  border-color: rgba(193, 117, 57, 0.46);
+}
+
+.astrael-dialog .form-group select:focus,
+.astrael-dialog .form-group input:focus {
+  border-color: var(--astrael-gold);
+}
+
+.astrael-dialog .modifier-group input {
+  text-align: center;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-weight: 700;
+}
+
+.astrael-dialog .mode-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.astrael-dialog .mode-arrow {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.34);
+  color: var(--astrael-gold-bright);
+  font-size: 10px;
+  line-height: 1;
+  background: rgba(11, 12, 13, 0.68);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.astrael-dialog .mode-arrow:hover {
+  border-color: var(--astrael-gold);
+  background: rgba(193, 117, 57, 0.22);
+}
+
+.astrael-dialog .mode-label {
+  min-width: 80px;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-dialog .specialty-group select {
+  color: var(--astrael-dim);
+  font-style: italic;
+}
+
+.astrael-dialog .window-title {
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+}
+
+.astrael-dialog .window-header {
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.62);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.24), transparent 42%, rgba(0, 0, 0, 0.24)), linear-gradient(180deg, #26231f, #191918);
 }

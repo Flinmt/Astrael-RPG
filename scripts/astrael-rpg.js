@@ -2,6 +2,10 @@ const SYSTEM_ID = "astrael-rpg";
 const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character-sheet.hbs`;
 const DICE_POOL_CHAT_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/dice-pool-card.hbs`;
 const RESOURCE_MINIMUMS = { health: 4, willpower: 2 };
+const ATTRIBUTE_KEYS = ["strength", "dexterity", "stamina", "charisma", "manipulation", "composure", "intelligence", "wits", "resolve"];
+const SKILL_KEYS = ["athletics", "brawl", "crafts", "drive", "firearms", "larceny", "melee", "stealth", "survival", "animalKen", "empathy", "etiquette", "expression", "intimidation", "leadership", "persuasion", "streetwise", "subterfuge", "academics", "awareness", "finance", "investigation", "medicine", "occult", "politics", "science", "technology"];
+const LOCALIZE_ATTR = { strength: "ASTRAEL.Attribute.Strength", dexterity: "ASTRAEL.Attribute.Dexterity", stamina: "ASTRAEL.Attribute.Stamina", charisma: "ASTRAEL.Attribute.Charisma", manipulation: "ASTRAEL.Attribute.Manipulation", composure: "ASTRAEL.Attribute.Composure", intelligence: "ASTRAEL.Attribute.Intelligence", wits: "ASTRAEL.Attribute.Wits", resolve: "ASTRAEL.Attribute.Resolve" };
+const LOCALIZE_SKILL = { athletics: "ASTRAEL.Skill.Athletics", brawl: "ASTRAEL.Skill.Brawl", crafts: "ASTRAEL.Skill.Crafts", drive: "ASTRAEL.Skill.Drive", firearms: "ASTRAEL.Skill.Firearms", larceny: "ASTRAEL.Skill.Larceny", melee: "ASTRAEL.Skill.Melee", stealth: "ASTRAEL.Skill.Stealth", survival: "ASTRAEL.Skill.Survival", animalKen: "ASTRAEL.Skill.AnimalKen", empathy: "ASTRAEL.Skill.Empathy", etiquette: "ASTRAEL.Skill.Etiquette", expression: "ASTRAEL.Skill.Expression", intimidation: "ASTRAEL.Skill.Intimidation", leadership: "ASTRAEL.Skill.Leadership", persuasion: "ASTRAEL.Skill.Persuasion", streetwise: "ASTRAEL.Skill.Streetwise", subterfuge: "ASTRAEL.Skill.Subterfuge", academics: "ASTRAEL.Skill.Academics", awareness: "ASTRAEL.Skill.Awareness", finance: "ASTRAEL.Skill.Finance", investigation: "ASTRAEL.Skill.Investigation", medicine: "ASTRAEL.Skill.Medicine", occult: "ASTRAEL.Skill.Occult", politics: "ASTRAEL.Skill.Politics", science: "ASTRAEL.Skill.Science", technology: "ASTRAEL.Skill.Technology" };
 const DEFAULT_RESOURCES = {
   health: {
     max: 8,
@@ -110,13 +114,15 @@ function classifyDie(value, { useCriticals = true } = {}) {
 }
 
 function summarizeDicePool(values, { useCriticals = true } = {}) {
-  return {
-    successes: values.reduce((total, value) => {
-      if (useCriticals && value === 10) return total + 4;
-      if (value >= 6) return total + 1;
-      return total;
-    }, 0)
-  };
+  const totalBase = values.reduce((total, value) => {
+    if (useCriticals && value === 10) return total + 2;
+    if (value >= 6) return total + 1;
+    return total;
+  }, 0);
+  const numTens = values.filter((v) => v === 10).length;
+  const pairBonus = useCriticals ? Math.floor(numTens / 2) * 2 : 0;
+
+  return { successes: totalBase + pairBonus };
 }
 
 function prepareDicePoolResults(values, { useCriticals = true } = {}) {
@@ -210,10 +216,17 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.system.resources.health = normalizeResource("health", context.system.resources.health);
     context.system.resources.willpower = normalizeResource("willpower", context.system.resources.willpower);
     context.system.attributes ??= {};
-    for (const key of ["strength", "dexterity", "stamina", "charisma", "manipulation", "composure", "intelligence", "wits", "resolve"]) {
+    for (const key of ATTRIBUTE_KEYS) {
       const attr = context.system.attributes[key];
       if (!attr || !Number.isFinite(Number(attr.value)) || Number(attr.value) < 1) {
         context.system.attributes[key] = { value: 1 };
+      }
+    }
+    context.system.skills ??= {};
+    for (const key of SKILL_KEYS) {
+      const skill = context.system.skills[key];
+      if (!skill || !Number.isFinite(Number(skill.value))) {
+        context.system.skills[key] = { value: 0 };
       }
     }
     context.cssClass = this.isEditable ? "editable" : "locked";
@@ -246,8 +259,197 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       track.addEventListener("contextmenu", this.#onDotContext.bind(this));
     });
 
+    this.element.querySelectorAll(".rollable").forEach((el) => {
+      el.addEventListener("click", this.#onRollClick.bind(this));
+    });
+
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
+  }
+
+  async #onRollClick(event) {
+    event.preventDefault();
+    const element = event.currentTarget;
+    const type = element.dataset.type;
+    const key = element.dataset.key;
+
+    const ROLL_MODES = [
+      { key: "skill", label: "Perícia" },
+      { key: "attribute", label: "Atributo" }
+    ];
+
+    const allAttrOptions = ATTRIBUTE_KEYS.map((k) =>
+      `<option value="${k}">${game.i18n.localize(LOCALIZE_ATTR[k])}</option>`
+    ).join("");
+
+    const allSkillOptions = SKILL_KEYS.map((k) =>
+      `<option value="${k}">${game.i18n.localize(LOCALIZE_SKILL[k])}</option>`
+    ).join("");
+
+    const initialModeIndex = type === "attribute" ? 1 : 0;
+    const initialMode = ROLL_MODES[initialModeIndex];
+    const initialSecondOptions = initialMode.key === "attribute" ? allAttrOptions : allSkillOptions;
+
+    const content = `
+      <form class="astrael-dialog-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Atributo</label>
+            <select name="attribute">${allAttrOptions}</select>
+          </div>
+          <div class="form-group mode-group">
+            <div class="mode-header">
+              <button type="button" class="mode-arrow" data-dir="prev">&#9664;</button>
+              <span class="mode-label">${initialMode.label}</span>
+              <button type="button" class="mode-arrow" data-dir="next">&#9654;</button>
+            </div>
+            <select name="second">${initialSecondOptions}</select>
+            <input type="hidden" name="mode" value="${initialMode.key}">
+          </div>
+        </div>
+        <div class="pool-preview">
+          <span class="pool-total"></span>
+        </div>
+        <div class="bottom-row">
+          <div class="form-group modifier-group">
+            <label>Modificador</label>
+            <input type="number" name="modifier" value="0" step="1">
+          </div>
+          <div class="form-group specialty-group">
+            <label>Especialidade</label>
+            <select name="specialty" disabled>
+              <option value="">Nenhuma</option>
+            </select>
+          </div>
+        </div>
+      </form>
+    `;
+
+    const dialog = new Dialog({
+      title: "Teste de Parada de Dados",
+      content,
+      buttons: {
+        roll: {
+          label: "Rolar",
+          callback: (html) => {
+            const attrKey = html.find("[name='attribute']").val();
+            const secondKey = html.find("[name='second']").val();
+            const modeKey = html.find("[name='mode']").val();
+            const modifier = Number(html.find("[name='modifier']").val()) || 0;
+            const system = this.actor.system;
+
+            const attrValue = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${attrKey}.value`)) || 1);
+            let secondValue, titleLeft, titleRight;
+
+            if (modeKey === "skill") {
+              secondValue = Math.max(0, Number(foundry.utils.getProperty(system, `skills.${secondKey}.value`)) || 0);
+              titleLeft = game.i18n.localize(LOCALIZE_SKILL[secondKey]);
+              titleRight = game.i18n.localize(LOCALIZE_ATTR[attrKey]);
+            } else {
+              secondValue = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${secondKey}.value`)) || 1);
+              titleLeft = game.i18n.localize(LOCALIZE_ATTR[secondKey]);
+              titleRight = game.i18n.localize(LOCALIZE_ATTR[attrKey]);
+            }
+
+            const diceCount = Math.max(1, attrValue + secondValue + modifier);
+
+            console.group("Astrael RPG | Detalhes da Rolagem");
+            console.log("Atributo:", attrKey, attrValue);
+            console.log("Modo:", modeKey, "Chave:", secondKey, secondValue);
+            console.log("Modificador:", modifier);
+            console.log("Total de Dados:", diceCount);
+            console.groupEnd();
+
+            return createDicePoolMessage({
+              actor: this.actor,
+              title: `${titleLeft} + ${titleRight}`,
+              kicker: "Teste de Perícia",
+              diceCount: diceCount
+            });
+          }
+        }
+      },
+      default: "roll",
+      render: (html) => {
+        let modeIndex = initialModeIndex;
+
+        const buildOptions = (modeKey, excludeAttr) => {
+          if (modeKey === "attribute") {
+            return ATTRIBUTE_KEYS
+              .filter((k) => k !== excludeAttr)
+              .map((k) => `<option value="${k}">${game.i18n.localize(LOCALIZE_ATTR[k])}</option>`)
+              .join("");
+          }
+          return SKILL_KEYS
+            .map((k) => `<option value="${k}">${game.i18n.localize(LOCALIZE_SKILL[k])}</option>`)
+            .join("");
+        };
+
+        const switchMode = (dir) => {
+          modeIndex = (modeIndex + dir + ROLL_MODES.length) % ROLL_MODES.length;
+          const mode = ROLL_MODES[modeIndex];
+          const attrKey = html.find("[name='attribute']").val();
+          const options = buildOptions(mode.key, mode.key === "attribute" ? attrKey : null);
+          html.find(".mode-label").text(mode.label);
+          html.find("[name='mode']").val(mode.key);
+          html.find("[name='second']").html(options);
+          html.find("[name='second'] option:first").prop("selected", true);
+          updatePreview();
+        };
+
+        const updatePreview = () => {
+          const attrKey = html.find("[name='attribute']").val();
+          const secondKey = html.find("[name='second']").val();
+          const modeKey = html.find("[name='mode']").val();
+          const modifier = Number(html.find("[name='modifier']").val()) || 0;
+          const system = this.actor.system;
+
+          const attrVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${attrKey}.value`)) || 1);
+          let secondVal;
+          if (modeKey === "skill") {
+            secondVal = Math.max(0, Number(foundry.utils.getProperty(system, `skills.${secondKey}.value`)) || 0);
+          } else {
+            secondVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${secondKey}.value`)) || 1);
+          }
+
+          html.find(".pool-total").text(`${Math.max(1, attrVal + secondVal + modifier)} dados`);
+        };
+
+        html.find(".mode-arrow").on("click", (e) => {
+          const dir = $(e.currentTarget).data("dir") === "next" ? 1 : -1;
+          switchMode(dir);
+        });
+
+        html.find("[name='attribute']").on("change", () => {
+          if (html.find("[name='mode']").val() === "attribute") {
+            const attrKey = html.find("[name='attribute']").val();
+            const currentVal = html.find("[name='second']").val();
+            const options = buildOptions("attribute", attrKey);
+            html.find("[name='second']").html(options);
+            if (html.find(`[name='second'] option[value="${currentVal}"]`).length) {
+              html.find("[name='second']").val(currentVal);
+            } else {
+              html.find("[name='second'] option:first").prop("selected", true);
+            }
+          }
+          updatePreview();
+        });
+
+        html.find("[name='second'], [name='modifier']").on("change input", updatePreview);
+
+        if (type === "attribute") {
+          const differentAttr = ATTRIBUTE_KEYS.find((k) => k !== key) || ATTRIBUTE_KEYS[0];
+          html.find("[name='attribute']").val(differentAttr);
+          html.find("[name='second']").val(key);
+        } else {
+          html.find("[name='second']").val(key);
+        }
+
+        updatePreview();
+      }
+    }, { classes: ["astrael-dialog"] });
+
+    return dialog.render(true);
   }
 
   async #onInputChange(event) {
@@ -256,16 +458,21 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return this.actor.update({ [input.name]: input.value });
   }
 
+  #dotMin(name) {
+    return name?.startsWith("system.skills") ? 0 : 1;
+  }
+
   async #onDotClick(event) {
     event.preventDefault();
     const track = event.currentTarget;
     const name = track.dataset.name;
+    const min = this.#dotMin(name);
     const rect = track.getBoundingClientRect();
     const relativeX = event.clientX - rect.left;
     const nextValue = rect.width ? Math.ceil(relativeX / (rect.width / 5)) : 0;
-    const clamped = Math.max(1, Math.min(5, nextValue));
+    const clamped = Math.max(min, Math.min(5, nextValue));
     const currentValue = Number(track.dataset.value) || 0;
-    const newValue = currentValue === clamped ? Math.max(1, clamped - 1) : clamped;
+    const newValue = currentValue === clamped ? Math.max(min, clamped - 1) : clamped;
 
     return this.actor.update({ [name]: newValue });
   }
@@ -275,7 +482,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const track = event.currentTarget;
     const name = track.dataset.name;
 
-    return this.actor.update({ [name]: 1 });
+    return this.actor.update({ [name]: this.#dotMin(name) });
   }
 
   async #onResourceBoxClick(event) {

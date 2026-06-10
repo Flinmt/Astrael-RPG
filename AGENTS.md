@@ -28,8 +28,8 @@ Clicking a `filled` box reduces `active`. Clicking `superficial`/`aggravated` re
 
 ## Dice & Chat
 
-- `classifyDie(10)` = critical (4 successes), `6-9` = success (1), `1-5` = failure.
-- Pairs of 10s produce `paired-critical` styling (each still counts 4 successes).
+- `classifyDie(10)` = critical (2 successes), `6-9` = success (1), `1-5` = failure.
+- Each pair of 10s adds +2 bonus successes. Pairs produce `paired-critical` styling.
 - Rouse Check (`useCriticals: false`): `6-10` = 1 success, `1-5` = 0.
 - Chat card template: `templates/chat/dice-pool-card.hbs`. Dice footer starts collapsed; clicking anywhere on the card toggles `details[open]` via a delegated `document.body` listener in the `ready` hook.
 - Custom chat card overrides `.chat-message` padding/border/header to zero for full-width layout.
