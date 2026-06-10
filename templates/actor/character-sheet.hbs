@@ -68,6 +68,314 @@
           </button>
         </div>
       </header>
+
+      <nav class="sheet-tabs" aria-label="Abas da ficha">
+        <button class="tab-button active" data-tab="attributes" type="button">{{localize "ASTRAEL.Tab.Attributes"}}</button>
+        <button class="tab-button" data-tab="advantages" type="button">{{localize "ASTRAEL.Tab.Advantages"}}</button>
+        <button class="tab-button" data-tab="hemomancy" type="button">{{localize "ASTRAEL.Tab.Hemomancy"}}</button>
+        <button class="tab-button" data-tab="stranger-mark" type="button">{{localize "ASTRAEL.Tab.StrangerMark"}}</button>
+        <button class="tab-button" data-tab="convictions" type="button">{{localize "ASTRAEL.Tab.Convictions"}}</button>
+        <button class="tab-button" data-tab="settings" type="button">{{localize "ASTRAEL.Tab.Settings"}}</button>
+      </nav>
+
+      <section class="sheet-body">
+        <div class="tab-panel active" data-tab="attributes">
+          <section class="section-card">
+            <div class="section-title">
+              <h2>{{localize "ASTRAEL.Tab.Attributes"}}</h2>
+            </div>
+            <div class="three-columns">
+              <article class="trait-group physical">
+                <h3>{{localize "ASTRAEL.Attributes.Physical"}}</h3>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Strength"}}</span>
+                  <div class="dot-track dots-{{system.attributes.strength.value}}" 
+                       data-name="system.attributes.strength.value" 
+                       data-value="{{system.attributes.strength.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Dexterity"}}</span>
+                  <div class="dot-track dots-{{system.attributes.dexterity.value}}" 
+                       data-name="system.attributes.dexterity.value" 
+                       data-value="{{system.attributes.dexterity.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Stamina"}}</span>
+                  <div class="dot-track dots-{{system.attributes.stamina.value}}" 
+                       data-name="system.attributes.stamina.value" 
+                       data-value="{{system.attributes.stamina.value}}"></div>
+                </div>
+              </article>
+
+              <article class="trait-group social">
+                <h3>{{localize "ASTRAEL.Attributes.Social"}}</h3>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Charisma"}}</span>
+                  <div class="dot-track dots-{{system.attributes.charisma.value}}" 
+                       data-name="system.attributes.charisma.value" 
+                       data-value="{{system.attributes.charisma.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Manipulation"}}</span>
+                  <div class="dot-track dots-{{system.attributes.manipulation.value}}" 
+                       data-name="system.attributes.manipulation.value" 
+                       data-value="{{system.attributes.manipulation.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Composure"}}</span>
+                  <div class="dot-track dots-{{system.attributes.composure.value}}" 
+                       data-name="system.attributes.composure.value" 
+                       data-value="{{system.attributes.composure.value}}"></div>
+                </div>
+              </article>
+
+              <article class="trait-group mental">
+                <h3>{{localize "ASTRAEL.Attributes.Mental"}}</h3>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Intelligence"}}</span>
+                  <div class="dot-track dots-{{system.attributes.intelligence.value}}" 
+                       data-name="system.attributes.intelligence.value" 
+                       data-value="{{system.attributes.intelligence.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Wits"}}</span>
+                  <div class="dot-track dots-{{system.attributes.wits.value}}" 
+                       data-name="system.attributes.wits.value" 
+                       data-value="{{system.attributes.wits.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Attribute.Resolve"}}</span>
+                  <div class="dot-track dots-{{system.attributes.resolve.value}}" 
+                       data-name="system.attributes.resolve.value" 
+                       data-value="{{system.attributes.resolve.value}}"></div>
+                </div>
+              </article>
+            </div>
+          </section>
+          
+          <section class="section-card skills-card">
+            <div class="section-title">
+              <h2>{{localize "ASTRAEL.Skills.Title"}}</h2>
+            </div>
+            <div class="three-columns skill-columns">
+              <article class="trait-group physical">
+                <h3>{{localize "ASTRAEL.Skills.Physical"}}</h3>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Athletics"}}</span>
+                  <div class="dot-track dots-{{system.skills.athletics.value}}" 
+                       data-name="system.skills.athletics.value" 
+                       data-value="{{system.skills.athletics.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Brawl"}}</span>
+                  <div class="dot-track dots-{{system.skills.brawl.value}}" 
+                       data-name="system.skills.brawl.value" 
+                       data-value="{{system.skills.brawl.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Drive"}}</span>
+                  <div class="dot-track dots-{{system.skills.drive.value}}" 
+                       data-name="system.skills.drive.value" 
+                       data-value="{{system.skills.drive.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Stealth"}}</span>
+                  <div class="dot-track dots-{{system.skills.stealth.value}}" 
+                       data-name="system.skills.stealth.value" 
+                       data-value="{{system.skills.stealth.value}}"></div>
+                </div>
+
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Larceny"}}</span>
+                  <div class="dot-track dots-{{system.skills.larceny.value}}" 
+                       data-name="system.skills.larceny.value" 
+                       data-value="{{system.skills.larceny.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Crafts"}}</span>
+                  <div class="dot-track dots-{{system.skills.crafts.value}}" 
+                       data-name="system.skills.crafts.value" 
+                       data-value="{{system.skills.crafts.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Firearms"}}</span>
+                  <div class="dot-track dots-{{system.skills.firearms.value}}" 
+                       data-name="system.skills.firearms.value" 
+                       data-value="{{system.skills.firearms.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Melee"}}</span>
+                  <div class="dot-track dots-{{system.skills.melee.value}}" 
+                       data-name="system.skills.melee.value" 
+                       data-value="{{system.skills.melee.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Survival"}}</span>
+                  <div class="dot-track dots-{{system.skills.survival.value}}" 
+                       data-name="system.skills.survival.value" 
+                       data-value="{{system.skills.survival.value}}"></div>
+                </div>
+              </article>
+
+              <article class="trait-group social">
+                <h3>{{localize "ASTRAEL.Skills.Social"}}</h3>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.AnimalKen"}}</span>
+                  <div class="dot-track dots-{{system.skills.animalKen.value}}" 
+                       data-name="system.skills.animalKen.value" 
+                       data-value="{{system.skills.animalKen.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Empathy"}}</span>
+                  <div class="dot-track dots-{{system.skills.empathy.value}}" 
+                       data-name="system.skills.empathy.value" 
+                       data-value="{{system.skills.empathy.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Etiquette"}}</span>
+                  <div class="dot-track dots-{{system.skills.etiquette.value}}" 
+                       data-name="system.skills.etiquette.value" 
+                       data-value="{{system.skills.etiquette.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Expression"}}</span>
+                  <div class="dot-track dots-{{system.skills.expression.value}}" 
+                       data-name="system.skills.expression.value" 
+                       data-value="{{system.skills.expression.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Intimidation"}}</span>
+                  <div class="dot-track dots-{{system.skills.intimidation.value}}" 
+                       data-name="system.skills.intimidation.value" 
+                       data-value="{{system.skills.intimidation.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Leadership"}}</span>
+                  <div class="dot-track dots-{{system.skills.leadership.value}}" 
+                       data-name="system.skills.leadership.value" 
+                       data-value="{{system.skills.leadership.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Persuasion"}}</span>
+                  <div class="dot-track dots-{{system.skills.persuasion.value}}" 
+                       data-name="system.skills.persuasion.value" 
+                       data-value="{{system.skills.persuasion.value}}"></div>
+                </div>
+
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Streetwise"}}</span>
+                  <div class="dot-track dots-{{system.skills.streetwise.value}}" 
+                       data-name="system.skills.streetwise.value" 
+                       data-value="{{system.skills.streetwise.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Subterfuge"}}</span>
+                  <div class="dot-track dots-{{system.skills.subterfuge.value}}" 
+                       data-name="system.skills.subterfuge.value" 
+                       data-value="{{system.skills.subterfuge.value}}"></div>
+                </div>
+              </article>
+
+              <article class="trait-group mental">
+                <h3>{{localize "ASTRAEL.Skills.Mental"}}</h3>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Academics"}}</span>
+                  <div class="dot-track dots-{{system.skills.academics.value}}" 
+                       data-name="system.skills.academics.value" 
+                       data-value="{{system.skills.academics.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Awareness"}}</span>
+                  <div class="dot-track dots-{{system.skills.awareness.value}}" 
+                       data-name="system.skills.awareness.value" 
+                       data-value="{{system.skills.awareness.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Finance"}}</span>
+                  <div class="dot-track dots-{{system.skills.finance.value}}" 
+                       data-name="system.skills.finance.value" 
+                       data-value="{{system.skills.finance.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Investigation"}}</span>
+                  <div class="dot-track dots-{{system.skills.investigation.value}}" 
+                       data-name="system.skills.investigation.value" 
+                       data-value="{{system.skills.investigation.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Medicine"}}</span>
+                  <div class="dot-track dots-{{system.skills.medicine.value}}" 
+                       data-name="system.skills.medicine.value" 
+                       data-value="{{system.skills.medicine.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Occult"}}</span>
+                  <div class="dot-track dots-{{system.skills.occult.value}}" 
+                       data-name="system.skills.occult.value" 
+                       data-value="{{system.skills.occult.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Politics"}}</span>
+                  <div class="dot-track dots-{{system.skills.politics.value}}" 
+                       data-name="system.skills.politics.value" 
+                       data-value="{{system.skills.politics.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Science"}}</span>
+                  <div class="dot-track dots-{{system.skills.science.value}}" 
+                       data-name="system.skills.science.value" 
+                       data-value="{{system.skills.science.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span>{{localize "ASTRAEL.Skill.Technology"}}</span>
+                  <div class="dot-track dots-{{system.skills.technology.value}}" 
+                       data-name="system.skills.technology.value" 
+                       data-value="{{system.skills.technology.value}}"></div>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+        <div class="tab-panel" data-tab="advantages"></div>
+        <div class="tab-panel" data-tab="hemomancy"></div>
+        <div class="tab-panel" data-tab="stranger-mark"></div>
+        <div class="tab-panel" data-tab="convictions"></div>
+        <div class="tab-panel" data-tab="settings"></div>
+      </section>
     </section>
   </main>
 </form>

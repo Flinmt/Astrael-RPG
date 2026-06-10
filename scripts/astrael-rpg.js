@@ -175,7 +175,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     classes: ["astrael-rpg", "sheet", "actor"],
     position: {
       width: 900,
-      height: 320
+      height: 680
     },
     form: {
       closeOnSubmit: false,
@@ -183,7 +183,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       handler: updateActorSheet
     },
     window: {
-      title: "Astrael RPG Character Sheet"
+      title: "Astrael RPG Character Sheet",
+      resizable: true
     }
   };
 
@@ -208,6 +209,13 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     );
     context.system.resources.health = normalizeResource("health", context.system.resources.health);
     context.system.resources.willpower = normalizeResource("willpower", context.system.resources.willpower);
+    context.system.attributes ??= {};
+    for (const key of ["strength", "dexterity", "stamina", "charisma", "manipulation", "composure", "intelligence", "wits", "resolve"]) {
+      const attr = context.system.attributes[key];
+      if (!attr || !Number.isFinite(Number(attr.value)) || Number(attr.value) < 1) {
+        context.system.attributes[key] = { value: 1 };
+      }
+    }
     context.cssClass = this.isEditable ? "editable" : "locked";
 
     return context;
@@ -229,25 +237,45 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       input.addEventListener("change", this.#onInputChange.bind(this));
     });
 
+    this.element.querySelectorAll(".tab-button").forEach((btn) => {
+      btn.addEventListener("click", this.#onTabClick.bind(this));
+    });
+
+    this.element.querySelectorAll(".dot-track").forEach((track) => {
+      track.addEventListener("click", this.#onDotClick.bind(this));
+      track.addEventListener("contextmenu", this.#onDotContext.bind(this));
+    });
+
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
-
-    this.#fitWindowToContent();
-  }
-
-  #fitWindowToContent() {
-    const content = this.element.querySelector(".sheet-shell");
-    const headerHeight = this.window.header?.offsetHeight ?? 0;
-
-    if (!content) return;
-
-    this.setPosition({ height: content.offsetHeight + headerHeight + 2 });
   }
 
   async #onInputChange(event) {
     const input = event.currentTarget;
 
     return this.actor.update({ [input.name]: input.value });
+  }
+
+  async #onDotClick(event) {
+    event.preventDefault();
+    const track = event.currentTarget;
+    const name = track.dataset.name;
+    const rect = track.getBoundingClientRect();
+    const relativeX = event.clientX - rect.left;
+    const nextValue = rect.width ? Math.ceil(relativeX / (rect.width / 5)) : 0;
+    const clamped = Math.max(1, Math.min(5, nextValue));
+    const currentValue = Number(track.dataset.value) || 0;
+    const newValue = currentValue === clamped ? Math.max(1, clamped - 1) : clamped;
+
+    return this.actor.update({ [name]: newValue });
+  }
+
+  async #onDotContext(event) {
+    event.preventDefault();
+    const track = event.currentTarget;
+    const name = track.dataset.name;
+
+    return this.actor.update({ [name]: 1 });
   }
 
   async #onResourceBoxClick(event) {
@@ -340,6 +368,25 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       [`system.resources.${resourceId}.superficial`]: normalized.superficial,
       [`system.resources.${resourceId}.aggravated`]: normalized.aggravated
     });
+  }
+
+  async #onTabClick(event) {
+    event.preventDefault();
+
+    const btn = event.currentTarget;
+    const tabId = btn.dataset.tab;
+
+    this.element.querySelectorAll(".tab-button").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    this.element.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
+    const panel = this.element.querySelector(`.tab-panel[data-tab="${tabId}"]`);
+    if (panel) panel.classList.add("active");
+  }
+
+  setPosition(position) {
+    if (position) position.width = 900;
+    return super.setPosition(position);
   }
 
   #onEditImage(event) {
