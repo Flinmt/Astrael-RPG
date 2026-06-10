@@ -659,30 +659,25 @@ Hooks.once("ready", () => {
     diceFooter.open = !diceFooter.open;
   });
 
-  Hooks.on("getChatLogEntryContext", (html, entries) => {
+  Hooks.on("getChatMessageContextOptions", (chatLog, entries) => {
     entries.push({
-      name: game.i18n.localize("ASTRAEL.Chat.WillpowerReroll"),
-      icon: '<i class="fas fa-redo"></i>',
-      condition: (li) => {
-        const el = li instanceof Element ? li : li[0];
-        if (!el) return false;
-        const card = el.querySelector(".astrael-chat-card.astrael-dice-pool-card");
+      label: game.i18n.localize("ASTRAEL.Chat.WillpowerReroll"),
+      icon: "fa-solid fa-redo",
+      visible: (target) => {
+        const card = target.querySelector(".astrael-chat-card.astrael-dice-pool-card");
         if (!card) return false;
         if (card.dataset.isRouseCheck === "true") return false;
-        if (!el.dataset.messageId) return false;
-        const msg = game.messages.get(el.dataset.messageId);
+        const msg = target.dataset.messageId ? game.messages.get(target.dataset.messageId) : null;
         if (!msg?.rolls?.length) return false;
-        const actorId = card.dataset.actorId;
-        const actor = game.actors?.get(actorId);
+        const actor = game.actors?.get(card.dataset.actorId);
         if (!actor) return false;
         const wp = actor.system.resources?.willpower;
         if (!wp) return false;
         return wp.active > RESOURCE_MINIMUMS.willpower;
       },
-      callback: async (li) => {
-        const el = li instanceof Element ? li : li[0];
-        const card = el.querySelector(".astrael-chat-card.astrael-dice-pool-card");
-        const msg = game.messages.get(el.dataset.messageId);
+      onClick: async (event, target) => {
+        const card = target.querySelector(".astrael-chat-card.astrael-dice-pool-card");
+        const msg = game.messages.get(target.dataset.messageId);
         const roll = msg.rolls[0];
         const originalValues = getRollValues(roll);
         const useCriticals = card.dataset.useCriticals !== "false";
