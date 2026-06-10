@@ -639,6 +639,40 @@
   background: rgba(11, 12, 13, 0.68);
 }
 
+.astrael-chat-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(90, 80, 68, 0.62);
+}
+
+.astrael-reroll-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid rgba(193, 117, 57, 0.4);
+  color: var(--astrael-chat-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(11, 12, 13, 0.5);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.astrael-reroll-btn:hover {
+  border-color: var(--astrael-chat-gold-bright);
+  background: rgba(193, 117, 57, 0.2);
+}
+
+.astrael-reroll-btn i {
+  font-size: 11px;
+}
+
 .astrael-rpg .sheet-tabs {
   position: relative;
   display: flex;
