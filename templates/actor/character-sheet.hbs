@@ -369,6 +369,22 @@
               </article>
             </div>
           </section>
+
+          <details class="section-card specialty-card" {{#if system.specialties.length}}open{{/if}}>
+            <summary class="section-title">
+              <h2>Especialidades</h2>
+              <span>Clique para Expandir ou Recolher</span>
+            </summary>
+            <div class="specialty-grid">
+              {{#each system.specialties as |spec|}}
+              <div class="specialty-entry" data-index="{{@index}}" data-action="edit-specialty">
+                <span class="specialty-skill">{{spec.skillLabel}}</span>
+                <span class="specialty-desc">{{spec.description}}</span>
+              </div>
+              {{/each}}
+              <button type="button" class="specialty-add" data-action="add-specialty">+</button>
+            </div>
+          </details>
         </div>
         <div class="tab-panel" data-tab="advantages"></div>
         <div class="tab-panel" data-tab="hemomancy"></div>

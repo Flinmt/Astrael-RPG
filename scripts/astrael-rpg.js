@@ -318,6 +318,11 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         context.system.skills[key] = { value: 0 };
       }
     }
+    context.system.specialties = Array.isArray(context.system.specialties) ? context.system.specialties : [];
+    context.system.specialties = context.system.specialties.map(spec => ({
+      ...spec,
+      skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
+    }));
     context.cssClass = this.isEditable ? "editable" : "locked";
 
     return context;
@@ -350,6 +355,11 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     this.element.querySelectorAll(".rollable").forEach((el) => {
       el.addEventListener("click", this.#onRollClick.bind(this));
+    });
+
+    this.element.querySelector("[data-action='add-specialty']")?.addEventListener("click", this.#onAddSpecialty.bind(this));
+    this.element.querySelectorAll("[data-action='edit-specialty']").forEach((el) => {
+      el.addEventListener("click", this.#onEditSpecialty.bind(this));
     });
 
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
@@ -717,6 +727,119 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       diceCount: 1,
       useCriticals: false
     });
+  }
+
+  async #onAddSpecialty(event) {
+    event.preventDefault();
+
+    const skillOptions = SKILL_KEYS
+      .filter(key => (foundry.utils.getProperty(this.actor.system, `skills.${key}.value`) || 0) > 0)
+      .map(key => ({ key, label: game.i18n.localize(LOCALIZE_SKILL[key]) }));
+
+    const optionsHtml = skillOptions.length
+      ? skillOptions.map(o => `<option value="${o.key}">${o.label}</option>`).join("")
+      : '<option value="">Nenhuma perícia com pontos</option>';
+
+    return new Dialog({
+      title: "Adicionar Especialidade",
+      content: `
+        <form class="astrael-dialog-form">
+          <div class="form-group">
+            <label>Perícia Associada</label>
+            <select name="skill">${optionsHtml}</select>
+          </div>
+          <div class="form-group">
+            <label>Definição</label>
+            <input type="text" name="description" placeholder="Ex: Cenas de crime, Duelos...">
+          </div>
+        </form>
+      `,
+      buttons: {
+        add: {
+          icon: '<i class="fas fa-plus"></i>',
+          label: "Confirmar",
+          callback: async (html) => {
+            const skill = html.find("[name='skill']").val();
+            if (!skill) {
+              ui.notifications.warn("Selecione uma perícia.");
+              return false;
+            }
+            const description = html.find("[name='description']").val() || "";
+            const actorData = this.actor.toObject();
+            const specialties = Array.isArray(actorData.system.specialties) ? actorData.system.specialties : [];
+            specialties.push({ skill, description });
+            return this.actor.update({ "system.specialties": specialties });
+          }
+        }
+      },
+      default: "add"
+    }, { classes: ["astrael-dialog"] }).render(true);
+  }
+
+  async #onEditSpecialty(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const actorData = this.actor.toObject();
+    const specialties = Array.isArray(actorData.system.specialties) ? actorData.system.specialties : [];
+    const spec = specialties[index];
+    if (!spec) return;
+
+    const skillOptions = SKILL_KEYS
+      .filter(key => (foundry.utils.getProperty(this.actor.system, `skills.${key}.value`) || 0) > 0 || key === spec.skill)
+      .map(key => ({ key, label: game.i18n.localize(LOCALIZE_SKILL[key]) }));
+
+    const optionsHtml = skillOptions.map(o =>
+      `<option value="${o.key}" ${o.key === spec.skill ? "selected" : ""}>${o.label}</option>`
+    ).join("");
+
+    return new Dialog({
+      title: "Registro de Especialidade",
+      content: `
+        <form class="astrael-dialog-form">
+          <div class="form-group">
+            <label>Perícia Associada</label>
+            <select name="skill">${optionsHtml}</select>
+          </div>
+          <div class="form-group">
+            <label>Definição</label>
+            <input type="text" name="description" value="${spec.description || ""}" placeholder="Ex: Cenas de crime, Duelos...">
+          </div>
+        </form>
+      `,
+      buttons: {
+        save: {
+          icon: '<i class="fas fa-save"></i>',
+          label: "Salvar",
+          callback: async (html) => {
+            const skill = html.find("[name='skill']").val();
+            if (!skill) {
+              ui.notifications.warn("Selecione uma perícia.");
+              return false;
+            }
+            const description = html.find("[name='description']").val() || "";
+            const data = this.actor.toObject();
+            const list = Array.isArray(data.system.specialties) ? [...data.system.specialties] : [];
+            if (list[index]) list[index] = { skill, description };
+            return this.actor.update({ "system.specialties": list });
+          }
+        },
+        delete: {
+          icon: '<i class="fas fa-trash"></i>',
+          label: "Deletar",
+          condition: true,
+          callback: async () => {
+            const data = this.actor.toObject();
+            const list = Array.isArray(data.system.specialties) ? [...data.system.specialties] : [];
+            list.splice(index, 1);
+            return this.actor.update({ "system.specialties": list });
+          }
+        }
+      },
+      default: "save",
+      render: (html) => {
+        html.closest(".app").find(".dialog-button.delete").addClass("delete");
+      }
+    }, { classes: ["astrael-dialog"], jQuery: true }).render(true);
   }
 }
 
