@@ -113,8 +113,12 @@
 .astrael-rpg .portrait-cell {
   grid-column: 2;
   grid-row: 1 / span 3;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 8px 8px;
   border: 1px solid rgba(182, 138, 58, 0.28);
   background:
     radial-gradient(circle, rgba(182, 138, 58, 0.13), transparent 62%),
@@ -124,15 +128,85 @@
 .astrael-rpg .portrait-ring {
   display: grid;
   place-items: center;
-  width: 140px;
-  height: 140px;
+  width: 120px;
+  height: 120px;
   padding: 0;
+  flex-shrink: 0;
   border: 2px solid var(--astrael-gold);
   border-radius: 50%;
   overflow: hidden;
   background: radial-gradient(circle, #2d2922 0 54%, #0d0e0f 55% 100%);
   box-shadow: 0 0 0 8px rgba(11, 12, 13, 0.75), 0 0 0 9px rgba(182, 138, 58, 0.32), inset 0 0 28px rgba(0, 0, 0, 0.65);
   cursor: pointer;
+}
+
+.astrael-rpg .xp-compact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: auto;
+  padding: 4px 6px 6px;
+  border-top: 1px solid rgba(182, 138, 58, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.astrael-rpg .xp-main-label {
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.8;
+}
+
+.astrael-rpg .xp-grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.astrael-rpg .xp-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  flex: 1;
+}
+
+.astrael-rpg .xp-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(182, 138, 58, 0.15);
+}
+
+.astrael-rpg .xp-label {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .xp-slot input {
+  width: 100%;
+  text-align: center;
+  border: 0;
+  color: var(--astrael-text);
+  background: transparent;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  outline: 0;
+}
+
+.astrael-rpg .xp-slot:nth-child(3) input {
+  color: var(--astrael-gold-bright);
 }
 
 .astrael-rpg .profile-img {

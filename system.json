@@ -34,13 +34,12 @@
   "socket": false,
   "manifest": "",
   "download": "",
-  "templateVersion": 1,
   "documentTypes": {
-    "Actor": [
-      "character"
-    ],
-    "Item": [
-      "trait"
-    ]
+    "Actor": {
+      "types": ["character"]
+    },
+    "Item": {
+      "types": ["trait"]
+    }
   }
 }

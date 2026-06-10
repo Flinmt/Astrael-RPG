@@ -323,6 +323,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       ...spec,
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
     }));
+    context.system.xp ??= { total: 0, current: 0, spent: 0 };
     context.cssClass = this.isEditable ? "editable" : "locked";
 
     return context;
@@ -416,7 +417,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           </div>
           <div class="form-group specialty-group">
             <label>Especialidade</label>
-            <select name="specialty" disabled>
+            <select name="specialty">
               <option value="">Nenhuma</option>
             </select>
           </div>
@@ -435,6 +436,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             const secondKey = html.find("[name='second']").val();
             const modeKey = html.find("[name='mode']").val();
             const modifier = Number(html.find("[name='modifier']").val()) || 0;
+            const specialty = modeKey === "skill" ? html.find("[name='specialty']").val() : "";
+            const specialtyBonus = specialty ? 1 : 0;
             const system = this.actor.system;
 
             const attrValue = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${attrKey}.value`)) || 1);
@@ -450,18 +453,21 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
               titleRight = game.i18n.localize(LOCALIZE_ATTR[attrKey]);
             }
 
-            const diceCount = Math.max(1, attrValue + secondValue + modifier);
+            const diceCount = Math.max(1, attrValue + secondValue + modifier + specialtyBonus);
 
             console.group("Astrael RPG | Detalhes da Rolagem");
             console.log("Atributo:", attrKey, attrValue);
             console.log("Modo:", modeKey, "Chave:", secondKey, secondValue);
             console.log("Modificador:", modifier);
+            if (specialty) console.log("Especialidade:", specialty, "+1 dado");
             console.log("Total de Dados:", diceCount);
             console.groupEnd();
 
+            const titleSuffix = specialty ? ` (${specialty})` : "";
+
             return createDicePoolMessage({
               actor: this.actor,
-              title: `${titleLeft} + ${titleRight}`,
+              title: `${titleLeft} + ${titleRight}${titleSuffix}`,
               kicker: "Teste de Perícia",
               diceCount: diceCount
             });
@@ -493,7 +499,22 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           html.find("[name='mode']").val(mode.key);
           html.find("[name='second']").html(options);
           html.find("[name='second'] option:first").prop("selected", true);
+          html.find(".specialty-group").toggle(mode.key === "skill");
+          if (mode.key === "skill") populateSpecialties(html.find("[name='second']").val());
           updatePreview();
+        };
+
+        const populateSpecialties = (skillKey) => {
+          const select = html.find("[name='specialty']");
+          const actorData = this.actor.toObject();
+          const specialties = Array.isArray(actorData.system.specialties) ? actorData.system.specialties : [];
+          const filtered = specialties.filter(s => s.skill === skillKey);
+          let opts = '<option value="">Nenhuma</option>';
+          filtered.forEach(s => {
+            opts += `<option value="${s.description}">${s.description}</option>`;
+          });
+          select.html(opts);
+          select.prop("disabled", filtered.length === 0);
         };
 
         const updatePreview = () => {
@@ -501,6 +522,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           const secondKey = html.find("[name='second']").val();
           const modeKey = html.find("[name='mode']").val();
           const modifier = Number(html.find("[name='modifier']").val()) || 0;
+          const specialtyBonus = modeKey === "skill" && html.find("[name='specialty']").val() ? 1 : 0;
           const system = this.actor.system;
 
           const attrVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${attrKey}.value`)) || 1);
@@ -511,7 +533,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
             secondVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${secondKey}.value`)) || 1);
           }
 
-          html.find(".pool-total").text(`${Math.max(1, attrVal + secondVal + modifier)} dados`);
+          html.find(".pool-total").text(`${Math.max(1, attrVal + secondVal + modifier + specialtyBonus)} dados`);
         };
 
         html.find(".mode-arrow").on("click", (e) => {
@@ -534,7 +556,15 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           updatePreview();
         });
 
+        html.find("[name='second']").on("change", function() {
+          if (html.find("[name='mode']").val() === "skill") {
+            populateSpecialties($(this).val());
+          }
+        });
+
         html.find("[name='second'], [name='modifier']").on("change input", updatePreview);
+
+        html.find("[name='specialty']").on("change", updatePreview);
 
         if (type === "attribute") {
           const differentAttr = ATTRIBUTE_KEYS.find((k) => k !== key) || ATTRIBUTE_KEYS[0];
@@ -545,6 +575,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         }
 
         updatePreview();
+        html.find(".specialty-group").toggle(initialMode.key === "skill");
+        if (initialMode.key === "skill") populateSpecialties(html.find("[name='second']").val());
       }
     }, { classes: ["astrael-dialog"] });
 

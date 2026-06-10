@@ -77,6 +77,11 @@
           "description": "Espaco reservado para um recurso ainda indefinido."
         }
       },
+      "xp": {
+        "total": 0,
+        "current": 0,
+        "spent": 0
+      }
     }
   },
   "Item": {

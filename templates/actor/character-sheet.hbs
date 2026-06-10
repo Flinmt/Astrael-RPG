@@ -12,6 +12,25 @@
             <button class="portrait-ring" type="button" data-action="editImage" title="Alterar retrato">
               <img class="profile-img" src="{{actor.img}}" alt="{{actor.name}}">
             </button>
+            <div class="xp-compact-card">
+              <span class="xp-main-label">Experiência</span>
+              <div class="xp-grid">
+                <div class="xp-slot" title="XP Gasta">
+                  <span class="xp-label">Gasta</span>
+                  <input name="system.xp.spent" type="number" value="{{system.xp.spent}}" placeholder="0">
+                </div>
+                <div class="xp-divider"></div>
+                <div class="xp-slot" title="XP Atual">
+                  <span class="xp-label">Atual</span>
+                  <input name="system.xp.current" type="number" value="{{system.xp.current}}" placeholder="0">
+                </div>
+                <div class="xp-divider"></div>
+                <div class="xp-slot" title="XP Total">
+                  <span class="xp-label">Total</span>
+                  <input name="system.xp.total" type="number" value="{{system.xp.total}}" placeholder="0">
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="resource-row health-row">
