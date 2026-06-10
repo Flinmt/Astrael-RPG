@@ -97,17 +97,40 @@
 
 .astrael-rpg .sheet-header {
   position: relative;
-  padding: 14px 16px 16px;
+  padding: 16px 18px 16px;
   background:
     linear-gradient(90deg, rgba(0, 0, 0, 0.24), transparent 42%, rgba(0, 0, 0, 0.24)),
     linear-gradient(180deg, #26231f, #191918);
 }
 
+.astrael-rpg .brand-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .brand-mark {
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.astrael-rpg .brand-code {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+}
+
 .astrael-rpg .identity-grid {
   display: grid;
-  grid-template-columns: minmax(210px, 1fr) 176px minmax(250px, 1.1fr);
-  grid-template-rows: repeat(3, 72px);
-  gap: 10px;
+  grid-template-columns: minmax(200px, 1fr) 176px minmax(240px, 1fr);
+  grid-template-rows: repeat(3, 64px);
+  gap: 8px;
 }
 
 .astrael-rpg .portrait-cell {
@@ -148,7 +171,7 @@
 .astrael-rpg .rouse-check-card {
   position: relative;
   min-width: 0;
-  padding: 9px 11px;
+  padding: 10px 12px;
   border: 1px solid rgba(90, 80, 68, 0.86);
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.18)), var(--astrael-panel-2);
 }
@@ -192,7 +215,7 @@
 
 .astrael-rpg .field-name input {
   font-family: "Cinzel", Georgia, serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
 }
 
@@ -200,9 +223,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   color: var(--astrael-muted);
   font-family: "Cinzel", Georgia, serif;
+  font-size: 12px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -210,28 +234,28 @@
 .astrael-rpg .resource-title strong {
   color: var(--astrael-text);
   font-family: "IBM Plex Mono", Consolas, monospace;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .astrael-rpg .resource-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 38px;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  gap: 6px;
   min-width: 0;
 }
 
 .astrael-rpg .damage-controls {
   display: grid;
   align-self: center;
-  grid-template-rows: 28px 28px;
-  gap: 6px;
+  grid-template-rows: 24px 24px;
+  gap: 4px;
   min-width: 0;
 }
 
 .astrael-rpg .damage-card {
   display: grid;
   place-items: center;
-  width: 34px;
+  width: 30px;
   min-width: 0;
   min-height: 0;
   padding: 0;
@@ -242,7 +266,7 @@
     rgba(11, 12, 13, 0.46);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
   font-family: "IBM Plex Mono", Consolas, monospace;
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;
@@ -264,8 +288,8 @@
 
 .astrael-rpg .resource-box {
   position: relative;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   padding: 0;
   border: 1px solid rgba(229, 221, 204, 0.35);
   background: #101112;
@@ -384,8 +408,8 @@
 
 @media (max-width: 940px) {
   .astrael-rpg .identity-grid {
-    grid-template-columns: minmax(190px, 1fr) 150px minmax(230px, 1fr);
-    grid-template-rows: repeat(3, 70px);
+    grid-template-columns: minmax(180px, 1fr) 150px minmax(200px, 1fr);
+    grid-template-rows: repeat(3, 64px);
     gap: 8px;
   }
 
@@ -404,21 +428,8 @@
   }
 
   .astrael-rpg .resource-box {
-    width: 15px;
-    height: 15px;
-  }
-}
-
-@media (max-width: 720px) {
-  .astrael-rpg .identity-grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-  }
-
-  .astrael-rpg .portrait-cell {
-    grid-column: auto;
-    grid-row: auto;
-    min-height: 160px;
+    width: 14px;
+    height: 14px;
   }
 }
 
