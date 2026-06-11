@@ -81,7 +81,9 @@
         "total": 0,
         "current": 0,
         "spent": 0
-      }
+      },
+      "advantages": [],
+      "flaws": []
     }
   },
   "Item": {

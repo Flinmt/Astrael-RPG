@@ -376,6 +376,17 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll(".custom-roll-entry").forEach((el) => {
       el.addEventListener("click", this.#onCustomRollClick.bind(this));
     });
+    this.element.querySelector("[data-action='add-advantage']")?.addEventListener("click", this.#onAddAdvantage.bind(this));
+    this.element.querySelector("[data-action='add-flaw']")?.addEventListener("click", this.#onAddFlaw.bind(this));
+
+    this.element.querySelectorAll("[data-action='remove-advantage']").forEach(btn => {
+      btn.addEventListener("click", this.#onRemoveAdvantage.bind(this));
+    });
+
+    this.element.querySelectorAll("[data-action='remove-flaw']").forEach(btn => {
+      btn.addEventListener("click", this.#onRemoveFlaw.bind(this));
+    });
+
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
   }
@@ -748,6 +759,40 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   setPosition(position) {
     if (position) position.width = 900;
     return super.setPosition(position);
+  }
+
+  async #onAddAdvantage(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const advantages = Array.isArray(actorData.system.advantages) ? [...actorData.system.advantages] : [];
+    advantages.push({ name: "Nova Vantagem", points: "I", details: "" });
+    return this.actor.update({ "system.advantages": advantages });
+  }
+
+  async #onAddFlaw(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const flaws = Array.isArray(actorData.system.flaws) ? [...actorData.system.flaws] : [];
+    flaws.push({ name: "Nova Desvantagem", points: "-I", details: "" });
+    return this.actor.update({ "system.flaws": flaws });
+  }
+
+  async #onRemoveAdvantage(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const actorData = this.actor.toObject();
+    const list = Array.isArray(actorData.system.advantages) ? [...actorData.system.advantages] : [];
+    list.splice(index, 1);
+    return this.actor.update({ "system.advantages": list });
+  }
+
+  async #onRemoveFlaw(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const actorData = this.actor.toObject();
+    const list = Array.isArray(actorData.system.flaws) ? [...actorData.system.flaws] : [];
+    list.splice(index, 1);
+    return this.actor.update({ "system.flaws": list });
   }
 
   #onEditImage(event) {

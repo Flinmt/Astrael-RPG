@@ -421,7 +421,53 @@
             </div>
           </details>
         </div>
-        <div class="tab-panel" data-tab="advantages"></div>
+        <div class="tab-panel" data-tab="advantages">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Recursos e complicações</span>
+              <h1>Vantagens e Desvantagens</h1>
+            </div>
+            <p>Campos editáveis para registro de Antecedentes, Vantagens e Defeitos do personagem.</p>
+          </div>
+
+          <div class="two-columns">
+            <section class="section-card ledger-card advantage-ledger">
+              <div class="section-title">
+                <h2>Vantagens</h2>
+                <span>7 pontos na criação</span>
+              </div>
+              <div class="ledger-list">
+                {{#each system.advantages as |adv|}}
+                <div class="ledger-entry">
+                  <label><span>Nome</span><input type="text" name="system.advantages.{{@index}}.name" value="{{adv.name}}"></label>
+                  <label><span>Pontos</span><input type="text" name="system.advantages.{{@index}}.points" value="{{adv.points}}"></label>
+                  <label class="wide"><span>Detalhes</span><input type="text" name="system.advantages.{{@index}}.details" value="{{adv.details}}"></label>
+                  <button type="button" class="specialty-remove" data-action="remove-advantage" data-index="{{@index}}">✕</button>
+                </div>
+                {{/each}}
+              </div>
+              <button class="ghost-button" type="button" data-action="add-advantage">Adicionar vantagem</button>
+            </section>
+
+            <section class="section-card ledger-card flaw-ledger">
+              <div class="section-title">
+                <h2>Desvantagens</h2>
+                <span>2 pontos na criação</span>
+              </div>
+              <div class="ledger-list">
+                {{#each system.flaws as |flaw|}}
+                <div class="ledger-entry">
+                  <label><span>Nome</span><input type="text" name="system.flaws.{{@index}}.name" value="{{flaw.name}}"></label>
+                  <label><span>Pontos</span><input type="text" name="system.flaws.{{@index}}.points" value="{{flaw.points}}"></label>
+                  <label class="wide"><span>Detalhes</span><input type="text" name="system.flaws.{{@index}}.details" value="{{flaw.details}}"></label>
+                  <button type="button" class="specialty-remove" data-action="remove-flaw" data-index="{{@index}}">✕</button>
+                </div>
+                {{/each}}
+              </div>
+              <button class="ghost-button danger" type="button" data-action="add-flaw">Adicionar desvantagem</button>
+            </section>
+          </div>
+        </div>
         <div class="tab-panel" data-tab="hemomancy"></div>
         <div class="tab-panel" data-tab="stranger-mark"></div>
         <div class="tab-panel" data-tab="convictions"></div>

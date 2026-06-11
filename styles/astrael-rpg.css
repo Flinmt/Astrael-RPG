@@ -1496,10 +1496,92 @@
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 
-.astrael-rpg .specialty-add:hover {
-  border-color: var(--astrael-gold);
-  color: var(--astrael-gold-bright);
-  background: rgba(193, 117, 57, 0.08);
+.astrael-rpg .two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.astrael-rpg .ledger-card {
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.astrael-rpg .advantage-ledger {
+  box-shadow: inset 3px 0 0 rgba(193, 117, 57, 0.78);
+}
+
+.astrael-rpg .flaw-ledger {
+  box-shadow: inset 3px 0 0 rgba(136, 53, 49, 0.86);
+}
+
+.astrael-rpg .ledger-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.astrael-rpg .ledger-entry {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.2fr) 60px minmax(180px, 2fr) auto;
+  align-items: end;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.32);
+}
+
+.astrael-rpg .ledger-entry label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.astrael-rpg .ledger-entry span {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .ledger-entry input {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid rgba(182, 138, 58, 0.34);
+  outline: 0;
+  color: var(--astrael-text);
+  background: transparent;
+  padding: 2px 0;
+  font-size: 13px;
+}
+
+.astrael-rpg .ledger-entry .specialty-remove {
+  margin-bottom: 4px;
+}
+
+.astrael-rpg .ghost-button {
+  margin-top: 16px;
+  min-height: 36px;
+  border: 1px solid rgba(193, 117, 57, 0.52);
+  color: var(--astrael-text);
+  background: rgba(193, 117, 57, 0.12);
+  cursor: pointer;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.2s;
+}
+
+.astrael-rpg .ghost-button:hover {
+  background: rgba(193, 117, 57, 0.22);
+}
+
+.astrael-rpg .ghost-button.danger {
+  border-color: rgba(136, 53, 49, 0.68);
+  background: rgba(136, 53, 49, 0.14);
 }
 
 .astrael-rpg .custom-roll-card {
@@ -1586,5 +1668,83 @@
 .astrael-rpg .custom-roll-gear:hover {
   color: var(--astrael-gold-bright);
   opacity: 1;
+}
+
+.astrael-rpg .two-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.astrael-rpg .ledger-card {
+  min-height: 420px;
+}
+
+.astrael-rpg .advantage-ledger {
+  box-shadow: inset 3px 0 0 rgba(193, 117, 57, 0.78);
+}
+
+.astrael-rpg .flaw-ledger {
+  box-shadow: inset 3px 0 0 rgba(136, 53, 49, 0.86);
+}
+
+.astrael-rpg .ledger-list {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 86px minmax(240px, 2fr);
+  gap: 10px;
+}
+
+.astrael-rpg .ledger-list label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.astrael-rpg .ledger-list span {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .ledger-list input {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid rgba(90, 80, 68, 0.64);
+  outline: 0;
+  color: var(--astrael-text);
+  background: rgba(11, 12, 13, 0.3);
+  padding: 8px 10px;
+}
+
+.astrael-rpg .ledger-list .wide {
+  min-width: 0;
+}
+
+.astrael-rpg .ghost-button {
+  margin-top: 16px;
+  min-height: 36px;
+  border: 1px solid rgba(193, 117, 57, 0.52);
+  color: var(--astrael-text);
+  background: rgba(193, 117, 57, 0.12);
+  cursor: pointer;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .ghost-button:hover {
+  background: rgba(193, 117, 57, 0.22);
+}
+
+.astrael-rpg .ghost-button.danger {
+  border-color: rgba(136, 53, 49, 0.68);
+  background: rgba(136, 53, 49, 0.14);
+}
+
+.astrael-rpg .ghost-button.danger:hover {
+  background: rgba(136, 53, 49, 0.24);
 }
 
