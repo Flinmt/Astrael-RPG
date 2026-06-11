@@ -25,6 +25,100 @@ const DEFAULT_RESOURCES = {
   }
 };
 
+const { TypeDataModel } = foundry.abstract;
+const { ArrayField, NumberField, ObjectField, SchemaField, StringField } = foundry.data.fields;
+
+function stringField(initial = "") {
+  return new StringField({ required: true, initial });
+}
+
+function traitValueField(initial, min = 0) {
+  return new SchemaField({
+    value: new NumberField({ required: true, integer: true, min, initial })
+  });
+}
+
+function resourceField(resourceId) {
+  const resource = DEFAULT_RESOURCES[resourceId];
+
+  return new SchemaField({
+    max: new NumberField({ required: true, integer: true, min: 0, initial: resource.max }),
+    active: new NumberField({ required: true, integer: true, min: RESOURCE_MINIMUMS[resourceId] ?? 0, initial: resource.active }),
+    superficial: new NumberField({ required: true, integer: true, min: 0, initial: resource.superficial }),
+    aggravated: new NumberField({ required: true, integer: true, min: 0, initial: resource.aggravated })
+  });
+}
+
+function migrateLegacyResource(resourceId, source) {
+  const fallback = DEFAULT_RESOURCES[resourceId];
+  const resource = source.resources?.[resourceId];
+  if (!Array.isArray(resource?.track) || isNumeric(resource.active)) return;
+
+  const max = clampNumber(resource.max ?? fallback.max, 0, fallback.max);
+  const active = resource.track.filter((state) => state && state !== "empty").length;
+  const superficial = resource.track.filter((state) => state === "superficial").length;
+  const aggravated = resource.track.filter((state) => state === "aggravated").length;
+  const normalized = normalizeDamage({ max, active, superficial, aggravated }, resourceId);
+
+  source.resources[resourceId] = {
+    max: normalized.max,
+    active: normalized.active,
+    superficial: normalized.superficial,
+    aggravated: normalized.aggravated
+  };
+}
+
+class AstraelCharacterData extends TypeDataModel {
+  static defineSchema() {
+    return {
+      description: stringField(),
+      details: new SchemaField({
+        concept: stringField(),
+        chronicle: stringField(),
+        player: stringField(),
+        ambition: stringField(),
+        desire: stringField()
+      }),
+      attributes: new SchemaField(Object.fromEntries(ATTRIBUTE_KEYS.map((key) => [key, traitValueField(1, 1)]))),
+      skills: new SchemaField(Object.fromEntries(SKILL_KEYS.map((key) => [key, traitValueField(0, 0)]))),
+      resources: new SchemaField({
+        health: resourceField("health"),
+        willpower: resourceField("willpower"),
+        future: new SchemaField({
+          label: stringField(DEFAULT_RESOURCES.future.label),
+          description: stringField(DEFAULT_RESOURCES.future.description)
+        })
+      }),
+      xp: new SchemaField({
+        total: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
+        current: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
+        spent: new NumberField({ required: true, integer: true, min: 0, initial: 0 })
+      }),
+      advantages: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+      flaws: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+      specialties: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+      customRolls: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
+    };
+  }
+
+  static migrateData(source) {
+    source.resources ??= {};
+    migrateLegacyResource("health", source);
+    migrateLegacyResource("willpower", source);
+
+    return super.migrateData(source);
+  }
+}
+
+class AstraelTraitData extends TypeDataModel {
+  static defineSchema() {
+    return {
+      description: stringField(),
+      value: new NumberField({ required: true, integer: true, initial: 0 })
+    };
+  }
+}
+
 async function updateActorSheet(event, form, formData) {
   return this.actor.update(formData.object);
 }
@@ -298,11 +392,12 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    const systemData = this.actor.system?.toObject?.() ?? this.actor.system;
 
     context.actor = this.actor;
     context.system = foundry.utils.mergeObject(
       { resources: DEFAULT_RESOURCES },
-      this.actor.system,
+      systemData,
       { inplace: false }
     );
     context.system.resources.health = normalizeResource("health", context.system.resources.health);
@@ -1356,6 +1451,9 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
 Hooks.once("init", () => {
   console.log("Astrael RPG | Initializing system");
+
+  CONFIG.Actor.dataModels.character = AstraelCharacterData;
+  CONFIG.Item.dataModels.trait = AstraelTraitData;
 
   foundry.applications.apps.DocumentSheetConfig.registerSheet(
     Actor,

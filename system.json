@@ -45,10 +45,10 @@
   "download": "",
   "documentTypes": {
     "Actor": {
-      "types": ["character"]
+      "character": {}
     },
     "Item": {
-      "types": ["trait"]
+      "trait": {}
     }
   }
 }
