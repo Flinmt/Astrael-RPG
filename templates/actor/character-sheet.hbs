@@ -422,80 +422,104 @@
           </details>
         </div>
         <div class="tab-panel" data-tab="advantages">
-          <div class="advantage-board">
-              <section class="advantage-column advantage-column-benefits">
-                <div class="advantage-column-header">
+          <div class="advantage-browser">
+            <aside class="advantage-sidebar">
+              <header class="advantage-browser-header">
+                <span>Arquivo operacional</span>
+                <h2>Caracteristicas</h2>
+              </header>
+
+              <section class="advantage-stack advantage-stack-benefits {{#if system.advantagesCollapsed}}is-collapsed{{/if}}">
+                <div class="advantage-stack-header">
                   <div>
                     <span>Dossie favoravel</span>
-                    <h3>Vantagens</h3>
+                    <button type="button" class="advantage-stack-toggle" data-action="toggle-advantage-stack" data-list="advantages" aria-expanded="{{#if system.advantagesCollapsed}}false{{else}}true{{/if}}">
+                      <h3>Vantagens</h3>
+                      <i class="fas fa-chevron-down"></i>
+                    </button>
                   </div>
                   <button type="button" class="advantage-add" data-action="add-advantage" title="Adicionar vantagem">+</button>
                 </div>
                 <div class="advantage-list">
                   {{#each system.advantages as |adv|}}
-                  <article class="advantage-entry {{#if adv.editing}}is-editing{{/if}}" data-type="advantage" data-key="{{@index}}" data-index="{{@index}}">
-                    <button type="button" class="advantage-rank" data-list="advantages" data-index="{{@index}}" aria-label="Nivel {{adv.level}}">{{adv.levelRoman}}</button>
-                    <span class="advantage-rail" aria-hidden="true"></span>
-                    {{#if adv.editing}}
-                    <input class="advantage-name advantage-name-input" type="text" data-list="advantages" data-index="{{@index}}" value="{{adv.name}}" placeholder="Nome da vantagem">
-                    <div class="advantage-actions">
-                      <button type="button" class="advantage-action advantage-save" data-action="save-advantage-entry" data-list="advantages" data-index="{{@index}}" title="Salvar vantagem"><i class="fas fa-save"></i></button>
-                      <button type="button" class="advantage-action advantage-delete" data-action="delete-advantage-entry" data-list="advantages" data-index="{{@index}}" title="Excluir vantagem"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="advantage-details advantage-edit-details">
-                      <textarea class="advantage-description-input" data-list="advantages" data-index="{{@index}}" placeholder="Descreva o efeito, contexto ou detalhe narrativo da vantagem.">{{adv.description}}</textarea>
-                    </div>
-                    {{else}}
-                    <span class="advantage-name">{{adv.name}}</span>
-                    <div class="advantage-actions">
-                      <button type="button" class="advantage-action" data-action="edit-advantage-entry" data-list="advantages" data-index="{{@index}}" title="Editar vantagem"><i class="fas fa-pen"></i></button>
-                      <button type="button" class="advantage-action advantage-delete" data-action="delete-advantage-entry" data-list="advantages" data-index="{{@index}}" title="Excluir vantagem"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="advantage-details">
-                      <p>{{#if adv.description}}{{adv.description}}{{else}}Sem descricao.{{/if}}</p>
-                    </div>
-                    {{/if}}
-                  </article>
+                  <button type="button" class="advantage-row {{#if adv.selected}}is-selected{{/if}}" data-action="select-advantage-entry" data-list="advantages" data-index="{{@index}}">
+                    <span class="advantage-row-rank" aria-label="Nivel {{adv.level}}">{{adv.levelRoman}}</span>
+                    <span class="advantage-row-name">{{adv.name}}</span>
+                  </button>
                   {{/each}}
                 </div>
               </section>
 
-              <section class="advantage-column advantage-column-flaws">
-                <div class="advantage-column-header">
+              <section class="advantage-stack advantage-stack-flaws {{#if system.flawsCollapsed}}is-collapsed{{/if}}">
+                <div class="advantage-stack-header">
                   <div>
                     <span>Arquivo comprometedor</span>
-                    <h3>Desvantagens</h3>
+                    <button type="button" class="advantage-stack-toggle" data-action="toggle-advantage-stack" data-list="flaws" aria-expanded="{{#if system.flawsCollapsed}}false{{else}}true{{/if}}">
+                      <h3>Desvantagens</h3>
+                      <i class="fas fa-chevron-down"></i>
+                    </button>
                   </div>
                   <button type="button" class="advantage-add flaw-add" data-action="add-flaw" title="Adicionar desvantagem">+</button>
                 </div>
                 <div class="advantage-list">
                   {{#each system.flaws as |flaw|}}
-                  <article class="advantage-entry flaw-entry {{#if flaw.editing}}is-editing{{/if}}" data-index="{{@index}}">
-                    <button type="button" class="advantage-rank flaw-rank" data-list="flaws" data-index="{{@index}}" aria-label="Nivel {{flaw.level}}">{{flaw.levelRoman}}</button>
-                    <span class="advantage-rail flaw-rail" aria-hidden="true"></span>
-                    {{#if flaw.editing}}
-                    <input class="advantage-name advantage-name-input" type="text" data-list="flaws" data-index="{{@index}}" value="{{flaw.name}}" placeholder="Nome da desvantagem">
-                    <div class="advantage-actions">
-                      <button type="button" class="advantage-action flaw-action advantage-save" data-action="save-advantage-entry" data-list="flaws" data-index="{{@index}}" title="Salvar desvantagem"><i class="fas fa-save"></i></button>
-                      <button type="button" class="advantage-action advantage-delete flaw-delete" data-action="delete-advantage-entry" data-list="flaws" data-index="{{@index}}" title="Excluir desvantagem"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="advantage-details advantage-edit-details">
-                      <textarea class="advantage-description-input" data-list="flaws" data-index="{{@index}}" placeholder="Descreva o efeito, contexto ou detalhe narrativo da desvantagem.">{{flaw.description}}</textarea>
-                    </div>
-                    {{else}}
-                    <span class="advantage-name">{{flaw.name}}</span>
-                    <div class="advantage-actions">
-                      <button type="button" class="advantage-action flaw-action" data-action="edit-advantage-entry" data-list="flaws" data-index="{{@index}}" title="Editar desvantagem"><i class="fas fa-pen"></i></button>
-                      <button type="button" class="advantage-action advantage-delete flaw-delete" data-action="delete-advantage-entry" data-list="flaws" data-index="{{@index}}" title="Excluir desvantagem"><i class="fas fa-trash"></i></button>
-                    </div>
-                    <div class="advantage-details">
-                      <p>{{#if flaw.description}}{{flaw.description}}{{else}}Sem descricao.{{/if}}</p>
-                    </div>
-                    {{/if}}
-                  </article>
+                  <button type="button" class="advantage-row flaw-row {{#if flaw.selected}}is-selected{{/if}}" data-action="select-advantage-entry" data-list="flaws" data-index="{{@index}}">
+                    <span class="advantage-row-rank flaw-rank" aria-label="Nivel {{flaw.level}}">{{flaw.levelRoman}}</span>
+                    <span class="advantage-row-name">{{flaw.name}}</span>
+                  </button>
                   {{/each}}
                 </div>
               </section>
+            </aside>
+
+            <section class="advantage-inspector {{#if system.selectedAdvantage.isFlaw}}flaw-inspector{{/if}}">
+              {{#if system.selectedAdvantage}}
+              {{#if system.selectedAdvantage.editing}}
+              <div class="advantage-inspector-edit-header">
+                <span class="advantage-inspector-kicker">{{system.selectedAdvantage.typeLabel}}</span>
+                <button type="button" class="advantage-rank {{#if system.selectedAdvantage.isFlaw}}flaw-rank{{/if}}" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}" aria-label="Nivel {{system.selectedAdvantage.level}}">{{system.selectedAdvantage.levelRoman}}</button>
+              </div>
+              <div class="advantage-inspector-form">
+                <label>
+                  <span>Nome</span>
+                  <input class="advantage-name-input" type="text" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}" value="{{system.selectedAdvantage.name}}" placeholder="Nome da {{system.selectedAdvantage.actionLabel}}">
+                </label>
+                <label>
+                  <span>Descricao</span>
+                  <textarea class="advantage-description-input" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}" placeholder="Descreva o efeito, contexto ou detalhe narrativo.">{{system.selectedAdvantage.description}}</textarea>
+                </label>
+              </div>
+              {{else}}
+              <div class="advantage-inspector-kicker">{{system.selectedAdvantage.typeLabel}}</div>
+              <div class="advantage-inspector-title-row">
+                <h2>{{system.selectedAdvantage.name}}</h2>
+                <button type="button" class="advantage-rank {{#if system.selectedAdvantage.isFlaw}}flaw-rank{{/if}}" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}" aria-label="Nivel {{system.selectedAdvantage.level}}">{{system.selectedAdvantage.levelRoman}}</button>
+              </div>
+              <div class="advantage-inspector-copy">
+                <p>{{#if system.selectedAdvantage.description}}{{system.selectedAdvantage.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+              </div>
+              {{/if}}
+
+              <div class="advantage-inspector-actions">
+                {{#unless system.selectedAdvantage.editing}}
+                {{#unless system.selectedAdvantage.isFlaw}}
+                <button type="button" class="advantage-command advantage-roll" data-action="roll-advantage-entry" data-index="{{system.selectedAdvantage.index}}">Rolar</button>
+                {{/unless}}
+                {{/unless}}
+                {{#if system.selectedAdvantage.editing}}
+                <button type="button" class="advantage-command" data-action="save-advantage-entry" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}">Salvar</button>
+                {{else}}
+                <button type="button" class="advantage-command" data-action="edit-advantage-entry" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}">Editar</button>
+                {{/if}}
+                <button type="button" class="advantage-command danger" data-action="delete-advantage-entry" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}">Excluir</button>
+              </div>
+              {{else}}
+              <div class="advantage-empty-inspector">
+                <span>Nenhum registro selecionado</span>
+                <p>Crie uma vantagem ou desvantagem para abrir um dossie.</p>
+              </div>
+              {{/if}}
+            </section>
           </div>
         </div>
         <div class="tab-panel" data-tab="hemomancy"></div>

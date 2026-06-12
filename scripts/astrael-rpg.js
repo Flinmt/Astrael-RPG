@@ -402,7 +402,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     },
     window: {
       title: "Astrael RPG Character Sheet",
-      resizable: true
+      resizable: false
     }
   };
 
@@ -448,6 +448,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.system.flaws = Array.isArray(context.system.flaws) ? context.system.flaws : [];
     context.system.advantages = context.system.advantages.map(prepareAdvantageEntry);
     context.system.flaws = context.system.flaws.map(prepareAdvantageEntry);
+    this.#prepareAdvantageSelection(context.system);
     context.system.specialties = context.system.specialties.map(spec => ({
       ...spec,
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
@@ -503,6 +504,12 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
     this.element.querySelector("[data-action='add-advantage']")?.addEventListener("click", this.#onAddAdvantageEntry.bind(this));
     this.element.querySelector("[data-action='add-flaw']")?.addEventListener("click", this.#onAddAdvantageEntry.bind(this));
+    this.element.querySelectorAll("[data-action='toggle-advantage-stack']").forEach((button) => {
+      button.addEventListener("click", this.#onToggleAdvantageStack.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='select-advantage-entry']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectAdvantageEntry.bind(this));
+    });
     this.element.querySelectorAll("[data-action='edit-advantage-entry']").forEach((button) => {
       button.addEventListener("click", this.#onEditAdvantageEntry.bind(this));
     });
@@ -512,12 +519,12 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll("[data-action='delete-advantage-entry']").forEach((button) => {
       button.addEventListener("click", this.#onDeleteAdvantageEntry.bind(this));
     });
+    this.element.querySelectorAll("[data-action='roll-advantage-entry']").forEach((button) => {
+      button.addEventListener("click", this.#onRollAdvantageEntry.bind(this));
+    });
     this.element.querySelectorAll(".advantage-rank").forEach((rank) => {
       rank.addEventListener("click", this.#onAdvantageRankClick.bind(this));
       rank.addEventListener("contextmenu", this.#onAdvantageRankContext.bind(this));
-    });
-    this.element.querySelectorAll(".advantage-entry[data-type='advantage']").forEach((el) => {
-      el.addEventListener("click", this.#onRollClick.bind(this));
     });
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
@@ -930,6 +937,42 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return super.setPosition(position);
   }
 
+  #prepareAdvantageSelection(system) {
+    const selectedList = this._selectedAdvantageList === "flaws" ? "flaws" : "advantages";
+    const selectedIndex = Number.isInteger(this._selectedAdvantageIndex) ? this._selectedAdvantageIndex : 0;
+    const fallbackList = system.advantages.length ? "advantages" : system.flaws.length ? "flaws" : selectedList;
+    const currentList = Array.isArray(system[selectedList]) ? system[selectedList] : [];
+    const hasCurrentSelection = selectedIndex >= 0 && selectedIndex < currentList.length;
+    const listId = hasCurrentSelection ? selectedList : fallbackList;
+    const list = Array.isArray(system[listId]) ? system[listId] : [];
+    const index = hasCurrentSelection ? selectedIndex : list.length ? 0 : -1;
+
+    this._selectedAdvantageList = listId;
+    this._selectedAdvantageIndex = index;
+
+    system.advantages = system.advantages.map((entry, entryIndex) => ({
+      ...entry,
+      selected: listId === "advantages" && entryIndex === index
+    }));
+    system.flaws = system.flaws.map((entry, entryIndex) => ({
+      ...entry,
+      selected: listId === "flaws" && entryIndex === index
+    }));
+
+    const selected = index >= 0 ? system[listId]?.[index] : null;
+    system.selectedAdvantage = selected ? {
+      ...selected,
+      index,
+      listId,
+      isFlaw: listId === "flaws",
+      typeLabel: listId === "flaws" ? "ARQUIVO COMPROMETEDOR" : "DOSSIE FAVORAVEL",
+      actionLabel: listId === "flaws" ? "Desvantagem" : "Vantagem"
+    } : null;
+    const collapsed = this._collapsedAdvantageStacks ??= { advantages: true, flaws: true };
+    system.advantagesCollapsed = collapsed.advantages !== false;
+    system.flawsCollapsed = collapsed.flaws !== false;
+  }
+
   #getAdvantagePath(listId) {
     return listId === "flaws" ? "flaws" : "advantages";
   }
@@ -952,18 +995,77 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return this.actor.update({ [`system.${path}`]: list });
   }
 
+  #getAdvantageListFromSheet(listId, { closeEditing = false } = {}) {
+    return this.#getAdvantageList(listId).map((entry, index) => {
+      if (!entry.editing) return entry;
+
+      const nameInput = this.element.querySelector(`.advantage-name-input[data-list='${listId}'][data-index='${index}']`);
+      const descriptionInput = this.element.querySelector(`.advantage-description-input[data-list='${listId}'][data-index='${index}']`);
+
+      return {
+        ...entry,
+        name: nameInput?.value?.trim() || entry.name || "Sem nome",
+        description: descriptionInput?.value?.trim() || "",
+        editing: closeEditing ? false : entry.editing
+      };
+    });
+  }
+
+  #updateAdvantageLists(advantages, flaws) {
+    return this.actor.update({
+      "system.advantages": advantages,
+      "system.flaws": flaws
+    });
+  }
+
+  async #saveEditingAdvantageEntries() {
+    const hasEditing = this.#getAdvantageList("advantages").some((entry) => entry.editing) || this.#getAdvantageList("flaws").some((entry) => entry.editing);
+    const advantages = this.#getAdvantageListFromSheet("advantages", { closeEditing: true });
+    const flaws = this.#getAdvantageListFromSheet("flaws", { closeEditing: true });
+    if (hasEditing) await this.#updateAdvantageLists(advantages, flaws);
+    return { advantages, flaws };
+  }
+
   async #onAddAdvantageEntry(event) {
     event.preventDefault();
     const listId = event.currentTarget.dataset.action === "add-flaw" ? "flaws" : "advantages";
-    const list = this.#getAdvantageList(listId);
+    const advantages = this.#getAdvantageListFromSheet("advantages", { closeEditing: true });
+    const flaws = this.#getAdvantageListFromSheet("flaws", { closeEditing: true });
+    const list = listId === "flaws" ? flaws : advantages;
     list.push({ name: "", description: "", level: 1, editing: true });
-    return this.#updateAdvantageList(listId, list);
+    this._selectedAdvantageList = listId;
+    this._selectedAdvantageIndex = list.length - 1;
+    this._collapsedAdvantageStacks ??= { advantages: true, flaws: true };
+    this._collapsedAdvantageStacks[listId] = false;
+
+    return this.#updateAdvantageLists(advantages, flaws);
+  }
+
+  #onToggleAdvantageStack(event) {
+    event.preventDefault();
+    const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
+    this._collapsedAdvantageStacks ??= { advantages: true, flaws: true };
+    this._collapsedAdvantageStacks[listId] = this._collapsedAdvantageStacks[listId] === false;
+    return this.render({ force: true });
+  }
+
+  async #onSelectAdvantageEntry(event) {
+    event.preventDefault();
+    const button = event.currentTarget;
+    await this.#saveEditingAdvantageEntries();
+    this._selectedAdvantageList = button.dataset.list;
+    this._selectedAdvantageIndex = Number(button.dataset.index);
+    return this.render({ force: true });
   }
 
   async #onEditAdvantageEntry(event) {
     event.preventDefault();
     const button = event.currentTarget;
-    return this.#editAdvantageEntry(button.dataset.list, Number(button.dataset.index));
+    const listId = button.dataset.list || this._selectedAdvantageList;
+    const index = Number(button.dataset.index ?? this._selectedAdvantageIndex);
+    this._selectedAdvantageList = listId;
+    this._selectedAdvantageIndex = index;
+    return this.#editAdvantageEntry(listId, index);
   }
 
   async #onSaveAdvantageEntry(event) {
@@ -975,7 +1077,22 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async #onDeleteAdvantageEntry(event) {
     event.preventDefault();
     const button = event.currentTarget;
-    return this.#deleteAdvantageEntry(button.dataset.list, Number(button.dataset.index));
+    const listId = button.dataset.list || this._selectedAdvantageList;
+    const index = Number(button.dataset.index ?? this._selectedAdvantageIndex);
+    return this.#deleteAdvantageEntry(listId, index);
+  }
+
+  async #onRollAdvantageEntry(event) {
+    event.preventDefault();
+    const button = event.currentTarget;
+    return this.#onRollClick({
+      preventDefault() {},
+      target: { closest: () => null },
+      currentTarget: {
+        dataset: { type: "advantage", key: button.dataset.index },
+        classList: { contains: () => false }
+      }
+    });
   }
 
   async #editAdvantageEntry(listId, index) {
@@ -1004,6 +1121,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       level: normalizeAdvantageLevel(list[index]),
       editing: false
     };
+    this._selectedAdvantageList = listId;
+    this._selectedAdvantageIndex = index;
     return this.#updateAdvantageList(listId, list);
   }
 
@@ -1012,6 +1131,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (!Number.isInteger(index) || !list[index]) return;
 
     list.splice(index, 1);
+    this._selectedAdvantageList = listId;
+    this._selectedAdvantageIndex = Math.min(index, list.length - 1);
     return this.#updateAdvantageList(listId, list);
   }
 
