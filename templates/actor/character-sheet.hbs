@@ -422,50 +422,80 @@
           </details>
         </div>
         <div class="tab-panel" data-tab="advantages">
-          <div class="panel-heading">
-            <div>
-              <span class="eyebrow">Recursos e complicações</span>
-              <h1>Vantagens e Desvantagens</h1>
-            </div>
-            <p>Campos editáveis para registro de Antecedentes, Vantagens e Defeitos do personagem.</p>
-          </div>
-
-          <div class="two-columns">
-            <section class="section-card ledger-card advantage-ledger">
-              <div class="section-title">
-                <h2>Vantagens</h2>
-                <span>7 pontos na criação</span>
-              </div>
-              <div class="ledger-list">
-                {{#each system.advantages as |adv|}}
-                <div class="ledger-entry">
-                  <label><span>Nome</span><input type="text" name="system.advantages.{{@index}}.name" value="{{adv.name}}"></label>
-                  <label><span>Pontos</span><input type="text" name="system.advantages.{{@index}}.points" value="{{adv.points}}"></label>
-                  <label class="wide"><span>Detalhes</span><input type="text" name="system.advantages.{{@index}}.details" value="{{adv.details}}"></label>
-                  <button type="button" class="specialty-remove" data-action="remove-advantage" data-index="{{@index}}">✕</button>
+          <div class="advantage-board">
+              <section class="advantage-column advantage-column-benefits">
+                <div class="advantage-column-header">
+                  <div>
+                    <span>Dossie favoravel</span>
+                    <h3>Vantagens</h3>
+                  </div>
+                  <button type="button" class="advantage-add" data-action="add-advantage" title="Adicionar vantagem">+</button>
                 </div>
-                {{/each}}
-              </div>
-              <button class="ghost-button" type="button" data-action="add-advantage">Adicionar vantagem</button>
-            </section>
-
-            <section class="section-card ledger-card flaw-ledger">
-              <div class="section-title">
-                <h2>Desvantagens</h2>
-                <span>2 pontos na criação</span>
-              </div>
-              <div class="ledger-list">
-                {{#each system.flaws as |flaw|}}
-                <div class="ledger-entry">
-                  <label><span>Nome</span><input type="text" name="system.flaws.{{@index}}.name" value="{{flaw.name}}"></label>
-                  <label><span>Pontos</span><input type="text" name="system.flaws.{{@index}}.points" value="{{flaw.points}}"></label>
-                  <label class="wide"><span>Detalhes</span><input type="text" name="system.flaws.{{@index}}.details" value="{{flaw.details}}"></label>
-                  <button type="button" class="specialty-remove" data-action="remove-flaw" data-index="{{@index}}">✕</button>
+                <div class="advantage-list">
+                  {{#each system.advantages as |adv|}}
+                  <article class="advantage-entry {{#if adv.editing}}is-editing{{/if}}" data-type="advantage" data-key="{{@index}}" data-index="{{@index}}">
+                    <button type="button" class="advantage-rank" data-list="advantages" data-index="{{@index}}" aria-label="Nivel {{adv.level}}">{{adv.levelRoman}}</button>
+                    <span class="advantage-rail" aria-hidden="true"></span>
+                    {{#if adv.editing}}
+                    <input class="advantage-name advantage-name-input" type="text" data-list="advantages" data-index="{{@index}}" value="{{adv.name}}" placeholder="Nome da vantagem">
+                    <div class="advantage-actions">
+                      <button type="button" class="advantage-action advantage-save" data-action="save-advantage-entry" data-list="advantages" data-index="{{@index}}" title="Salvar vantagem"><i class="fas fa-save"></i></button>
+                      <button type="button" class="advantage-action advantage-delete" data-action="delete-advantage-entry" data-list="advantages" data-index="{{@index}}" title="Excluir vantagem"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="advantage-details advantage-edit-details">
+                      <textarea class="advantage-description-input" data-list="advantages" data-index="{{@index}}" placeholder="Descreva o efeito, contexto ou detalhe narrativo da vantagem.">{{adv.description}}</textarea>
+                    </div>
+                    {{else}}
+                    <span class="advantage-name">{{adv.name}}</span>
+                    <div class="advantage-actions">
+                      <button type="button" class="advantage-action" data-action="edit-advantage-entry" data-list="advantages" data-index="{{@index}}" title="Editar vantagem"><i class="fas fa-pen"></i></button>
+                      <button type="button" class="advantage-action advantage-delete" data-action="delete-advantage-entry" data-list="advantages" data-index="{{@index}}" title="Excluir vantagem"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="advantage-details">
+                      <p>{{#if adv.description}}{{adv.description}}{{else}}Sem descricao.{{/if}}</p>
+                    </div>
+                    {{/if}}
+                  </article>
+                  {{/each}}
                 </div>
-                {{/each}}
-              </div>
-              <button class="ghost-button danger" type="button" data-action="add-flaw">Adicionar desvantagem</button>
-            </section>
+              </section>
+
+              <section class="advantage-column advantage-column-flaws">
+                <div class="advantage-column-header">
+                  <div>
+                    <span>Arquivo comprometedor</span>
+                    <h3>Desvantagens</h3>
+                  </div>
+                  <button type="button" class="advantage-add flaw-add" data-action="add-flaw" title="Adicionar desvantagem">+</button>
+                </div>
+                <div class="advantage-list">
+                  {{#each system.flaws as |flaw|}}
+                  <article class="advantage-entry flaw-entry {{#if flaw.editing}}is-editing{{/if}}" data-index="{{@index}}">
+                    <button type="button" class="advantage-rank flaw-rank" data-list="flaws" data-index="{{@index}}" aria-label="Nivel {{flaw.level}}">{{flaw.levelRoman}}</button>
+                    <span class="advantage-rail flaw-rail" aria-hidden="true"></span>
+                    {{#if flaw.editing}}
+                    <input class="advantage-name advantage-name-input" type="text" data-list="flaws" data-index="{{@index}}" value="{{flaw.name}}" placeholder="Nome da desvantagem">
+                    <div class="advantage-actions">
+                      <button type="button" class="advantage-action flaw-action advantage-save" data-action="save-advantage-entry" data-list="flaws" data-index="{{@index}}" title="Salvar desvantagem"><i class="fas fa-save"></i></button>
+                      <button type="button" class="advantage-action advantage-delete flaw-delete" data-action="delete-advantage-entry" data-list="flaws" data-index="{{@index}}" title="Excluir desvantagem"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="advantage-details advantage-edit-details">
+                      <textarea class="advantage-description-input" data-list="flaws" data-index="{{@index}}" placeholder="Descreva o efeito, contexto ou detalhe narrativo da desvantagem.">{{flaw.description}}</textarea>
+                    </div>
+                    {{else}}
+                    <span class="advantage-name">{{flaw.name}}</span>
+                    <div class="advantage-actions">
+                      <button type="button" class="advantage-action flaw-action" data-action="edit-advantage-entry" data-list="flaws" data-index="{{@index}}" title="Editar desvantagem"><i class="fas fa-pen"></i></button>
+                      <button type="button" class="advantage-action advantage-delete flaw-delete" data-action="delete-advantage-entry" data-list="flaws" data-index="{{@index}}" title="Excluir desvantagem"><i class="fas fa-trash"></i></button>
+                    </div>
+                    <div class="advantage-details">
+                      <p>{{#if flaw.description}}{{flaw.description}}{{else}}Sem descricao.{{/if}}</p>
+                    </div>
+                    {{/if}}
+                  </article>
+                  {{/each}}
+                </div>
+              </section>
           </div>
         </div>
         <div class="tab-panel" data-tab="hemomancy"></div>

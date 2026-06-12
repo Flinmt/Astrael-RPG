@@ -131,6 +131,32 @@ function isNumeric(value) {
   return value !== null && value !== undefined && Number.isFinite(Number(value));
 }
 
+function toRomanLevel(value) {
+  const levels = ["", "I", "II", "III", "IV", "V"];
+  return levels[clampNumber(value, 1, 5)] ?? "I";
+}
+
+function normalizeAdvantageLevel(source = {}) {
+  const rawLevel = source.level ?? source.value ?? source.points ?? 1;
+  if (isNumeric(rawLevel)) return clampNumber(rawLevel, 1, 5);
+
+  const roman = String(rawLevel).replace(/^-/, "").trim().toUpperCase();
+  const romanValue = ["", "I", "II", "III", "IV", "V"].indexOf(roman);
+  return romanValue > 0 ? romanValue : 1;
+}
+
+function prepareAdvantageEntry(source = {}) {
+  const level = normalizeAdvantageLevel(source);
+
+  return {
+    ...source,
+    name: source.name || "Sem nome",
+    description: source.description || source.details || "",
+    level,
+    levelRoman: toRomanLevel(level)
+  };
+}
+
 function normalizeResource(resourceId, source = {}) {
   const fallback = DEFAULT_RESOURCES[resourceId];
   const max = clampNumber(source.max ?? fallback.max, 0, fallback.max);
@@ -418,6 +444,10 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     }
     context.system.specialties = Array.isArray(context.system.specialties) ? context.system.specialties : [];
     context.system.customRolls = Array.isArray(context.system.customRolls) ? context.system.customRolls : [];
+    context.system.advantages = Array.isArray(context.system.advantages) ? context.system.advantages : [];
+    context.system.flaws = Array.isArray(context.system.flaws) ? context.system.flaws : [];
+    context.system.advantages = context.system.advantages.map(prepareAdvantageEntry);
+    context.system.flaws = context.system.flaws.map(prepareAdvantageEntry);
     context.system.specialties = context.system.specialties.map(spec => ({
       ...spec,
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
@@ -471,30 +501,42 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll(".custom-roll-entry").forEach((el) => {
       el.addEventListener("click", this.#onCustomRollClick.bind(this));
     });
-    this.element.querySelector("[data-action='add-advantage']")?.addEventListener("click", this.#onAddAdvantage.bind(this));
-    this.element.querySelector("[data-action='add-flaw']")?.addEventListener("click", this.#onAddFlaw.bind(this));
-
-    this.element.querySelectorAll("[data-action='remove-advantage']").forEach(btn => {
-      btn.addEventListener("click", this.#onRemoveAdvantage.bind(this));
+    this.element.querySelector("[data-action='add-advantage']")?.addEventListener("click", this.#onAddAdvantageEntry.bind(this));
+    this.element.querySelector("[data-action='add-flaw']")?.addEventListener("click", this.#onAddAdvantageEntry.bind(this));
+    this.element.querySelectorAll("[data-action='edit-advantage-entry']").forEach((button) => {
+      button.addEventListener("click", this.#onEditAdvantageEntry.bind(this));
     });
-
-    this.element.querySelectorAll("[data-action='remove-flaw']").forEach(btn => {
-      btn.addEventListener("click", this.#onRemoveFlaw.bind(this));
+    this.element.querySelectorAll("[data-action='save-advantage-entry']").forEach((button) => {
+      button.addEventListener("click", this.#onSaveAdvantageEntry.bind(this));
     });
-
+    this.element.querySelectorAll("[data-action='delete-advantage-entry']").forEach((button) => {
+      button.addEventListener("click", this.#onDeleteAdvantageEntry.bind(this));
+    });
+    this.element.querySelectorAll(".advantage-rank").forEach((rank) => {
+      rank.addEventListener("click", this.#onAdvantageRankClick.bind(this));
+      rank.addEventListener("contextmenu", this.#onAdvantageRankContext.bind(this));
+    });
+    this.element.querySelectorAll(".advantage-entry[data-type='advantage']").forEach((el) => {
+      el.addEventListener("click", this.#onRollClick.bind(this));
+    });
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
+
+    if (this._activeTab) this.#activateTab(this._activeTab);
   }
 
   async #onRollClick(event) {
     event.preventDefault();
+    if (event.target.closest("button, input, textarea, select")) return;
     const element = event.currentTarget;
+    if (element.classList.contains("is-editing")) return;
     const type = element.dataset.type;
     const key = element.dataset.key;
 
     const ROLL_MODES = [
       { key: "skill", label: "Perícia" },
-      { key: "attribute", label: "Atributo" }
+      { key: "attribute", label: "Atributo" },
+      { key: "advantage", label: "Vantagem" }
     ];
 
     const allAttrOptions = ATTRIBUTE_KEYS.map((k) =>
@@ -505,9 +547,18 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       `<option value="${k}">${game.i18n.localize(LOCALIZE_SKILL[k])}</option>`
     ).join("");
 
-    const initialModeIndex = type === "attribute" ? 1 : 0;
+    const allAdvantageOptions = (() => {
+      const advs = Array.isArray(this.actor.system.advantages) ? this.actor.system.advantages : [];
+      if (!advs.length) return '<option value="">Nenhuma vantagem</option>';
+      return advs.map((a, i) => `<option value="${i}">${a.name}</option>`).join("");
+    })();
+
+    const initialModeIndex = type === "attribute" ? 1 : type === "advantage" ? 2 : 0;
     const initialMode = ROLL_MODES[initialModeIndex];
-    const initialSecondOptions = initialMode.key === "attribute" ? allAttrOptions : allSkillOptions;
+    const initialSecondOptions =
+      initialMode.key === "attribute" ? allAttrOptions :
+      initialMode.key === "advantage" ? allAdvantageOptions :
+      allSkillOptions;
 
     const content = `
       <form class="astrael-dialog-form">
@@ -566,6 +617,12 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
               secondValue = Math.max(0, Number(foundry.utils.getProperty(system, `skills.${secondKey}.value`)) || 0);
               titleLeft = game.i18n.localize(LOCALIZE_SKILL[secondKey]);
               titleRight = game.i18n.localize(LOCALIZE_ATTR[attrKey]);
+            } else if (modeKey === "advantage") {
+              const advs = Array.isArray(system.advantages) ? system.advantages : [];
+              const adv = advs[Number(secondKey)];
+              secondValue = adv ? (adv.level || 1) : 0;
+              titleLeft = adv ? adv.name : "Vantagem";
+              titleRight = game.i18n.localize(LOCALIZE_ATTR[attrKey]);
             } else {
               secondValue = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${secondKey}.value`)) || 1);
               titleLeft = game.i18n.localize(LOCALIZE_ATTR[secondKey]);
@@ -604,6 +661,11 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
               .map((k) => `<option value="${k}">${game.i18n.localize(LOCALIZE_ATTR[k])}</option>`)
               .join("");
           }
+          if (modeKey === "advantage") {
+            const advs = Array.isArray(this.actor.system.advantages) ? this.actor.system.advantages : [];
+            if (!advs.length) return '<option value="">Nenhuma vantagem</option>';
+            return advs.map((a, i) => `<option value="${i}">${a.name}</option>`).join("");
+          }
           return SKILL_KEYS
             .map((k) => `<option value="${k}">${game.i18n.localize(LOCALIZE_SKILL[k])}</option>`)
             .join("");
@@ -619,6 +681,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           html.find("[name='second']").html(options);
           html.find("[name='second'] option:first").prop("selected", true);
           html.find(".specialty-group").toggle(mode.key === "skill");
+          html.find(".modifier-group").toggleClass("span-full", mode.key !== "skill");
           if (mode.key === "skill") populateSpecialties(html.find("[name='second']").val());
           updatePreview();
         };
@@ -648,6 +711,10 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           let secondVal;
           if (modeKey === "skill") {
             secondVal = Math.max(0, Number(foundry.utils.getProperty(system, `skills.${secondKey}.value`)) || 0);
+          } else if (modeKey === "advantage") {
+            const advs = Array.isArray(system.advantages) ? system.advantages : [];
+            const adv = advs[Number(secondKey)];
+            secondVal = adv ? (adv.level || 1) : 0;
           } else {
             secondVal = Math.max(1, Number(foundry.utils.getProperty(system, `attributes.${secondKey}.value`)) || 1);
           }
@@ -689,12 +756,16 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
           const differentAttr = ATTRIBUTE_KEYS.find((k) => k !== key) || ATTRIBUTE_KEYS[0];
           html.find("[name='attribute']").val(differentAttr);
           html.find("[name='second']").val(key);
+        } else if (type === "advantage") {
+          html.find("[name='attribute']").val(ATTRIBUTE_KEYS[0]);
+          html.find("[name='second']").val(key);
         } else {
           html.find("[name='second']").val(key);
         }
 
         updatePreview();
         html.find(".specialty-group").toggle(initialMode.key === "skill");
+        html.find(".modifier-group").toggleClass("span-full", initialMode.key !== "skill");
         if (initialMode.key === "skill") populateSpecialties(html.find("[name='second']").val());
       }
     }, { classes: ["astrael-dialog"] });
@@ -839,12 +910,15 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async #onTabClick(event) {
     event.preventDefault();
+    this.#activateTab(event.currentTarget.dataset.tab);
+  }
 
-    const btn = event.currentTarget;
-    const tabId = btn.dataset.tab;
+  #activateTab(tabId) {
+    if (!tabId) return;
+    this._activeTab = tabId;
 
     this.element.querySelectorAll(".tab-button").forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
+    this.element.querySelector(`.tab-button[data-tab="${tabId}"]`)?.classList.add("active");
 
     this.element.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
     const panel = this.element.querySelector(`.tab-panel[data-tab="${tabId}"]`);
@@ -856,38 +930,109 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return super.setPosition(position);
   }
 
-  async #onAddAdvantage(event) {
-    event.preventDefault();
-    const actorData = this.actor.toObject();
-    const advantages = Array.isArray(actorData.system.advantages) ? [...actorData.system.advantages] : [];
-    advantages.push({ name: "Nova Vantagem", points: "I", details: "" });
-    return this.actor.update({ "system.advantages": advantages });
+  #getAdvantagePath(listId) {
+    return listId === "flaws" ? "flaws" : "advantages";
   }
 
-  async #onAddFlaw(event) {
-    event.preventDefault();
+  #getAdvantageList(listId) {
+    const path = this.#getAdvantagePath(listId);
     const actorData = this.actor.toObject();
-    const flaws = Array.isArray(actorData.system.flaws) ? [...actorData.system.flaws] : [];
-    flaws.push({ name: "Nova Desvantagem", points: "-I", details: "" });
-    return this.actor.update({ "system.flaws": flaws });
+    const list = Array.isArray(actorData.system?.[path]) ? actorData.system[path] : [];
+
+    return list.map((entry) => ({
+      name: entry.name || "",
+      description: entry.description || entry.details || "",
+      level: normalizeAdvantageLevel(entry),
+      editing: Boolean(entry.editing)
+    }));
   }
 
-  async #onRemoveAdvantage(event) {
+  #updateAdvantageList(listId, list) {
+    const path = this.#getAdvantagePath(listId);
+    return this.actor.update({ [`system.${path}`]: list });
+  }
+
+  async #onAddAdvantageEntry(event) {
     event.preventDefault();
-    const index = Number(event.currentTarget.dataset.index);
-    const actorData = this.actor.toObject();
-    const list = Array.isArray(actorData.system.advantages) ? [...actorData.system.advantages] : [];
+    const listId = event.currentTarget.dataset.action === "add-flaw" ? "flaws" : "advantages";
+    const list = this.#getAdvantageList(listId);
+    list.push({ name: "", description: "", level: 1, editing: true });
+    return this.#updateAdvantageList(listId, list);
+  }
+
+  async #onEditAdvantageEntry(event) {
+    event.preventDefault();
+    const button = event.currentTarget;
+    return this.#editAdvantageEntry(button.dataset.list, Number(button.dataset.index));
+  }
+
+  async #onSaveAdvantageEntry(event) {
+    event.preventDefault();
+    const button = event.currentTarget;
+    return this.#saveAdvantageEntry(button.dataset.list, Number(button.dataset.index));
+  }
+
+  async #onDeleteAdvantageEntry(event) {
+    event.preventDefault();
+    const button = event.currentTarget;
+    return this.#deleteAdvantageEntry(button.dataset.list, Number(button.dataset.index));
+  }
+
+  async #editAdvantageEntry(listId, index) {
+    const list = this.#getAdvantageList(listId);
+    if (!Number.isInteger(index) || !list[index]) return;
+
+    list[index].editing = true;
+    return this.#updateAdvantageList(listId, list);
+  }
+
+  async #saveAdvantageEntry(listId, index) {
+    const list = this.#getAdvantageList(listId);
+    if (!Number.isInteger(index) || !list[index]) return;
+
+    const nameInput = this.element.querySelector(`.advantage-name-input[data-list='${listId}'][data-index='${index}']`);
+    const descriptionInput = this.element.querySelector(`.advantage-description-input[data-list='${listId}'][data-index='${index}']`);
+    const name = nameInput?.value?.trim();
+    if (!name) {
+      ui.notifications.warn(`Defina um nome para a ${listId === "flaws" ? "desvantagem" : "vantagem"}.`);
+      return;
+    }
+
+    list[index] = {
+      name,
+      description: descriptionInput?.value?.trim() || "",
+      level: normalizeAdvantageLevel(list[index]),
+      editing: false
+    };
+    return this.#updateAdvantageList(listId, list);
+  }
+
+  async #deleteAdvantageEntry(listId, index) {
+    const list = this.#getAdvantageList(listId);
+    if (!Number.isInteger(index) || !list[index]) return;
+
     list.splice(index, 1);
-    return this.actor.update({ "system.advantages": list });
+    return this.#updateAdvantageList(listId, list);
   }
 
-  async #onRemoveFlaw(event) {
+  async #onAdvantageRankClick(event) {
     event.preventDefault();
-    const index = Number(event.currentTarget.dataset.index);
-    const actorData = this.actor.toObject();
-    const list = Array.isArray(actorData.system.flaws) ? [...actorData.system.flaws] : [];
-    list.splice(index, 1);
-    return this.actor.update({ "system.flaws": list });
+    const rank = event.currentTarget;
+    return this.#shiftAdvantageLevel(rank.dataset.list, Number(rank.dataset.index), 1);
+  }
+
+  async #onAdvantageRankContext(event) {
+    event.preventDefault();
+    const rank = event.currentTarget;
+    return this.#shiftAdvantageLevel(rank.dataset.list, Number(rank.dataset.index), -1);
+  }
+
+  async #shiftAdvantageLevel(listId, index, delta) {
+    const list = this.#getAdvantageList(listId);
+    if (!Number.isInteger(index) || !list[index]) return;
+
+    list[index].level = clampNumber((list[index].level || 1) + delta, 1, 5);
+    return this.#updateAdvantageList(listId, list);
   }
 
   #onEditImage(event) {
