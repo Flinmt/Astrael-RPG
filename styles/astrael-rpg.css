@@ -1607,8 +1607,9 @@
   background:
     radial-gradient(circle, rgba(193, 117, 57, 0.18), transparent 62%),
     rgba(11, 12, 13, 0.52);
+  box-shadow: 0 0 0 rgba(193, 117, 57, 0);
   cursor: pointer;
-  transition: transform 0.18s, border-color 0.2s, background 0.2s;
+  transition: transform 0.18s, border-color 0.2s, background 0.2s, box-shadow 0.2s, filter 0.2s;
 }
 
 .astrael-rpg .advantage-add::before {
@@ -1626,11 +1627,13 @@
   background:
     radial-gradient(circle, rgba(214, 154, 85, 0.32), transparent 64%),
     rgba(11, 12, 13, 0.52);
-  transform: rotate(45deg) scale(1.06);
+  box-shadow: 0 0 16px rgba(193, 117, 57, 0.22);
+  filter: brightness(1.08);
+  transform: scale(1.08);
 }
 
 .astrael-rpg .advantage-add:hover::before {
-  transform: rotate(-45deg);
+  transform: scale(1.08);
 }
 
 .astrael-rpg .flaw-add {
@@ -1643,6 +1646,7 @@
   background:
     radial-gradient(circle, rgba(136, 53, 49, 0.34), transparent 64%),
     rgba(11, 12, 13, 0.52);
+  box-shadow: 0 0 16px rgba(136, 53, 49, 0.24);
 }
 
 .astrael-rpg .advantage-list {
@@ -2068,11 +2072,18 @@
 
 .astrael-rpg .advantage-sidebar {
   display: grid;
-  grid-template-rows: auto auto auto;
-  align-content: start;
+  grid-template-rows: auto auto 1fr;
   gap: 12px;
   height: 430px;
   padding: 12px;
+}
+
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] {
+  border-color: rgba(136, 53, 49, 0.64);
+  background:
+    linear-gradient(180deg, rgba(236, 228, 211, 0.025), transparent 150px),
+    radial-gradient(circle at 20% 0, rgba(136, 53, 49, 0.12), transparent 48%),
+    rgba(11, 12, 13, 0.24);
 }
 
 .astrael-rpg .advantage-browser-header {
@@ -2080,8 +2091,17 @@
   border-bottom: 1px solid rgba(90, 80, 68, 0.44);
 }
 
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-browser-header {
+  border-bottom-color: rgba(136, 53, 49, 0.5);
+}
+
+.astrael-rpg .advantage-browser-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .astrael-rpg .advantage-browser-header span,
-.astrael-rpg .advantage-stack-header span,
 .astrael-rpg .advantage-inspector-kicker,
 .astrael-rpg .advantage-inspector-form label span,
 .astrael-rpg .advantage-inspector-level > span {
@@ -2094,7 +2114,6 @@
 }
 
 .astrael-rpg .advantage-browser-header h2,
-.astrael-rpg .advantage-stack-header h3,
 .astrael-rpg .advantage-inspector-title-row h2 {
   margin: 3px 0 0;
   color: var(--astrael-text);
@@ -2108,71 +2127,100 @@
   font-size: 18px;
 }
 
-.astrael-rpg .advantage-stack {
-  min-height: 0;
-  display: grid;
-  grid-template-rows: auto minmax(0, 155px);
-  gap: 8px;
-}
-
-.astrael-rpg .advantage-stack.is-collapsed {
-  grid-template-rows: auto 0fr;
-}
-
-.astrael-rpg .advantage-stack-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.astrael-rpg .advantage-stack-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  color: inherit;
-  background: transparent;
-  cursor: pointer;
-}
-
-.astrael-rpg .advantage-stack-toggle i {
-  color: var(--astrael-dim);
-  font-size: 10px;
-  transition: color 0.2s, transform 0.2s;
-}
-
-.astrael-rpg .advantage-stack-toggle:hover i {
-  color: var(--astrael-gold-bright);
-}
-
-.astrael-rpg .advantage-stack.is-collapsed .advantage-stack-toggle i {
-  transform: rotate(-90deg);
-}
-
-.astrael-rpg .advantage-stack-header h3 {
-  font-size: 13px;
-}
-
-.astrael-rpg .advantage-stack-flaws .advantage-stack-header span {
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-browser-header span {
   color: #cf6a62;
 }
 
-.astrael-rpg .advantage-browser .advantage-list {
+.astrael-rpg .advantage-mode-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.astrael-rpg .advantage-mode-tab {
+  flex: 1;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 1px solid rgba(90, 80, 68, 0.44);
+  color: var(--astrael-dim);
+  background: rgba(8, 10, 11, 0.3);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.astrael-rpg .advantage-mode-tab:hover {
+  border-color: rgba(214, 154, 85, 0.4);
+  color: var(--astrael-muted);
+}
+
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-mode-tab:hover {
+  border-color: rgba(207, 106, 98, 0.42);
+}
+
+.astrael-rpg .advantage-mode-tab.active {
+  border-color: rgba(214, 154, 85, 0.58);
+  color: var(--astrael-gold-bright);
+  background:
+    linear-gradient(180deg, rgba(193, 117, 57, 0.14), rgba(8, 10, 11, 0.4));
+}
+
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-mode-tab.active {
+  border-color: rgba(207, 106, 98, 0.6);
+  color: #cf6a62;
+  background:
+    linear-gradient(180deg, rgba(136, 53, 49, 0.18), rgba(8, 10, 11, 0.4));
+}
+
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-add {
+  border-color: rgba(136, 53, 49, 0.7);
+  color: #cf6a62;
+  background:
+    radial-gradient(circle, rgba(136, 53, 49, 0.22), transparent 62%),
+    rgba(11, 12, 13, 0.52);
+}
+
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-add:hover {
+  border-color: #cf6a62;
+  background:
+    radial-gradient(circle, rgba(136, 53, 49, 0.34), transparent 64%),
+    rgba(11, 12, 13, 0.52);
+  box-shadow: 0 0 16px rgba(136, 53, 49, 0.24);
+}
+
+.astrael-rpg .advantage-list-container {
   min-height: 0;
+  overflow: hidden;
+}
+
+.astrael-rpg .advantage-list {
+  height: 100%;
   overflow-y: auto;
   display: grid;
   align-content: start;
   gap: 7px;
   padding-right: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(214, 154, 85, 0.32) transparent;
 }
 
-.astrael-rpg .advantage-stack.is-collapsed .advantage-list {
-  overflow: hidden;
-  padding-right: 0;
-  pointer-events: none;
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-list {
+  scrollbar-color: rgba(207, 106, 98, 0.34) transparent;
+}
+
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(207, 106, 98, 0.42);
+}
+
+.astrael-rpg .advantage-sidebar[data-mode="flaws"] .advantage-list::-webkit-scrollbar-thumb {
+  background: rgba(207, 106, 98, 0.28);
+}
+
+.astrael-rpg .advantage-list.is-hidden {
+  display: none;
 }
 
 .astrael-rpg .advantage-row {
@@ -2245,6 +2293,12 @@
   font-family: "Cinzel", Georgia, serif;
   font-size: 12px;
   font-weight: 700;
+}
+
+.astrael-rpg .advantage-row-rank.flaw-rank {
+  border-color: rgba(136, 53, 49, 0.82);
+  color: rgba(207, 106, 98, 0.98);
+  background: radial-gradient(circle, rgba(136, 53, 49, 0.34), transparent 64%), #090b0c;
 }
 
 .astrael-rpg .advantage-row-name {
@@ -2443,6 +2497,10 @@
   font-family: "Cinzel", Georgia, serif;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.astrael-rpg .flaw-inspector .advantage-empty-inspector span {
+  color: #cf6a62;
 }
 
 .astrael-rpg .advantage-empty-inspector p {

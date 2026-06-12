@@ -423,24 +423,24 @@
         </div>
         <div class="tab-panel" data-tab="advantages">
           <div class="advantage-browser">
-            <aside class="advantage-sidebar">
+            <aside class="advantage-sidebar" data-mode="{{#if system.advantageModeFlaws}}flaws{{else}}advantages{{/if}}">
               <header class="advantage-browser-header">
-                <span>Arquivo operacional</span>
-                <h2>Caracteristicas</h2>
+                <div class="advantage-browser-header-row">
+                  <div>
+                    <span>{{#if system.advantageModeFlaws}}Arquivos Comprometedores{{else}}Dossie Favoravel{{/if}}</span>
+                    <h2>Caracteristicas</h2>
+                  </div>
+                  <button type="button" class="advantage-add" data-action="add-advantage-entry" title="{{#if system.advantageModeFlaws}}Adicionar desvantagem{{else}}Adicionar vantagem{{/if}}">+</button>
+                </div>
               </header>
 
-              <section class="advantage-stack advantage-stack-benefits {{#if system.advantagesCollapsed}}is-collapsed{{/if}}">
-                <div class="advantage-stack-header">
-                  <div>
-                    <span>Dossie favoravel</span>
-                    <button type="button" class="advantage-stack-toggle" data-action="toggle-advantage-stack" data-list="advantages" aria-expanded="{{#if system.advantagesCollapsed}}false{{else}}true{{/if}}">
-                      <h3>Vantagens</h3>
-                      <i class="fas fa-chevron-down"></i>
-                    </button>
-                  </div>
-                  <button type="button" class="advantage-add" data-action="add-advantage" title="Adicionar vantagem">+</button>
-                </div>
-                <div class="advantage-list">
+              <div class="advantage-mode-tabs">
+                <button type="button" class="advantage-mode-tab {{#unless system.advantageModeFlaws}}active{{/unless}}" data-action="set-advantage-mode" data-mode="advantages">Vantagens</button>
+                <button type="button" class="advantage-mode-tab {{#if system.advantageModeFlaws}}active{{/if}}" data-action="set-advantage-mode" data-mode="flaws">Desvantagens</button>
+              </div>
+
+              <div class="advantage-list-container">
+                <div class="advantage-list {{#if system.advantageModeFlaws}}is-hidden{{/if}}" data-list="advantages">
                   {{#each system.advantages as |adv|}}
                   <button type="button" class="advantage-row {{#if adv.selected}}is-selected{{/if}}" data-action="select-advantage-entry" data-list="advantages" data-index="{{@index}}">
                     <span class="advantage-row-rank" aria-label="Nivel {{adv.level}}">{{adv.levelRoman}}</span>
@@ -448,20 +448,7 @@
                   </button>
                   {{/each}}
                 </div>
-              </section>
-
-              <section class="advantage-stack advantage-stack-flaws {{#if system.flawsCollapsed}}is-collapsed{{/if}}">
-                <div class="advantage-stack-header">
-                  <div>
-                    <span>Arquivo comprometedor</span>
-                    <button type="button" class="advantage-stack-toggle" data-action="toggle-advantage-stack" data-list="flaws" aria-expanded="{{#if system.flawsCollapsed}}false{{else}}true{{/if}}">
-                      <h3>Desvantagens</h3>
-                      <i class="fas fa-chevron-down"></i>
-                    </button>
-                  </div>
-                  <button type="button" class="advantage-add flaw-add" data-action="add-flaw" title="Adicionar desvantagem">+</button>
-                </div>
-                <div class="advantage-list">
+                <div class="advantage-list {{#unless system.advantageModeFlaws}}is-hidden{{/unless}}" data-list="flaws">
                   {{#each system.flaws as |flaw|}}
                   <button type="button" class="advantage-row flaw-row {{#if flaw.selected}}is-selected{{/if}}" data-action="select-advantage-entry" data-list="flaws" data-index="{{@index}}">
                     <span class="advantage-row-rank flaw-rank" aria-label="Nivel {{flaw.level}}">{{flaw.levelRoman}}</span>
@@ -469,10 +456,10 @@
                   </button>
                   {{/each}}
                 </div>
-              </section>
+              </div>
             </aside>
 
-            <section class="advantage-inspector {{#if system.selectedAdvantage.isFlaw}}flaw-inspector{{/if}}">
+            <section class="advantage-inspector {{#if system.advantageModeFlaws}}flaw-inspector{{/if}}">
               {{#if system.selectedAdvantage}}
               {{#if system.selectedAdvantage.editing}}
               <div class="advantage-inspector-edit-header">
