@@ -897,6 +897,45 @@
   animation: grommetFade 200ms ease-out;
 }
 
+.astrael-rpg .tab-button[data-tab="hemomancy"] {
+  color: #dca49a;
+  text-shadow: 0 0 8px rgba(176, 25, 38, 0.34);
+}
+
+.astrael-rpg .tab-button[data-tab="hemomancy"]::before {
+  background: linear-gradient(180deg, #401018 0%, #19070b 100%);
+  border-color: rgba(205, 56, 67, 0.62);
+  box-shadow: inset 0 0 18px rgba(176, 25, 38, 0.14);
+}
+
+.astrael-rpg .tab-button[data-tab="hemomancy"]:hover {
+  color: #ffe0c8;
+}
+
+.astrael-rpg .tab-button[data-tab="hemomancy"]:hover::before {
+  background: linear-gradient(180deg, #5c1721 0%, #240a10 100%);
+  border-color: rgba(255, 121, 120, 0.72);
+}
+
+.astrael-rpg .tab-button[data-tab="hemomancy"].active {
+  color: #fff0dc;
+  text-shadow: 0 0 12px rgba(255, 74, 84, 0.5);
+}
+
+.astrael-rpg .tab-button[data-tab="hemomancy"].active::before {
+  background: linear-gradient(180deg, #7a1520 0%, #2a0810 100%);
+  border: 1px solid rgba(232, 74, 83, 0.86);
+  border-top: 3px solid #ffd7bf;
+  border-bottom: none;
+  box-shadow: 2px -1px 5px rgba(0, 0, 0, 0.48), inset 0 0 22px rgba(255, 93, 94, 0.16);
+}
+
+.astrael-rpg .tab-button[data-tab="hemomancy"].active::after {
+  background: #120407;
+  border-color: rgba(255, 121, 120, 0.9);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 74, 84, 0.42);
+}
+
 @keyframes grommetFade {
   from {
     opacity: 0;
@@ -908,9 +947,50 @@
   }
 }
 
+.astrael-rpg .settings-gear {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #8c7a67;
+  cursor: pointer;
+  font-size: 1.15rem;
+  z-index: 2;
+  transition: color 200ms ease, transform 300ms ease;
+  box-shadow: none !important;
+  line-height: 1;
+}
+
+.astrael-rpg .settings-gear:hover {
+  color: var(--astrael-gold-bright);
+  transform: rotate(60deg);
+}
+
+.astrael-rpg .settings-gear.active {
+  color: var(--astrael-gold-bright);
+  text-shadow: 0 0 12px rgba(193, 117, 57, 0.5);
+}
+
 .astrael-rpg .sheet-body {
   padding: 16px;
   min-height: 100px;
+}
+
+.astrael-rpg[data-active-tab="hemomancy"] .sheet-frame {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 220px),
+    radial-gradient(circle at 18% 18%, rgba(120, 12, 24, 0.16), transparent 34%),
+    #050304;
+}
+
+.astrael-rpg[data-active-tab="hemomancy"] .sheet-body {
+  background: #050304;
 }
 
 .astrael-rpg .tab-panel {
@@ -919,6 +999,10 @@
 
 .astrael-rpg .tab-panel.active {
   display: block;
+}
+
+.astrael-rpg .tab-panel[data-tab="hemomancy"].active {
+  background: #050304;
 }
 
 .astrael-rpg .section-card {
@@ -1416,11 +1500,12 @@
   margin: 0;
   padding: 0;
   border: 1px solid rgba(193, 117, 57, 0.68);
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  border-radius: 50%;
   color: var(--astrael-gold-bright);
   background:
-    radial-gradient(circle, rgba(193, 117, 57, 0.26), transparent 64%),
+    radial-gradient(circle, rgba(193, 117, 57, 0.26), transparent 63%),
     #090b0c;
+  box-shadow: 0 0 0 1px rgba(193, 117, 57, 0.14);
   font-family: "Cinzel", Georgia, serif;
   font-size: 16px;
   font-weight: 700;
@@ -1667,6 +1752,7 @@
   height: 32px;
   padding: 0;
   border: 1px solid rgba(193, 117, 57, 0.52);
+  border-radius: 50%;
   color: var(--astrael-gold-bright);
   background:
     radial-gradient(circle, rgba(193, 117, 57, 0.2), transparent 62%),
@@ -1735,11 +1821,12 @@
   margin: 0;
   padding: 0;
   border: 1px solid rgba(193, 117, 57, 0.68);
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  border-radius: 50%;
   color: var(--astrael-gold-bright);
   background:
     radial-gradient(circle, rgba(193, 117, 57, 0.24), transparent 64%),
     #090b0c;
+  box-shadow: 0 0 0 1px rgba(193, 117, 57, 0.12);
   font-family: "Cinzel", Georgia, serif;
   font-size: 10px;
   font-weight: 700;
@@ -1856,6 +1943,375 @@
   font-size: 11px;
 }
 
+.astrael-rpg .hemomancy-browser {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 18px;
+  height: 100%;
+  min-height: 430px;
+}
+
+.astrael-rpg .hemomancy-sidebar,
+.astrael-rpg .hemomancy-inspector {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(127, 21, 31, 0.64);
+  background: radial-gradient(circle at 12% 0%, rgba(178, 32, 43, 0.34), transparent 38%), linear-gradient(145deg, #050304, #0a0608);
+  box-shadow: inset 0 0 0 1px rgba(193, 117, 57, 0.08), 0 18px 45px rgba(0, 0, 0, 0.32);
+}
+
+.astrael-rpg .hemomancy-sidebar::before,
+.astrael-rpg .hemomancy-inspector::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.03), transparent 30%, rgba(178, 32, 43, 0.10));
+}
+
+.astrael-rpg .hemomancy-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px;
+}
+
+.astrael-rpg .hemomancy-browser-header,
+.astrael-rpg .hemomancy-mode-tabs,
+.astrael-rpg .hemomancy-list-container,
+.astrael-rpg .hemomancy-level-card,
+.astrael-rpg .hemomancy-inspector > * {
+  position: relative;
+  z-index: 1;
+}
+
+.astrael-rpg .hemomancy-browser-header-row,
+.astrael-rpg .hemomancy-inspector-edit-header,
+.astrael-rpg .hemomancy-inspector-title-row,
+.astrael-rpg .hemomancy-level-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.astrael-rpg .hemomancy-browser-header-row {
+  align-items: flex-start;
+}
+
+.astrael-rpg .hemomancy-browser-header span,
+.astrael-rpg .hemomancy-inspector-kicker,
+.astrael-rpg .hemomancy-level-card span,
+.astrael-rpg .hemomancy-inspector-form span {
+  display: block;
+  color: var(--astrael-gold-bright);
+  opacity: 0.8;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .hemomancy-browser-header h2,
+.astrael-rpg .hemomancy-inspector-title-row h2 {
+  margin: 3px 0 0;
+  color: #f4dcc2;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.45rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(172, 29, 45, 0.55);
+}
+
+.astrael-rpg .hemomancy-add {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(205, 56, 67, 0.85);
+  border-radius: 50%;
+  background: rgba(66, 10, 18, 0.95);
+  color: var(--astrael-gold-bright);
+  font-size: 1.35rem;
+  line-height: 1;
+  box-shadow: 0 0 18px rgba(176, 25, 38, 0.26);
+}
+
+.astrael-rpg .hemomancy-add:hover {
+  transform: scale(1.06);
+  border-color: rgba(255, 121, 120, 0.85);
+  box-shadow: 0 0 24px rgba(204, 34, 52, 0.42), 0 0 0 1px rgba(193, 117, 57, 0.18);
+}
+
+.astrael-rpg .hemomancy-mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+  margin: 16px 0 12px;
+}
+
+.astrael-rpg .hemomancy-mode-tab {
+  min-height: 30px;
+  border: 1px solid rgba(193, 117, 57, 0.5);
+  background: rgba(20, 6, 10, 0.76);
+  color: var(--astrael-gold-bright);
+  opacity: 0.7;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  letter-spacing: 0.08em;
+}
+
+.astrael-rpg .hemomancy-mode-tab.active,
+.astrael-rpg .hemomancy-mode-tab:hover {
+  background: linear-gradient(180deg, rgba(116, 18, 28, 0.88), rgba(48, 8, 14, 0.96));
+  border-color: var(--astrael-gold-bright);
+  color: var(--astrael-gold-bright);
+  opacity: 1;
+  box-shadow: inset 0 0 18px rgba(255, 93, 94, 0.10), 0 0 16px rgba(193, 117, 57, 0.18);
+}
+
+.astrael-rpg .hemomancy-list-container {
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.astrael-rpg .hemomancy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.astrael-rpg .hemomancy-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(113, 26, 36, 0.72);
+  background: rgba(14, 7, 9, 0.76);
+  color: #ead5bf;
+  text-align: left;
+}
+
+.astrael-rpg .hemomancy-row:hover,
+.astrael-rpg .hemomancy-row.is-selected {
+  border-color: rgba(225, 67, 78, 0.82);
+  background: rgba(76, 12, 20, 0.82);
+  box-shadow: inset 0 0 0 1px rgba(193, 117, 57, 0.12);
+}
+
+.astrael-rpg .hemomancy-row-rank,
+.astrael-rpg .hemomancy-rank,
+.astrael-rpg .hemomancy-level-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(193, 117, 57, 0.6);
+  background: radial-gradient(circle, rgba(128, 14, 26, 0.88), rgba(8, 5, 6, 0.98));
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-weight: 700;
+  box-shadow: 0 0 0 1px rgba(193, 117, 57, 0.2);
+  text-shadow: 0 0 10px rgba(193, 117, 57, 0.42);
+}
+
+.astrael-rpg .hemomancy-row-rank {
+  width: 32px;
+  height: 32px;
+  margin-left: 8px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+}
+
+.astrael-rpg .hemomancy-row-name {
+  overflow: hidden;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-rpg .hemomancy-inspector {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px;
+}
+
+.astrael-rpg .hemomancy-level-card {
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(193, 117, 57, 0.34);
+  background: rgba(5, 3, 4, 0.76);
+}
+
+.astrael-rpg .hemomancy-level-card strong {
+  color: rgba(246, 225, 205, 0.82);
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.astrael-rpg .hemomancy-level-control {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 1rem;
+}
+
+.astrael-rpg .hemomancy-level-control:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 22px rgba(219, 47, 62, 0.38);
+}
+
+.astrael-rpg .hemomancy-rank {
+  min-width: 54px;
+  height: 38px;
+  border-radius: 999px;
+  padding: 0 12px;
+}
+
+.astrael-rpg .hemomancy-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(193, 117, 57, 0.28);
+  border-bottom: 1px solid rgba(193, 117, 57, 0.28);
+  color: rgba(239, 210, 185, 0.68);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .hemomancy-cost {
+  display: flex;
+  gap: 4px;
+}
+
+.astrael-rpg .hemomancy-cost-icon {
+  width: 22px;
+  height: 22px;
+  filter: sepia(0.8) saturate(3.5) hue-rotate(295deg) brightness(1.15) drop-shadow(0 0 6px rgba(193, 117, 57, 0.5));
+}
+
+.astrael-rpg .hemomancy-inspector-copy {
+  flex: 1;
+  min-height: 0;
+  margin-top: 18px;
+  overflow-y: auto;
+}
+
+.astrael-rpg .hemomancy-inspector-copy p {
+  margin: 0;
+  color: rgba(246, 225, 205, 0.86);
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.astrael-rpg .hemomancy-inspector-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.astrael-rpg .hemomancy-description-field {
+  grid-column: 1 / -1;
+}
+
+.astrael-rpg .hemomancy-inspector-form input,
+.astrael-rpg .hemomancy-inspector-form textarea {
+  width: 100%;
+  border: 1px solid rgba(164, 42, 53, 0.75);
+  background: rgba(9, 5, 7, 0.86);
+  color: #f7e4ce;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+.astrael-rpg .hemomancy-inspector-form input {
+  height: 38px;
+}
+
+.astrael-rpg .hemomancy-inspector-form textarea {
+  min-height: 188px;
+  resize: none;
+}
+
+.astrael-rpg .hemomancy-inspector-form input:focus,
+.astrael-rpg .hemomancy-inspector-form textarea:focus {
+  border-color: rgba(242, 90, 98, 0.95);
+  box-shadow: 0 0 0 1px rgba(242, 90, 98, 0.24), 0 0 18px rgba(184, 32, 47, 0.22);
+}
+
+.astrael-rpg .hemomancy-inspector-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.astrael-rpg .hemomancy-command {
+  min-width: 92px;
+  min-height: 34px;
+  border: 1px solid rgba(182, 49, 60, 0.78);
+  background: rgba(53, 10, 17, 0.86);
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .hemomancy-command:hover,
+.astrael-rpg .hemomancy-command.hemomancy-roll {
+  border-color: rgba(239, 86, 95, 0.96);
+  background: linear-gradient(180deg, rgba(130, 19, 31, 0.94), rgba(56, 8, 16, 0.94));
+}
+
+.astrael-rpg .hemomancy-command.danger {
+  border-color: rgba(207, 53, 53, 0.68);
+  color: #dba08a;
+}
+
+.astrael-rpg .hemomancy-empty-inspector {
+  display: grid;
+  place-content: center;
+  flex: 1;
+  text-align: center;
+}
+
+.astrael-rpg .hemomancy-empty-inspector span {
+  color: #f2dcc8;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .hemomancy-empty-inspector p {
+  max-width: 320px;
+  color: rgba(237, 204, 183, 0.68);
+  font-family: "Inter", Arial, sans-serif;
+}
+
+@media (max-width: 760px) {
+  .astrael-rpg .hemomancy-browser {
+    grid-template-columns: 1fr;
+  }
+
+  .astrael-rpg .hemomancy-sidebar {
+    min-height: 250px;
+  }
+}
+
 .astrael-rpg .advantage-column-header span {
   color: var(--astrael-gold-bright);
   font-family: "IBM Plex Mono", Consolas, monospace;
@@ -1948,7 +2404,7 @@
   height: 32px;
   padding: 0;
   border: 1px solid rgba(193, 117, 57, 0.42);
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  border-radius: 50%;
   color: var(--astrael-gold-bright);
   font-size: 0;
   font-weight: 700;
@@ -2119,7 +2575,7 @@
   height: 40px;
   padding: 0;
   border: 1px solid rgba(193, 117, 57, 0.72);
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  border-radius: 50%;
   color: rgba(214, 154, 85, 0.96);
   background:
     radial-gradient(circle, rgba(193, 117, 57, 0.26), transparent 63%),
@@ -2636,7 +3092,7 @@
   width: 28px;
   height: 28px;
   border: 1px solid rgba(193, 117, 57, 0.68);
-  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  border-radius: 50%;
   color: var(--astrael-gold-bright);
   background: radial-gradient(circle, rgba(193, 117, 57, 0.24), transparent 64%), #090b0c;
   font-family: "Cinzel", Georgia, serif;

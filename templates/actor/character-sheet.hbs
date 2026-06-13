@@ -91,10 +91,12 @@
       <nav class="sheet-tabs" aria-label="Abas da ficha">
         <button class="tab-button active" data-tab="attributes" type="button">{{localize "ASTRAEL.Tab.Attributes"}}</button>
         <button class="tab-button" data-tab="advantages" type="button">{{localize "ASTRAEL.Tab.Advantages"}}</button>
+        <button class="tab-button" data-tab="convictions" type="button">{{localize "ASTRAEL.Tab.Convictions"}}</button>
         <button class="tab-button" data-tab="hemomancy" type="button">{{localize "ASTRAEL.Tab.Hemomancy"}}</button>
         <button class="tab-button" data-tab="stranger-mark" type="button">{{localize "ASTRAEL.Tab.StrangerMark"}}</button>
-        <button class="tab-button" data-tab="convictions" type="button">{{localize "ASTRAEL.Tab.Convictions"}}</button>
-        <button class="tab-button" data-tab="settings" type="button">{{localize "ASTRAEL.Tab.Settings"}}</button>
+        <button class="settings-gear" data-tab="settings" type="button" title="{{localize 'ASTRAEL.Tab.Settings'}}">
+          <i class="fas fa-cog"></i>
+        </button>
       </nav>
 
       <section class="sheet-body">
@@ -496,7 +498,107 @@
             </section>
           </div>
         </div>
-        <div class="tab-panel" data-tab="hemomancy"></div>
+        <div class="tab-panel" data-tab="hemomancy">
+          <div class="hemomancy-browser">
+            <aside class="hemomancy-sidebar">
+              <header class="hemomancy-browser-header">
+                <div class="hemomancy-browser-header-row">
+                  <div>
+                    <span>Sangue Invocado</span>
+                    <h2>Hemomancia</h2>
+                  </div>
+                  <button type="button" class="hemomancy-add" data-action="add-hemomancy-power" title="Adicionar magia">+</button>
+                </div>
+              </header>
+
+              <div class="hemomancy-mode-tabs">
+                {{#each system.hemomancy.modeTabs as |tab|}}
+                <button type="button" class="hemomancy-mode-tab {{#if tab.active}}active{{/if}}" data-action="set-hemomancy-mode" data-level="{{tab.level}}">{{tab.roman}}</button>
+                {{/each}}
+              </div>
+
+              <div class="hemomancy-list-container">
+                <div class="hemomancy-list">
+                  {{#each system.hemomancy.powers as |power|}}
+                  {{#unless power.hidden}}
+                  <button type="button" class="hemomancy-row {{#if power.selected}}is-selected{{/if}}" data-action="select-hemomancy-power" data-index="{{@index}}">
+                    <span class="hemomancy-row-rank" aria-label="Nivel {{power.level}}">{{power.levelRoman}}</span>
+                    <span class="hemomancy-row-name">{{power.name}}</span>
+                  </button>
+                  {{/unless}}
+                  {{/each}}
+                </div>
+              </div>
+            </aside>
+
+            <section class="hemomancy-inspector">
+              <div class="hemomancy-level-card">
+                <div>
+                  <span>Nivel do Personagem</span>
+                  <strong>Inteligencia + Hemomancia</strong>
+                </div>
+                <button type="button" class="hemomancy-level-control" title="Clique para aumentar, botao direito para reduzir">{{system.hemomancy.levelRoman}}</button>
+              </div>
+
+              {{#if system.hemomancy.selectedPower}}
+              {{#if system.hemomancy.selectedPower.editing}}
+              <div class="hemomancy-inspector-edit-header">
+                <span class="hemomancy-inspector-kicker">HEMOMANCIA NIVEL {{system.hemomancy.selectedPower.levelRoman}}</span>
+                <span class="hemomancy-rank">{{system.hemomancy.selectedPower.levelRoman}}</span>
+              </div>
+              <div class="hemomancy-inspector-form">
+                <label>
+                  <span>Nome</span>
+                  <input class="hemomancy-name-input" type="text" data-index="{{system.hemomancy.selectedPower.index}}" value="{{system.hemomancy.selectedPower.name}}" placeholder="Nome da magia">
+                </label>
+                <label>
+                  <span>Custo</span>
+                  <input class="hemomancy-cost-input" type="number" min="1" max="5" data-index="{{system.hemomancy.selectedPower.index}}" value="{{system.hemomancy.selectedPower.cost}}">
+                </label>
+                <label class="hemomancy-description-field">
+                  <span>Descricao</span>
+                  <textarea class="hemomancy-description-input" data-index="{{system.hemomancy.selectedPower.index}}" placeholder="Descreva efeito, alcance e consequencias da magia.">{{system.hemomancy.selectedPower.description}}</textarea>
+                </label>
+              </div>
+              {{else}}
+              <div class="hemomancy-inspector-kicker">HEMOMANCIA NIVEL {{system.hemomancy.selectedPower.levelRoman}}</div>
+              <div class="hemomancy-inspector-title-row">
+                <h2>{{system.hemomancy.selectedPower.name}}</h2>
+                <span class="hemomancy-rank">{{system.hemomancy.selectedPower.levelRoman}}</span>
+              </div>
+              <div class="hemomancy-meta-row">
+                <div class="hemomancy-cost" title="Custo de Queima">
+                  {{#each system.hemomancy.selectedPower.costIcons as |icon|}}
+                  <img src="systems/astrael-rpg/assets/icons/d10.svg" alt="" class="hemomancy-cost-icon">
+                  {{/each}}
+                </div>
+                <span>{{system.hemomancy.selectedPower.rollFormula}}</span>
+              </div>
+              <div class="hemomancy-inspector-copy">
+                <p>{{#if system.hemomancy.selectedPower.description}}{{system.hemomancy.selectedPower.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+              </div>
+              {{/if}}
+
+              <div class="hemomancy-inspector-actions">
+                {{#unless system.hemomancy.selectedPower.editing}}
+                <button type="button" class="hemomancy-command hemomancy-roll" data-action="roll-hemomancy-power" data-index="{{system.hemomancy.selectedPower.index}}">Rolar</button>
+                {{/unless}}
+                {{#if system.hemomancy.selectedPower.editing}}
+                <button type="button" class="hemomancy-command" data-action="save-hemomancy-power" data-index="{{system.hemomancy.selectedPower.index}}">Salvar</button>
+                {{else}}
+                <button type="button" class="hemomancy-command" data-action="edit-hemomancy-power" data-index="{{system.hemomancy.selectedPower.index}}">Editar</button>
+                {{/if}}
+                <button type="button" class="hemomancy-command danger" data-action="delete-hemomancy-power" data-index="{{system.hemomancy.selectedPower.index}}">Excluir</button>
+              </div>
+              {{else}}
+              <div class="hemomancy-empty-inspector">
+                <span>Nenhuma magia selecionada</span>
+                <p>Crie uma magia no circulo {{system.hemomancy.modeRoman}} para abrir o grimorio de sangue.</p>
+              </div>
+              {{/if}}
+            </section>
+          </div>
+        </div>
         <div class="tab-panel" data-tab="stranger-mark"></div>
         <div class="tab-panel" data-tab="convictions"></div>
         <div class="tab-panel" data-tab="settings"></div>

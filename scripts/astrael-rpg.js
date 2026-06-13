@@ -97,6 +97,10 @@ class AstraelCharacterData extends TypeDataModel {
       }),
       advantages: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       flaws: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+      hemomancy: new SchemaField({
+        level: new NumberField({ required: true, integer: true, min: 0, max: 5, initial: 0 }),
+        powers: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
+      }),
       specialties: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       customRolls: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
     };
@@ -164,6 +168,22 @@ function prepareAdvantageEntry(source = {}) {
     description: source.description || source.details || "",
     level,
     levelRoman: toRomanLevel(level)
+  };
+}
+
+function normalizeHemomancyPower(source = {}) {
+  const level = clampNumber(source.level ?? 1, 1, 5);
+  const cost = clampNumber(source.cost ?? 1, 1, 5);
+
+  return {
+    ...source,
+    name: source.name || "Sem nome",
+    description: source.description || "",
+    level,
+    levelRoman: toRomanLevel(level),
+    cost,
+    costIcons: Array.from({ length: cost }, (_, index) => index),
+    editing: Boolean(source.editing)
   };
 }
 
@@ -282,18 +302,19 @@ async function renderAstraelTemplate(path, data) {
   return renderer(path, data);
 }
 
-async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriticals = true, preRolledValues = null }) {
+async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriticals = true, preRolledValues = null, preRolledRoll = null, suppressReroll = false }) {
   let values;
   let roll;
   if (preRolledValues) {
     values = preRolledValues;
+    roll = preRolledRoll;
   } else {
     roll = await new Roll(`${diceCount}d10`).evaluate();
     values = getRollValues(roll);
   }
   const summary = summarizeDicePool(values, { useCriticals });
   const dice = prepareDicePoolResults(values, { useCriticals });
-  const isRouseCheck = !useCriticals && diceCount === 1;
+  const isRouseCheck = suppressReroll || (!useCriticals && diceCount === 1);
   const content = await renderAstraelTemplate(DICE_POOL_CHAT_TEMPLATE, {
     title,
     kicker,
@@ -699,9 +720,14 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.system.customRolls = Array.isArray(context.system.customRolls) ? context.system.customRolls : [];
     context.system.advantages = Array.isArray(context.system.advantages) ? context.system.advantages : [];
     context.system.flaws = Array.isArray(context.system.flaws) ? context.system.flaws : [];
+    context.system.hemomancy ??= { level: 0, powers: [] };
+    context.system.hemomancy.level = clampNumber(context.system.hemomancy.level, 0, 5);
+    context.system.hemomancy.levelRoman = context.system.hemomancy.level ? toRomanLevel(context.system.hemomancy.level) : "0";
+    context.system.hemomancy.powers = Array.isArray(context.system.hemomancy.powers) ? context.system.hemomancy.powers.map(normalizeHemomancyPower) : [];
     context.system.advantages = context.system.advantages.map(prepareAdvantageEntry);
     context.system.flaws = context.system.flaws.map(prepareAdvantageEntry);
     this.#prepareAdvantageSelection(context.system);
+    this.#prepareHemomancySelection(context.system);
     context.system.specialties = context.system.specialties.map(spec => ({
       ...spec,
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
@@ -730,7 +756,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       input.addEventListener("change", this.#onInputChange.bind(this));
     });
 
-    this.element.querySelectorAll(".tab-button").forEach((btn) => {
+    this.element.querySelectorAll("[data-tab]").forEach((btn) => {
       btn.addEventListener("click", this.#onTabClick.bind(this));
     });
 
@@ -777,10 +803,32 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       rank.addEventListener("click", this.#onAdvantageRankClick.bind(this));
       rank.addEventListener("contextmenu", this.#onAdvantageRankContext.bind(this));
     });
+    this.element.querySelectorAll("[data-action='set-hemomancy-mode']").forEach((button) => {
+      button.addEventListener("click", this.#onSetHemomancyMode.bind(this));
+    });
+    this.element.querySelector("[data-action='add-hemomancy-power']")?.addEventListener("click", this.#onAddHemomancyPower.bind(this));
+    this.element.querySelectorAll("[data-action='select-hemomancy-power']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectHemomancyPower.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='edit-hemomancy-power']").forEach((button) => {
+      button.addEventListener("click", this.#onEditHemomancyPower.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='save-hemomancy-power']").forEach((button) => {
+      button.addEventListener("click", this.#onSaveHemomancyPower.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='delete-hemomancy-power']").forEach((button) => {
+      button.addEventListener("click", this.#onDeleteHemomancyPower.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='roll-hemomancy-power']").forEach((button) => {
+      button.addEventListener("click", this.#onRollHemomancyPower.bind(this));
+    });
+    this.element.querySelector(".hemomancy-level-control")?.addEventListener("click", this.#onHemomancyLevelClick.bind(this));
+    this.element.querySelector(".hemomancy-level-control")?.addEventListener("contextmenu", this.#onHemomancyLevelContext.bind(this));
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
 
     if (this._activeTab) this.#activateTab(this._activeTab);
+    else this.element.dataset.activeTab = "attributes";
   }
 
   async #onRollClick(event) {
@@ -1174,9 +1222,10 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   #activateTab(tabId) {
     if (!tabId) return;
     this._activeTab = tabId;
+    this.element.dataset.activeTab = tabId;
 
-    this.element.querySelectorAll(".tab-button").forEach((b) => b.classList.remove("active"));
-    this.element.querySelector(`.tab-button[data-tab="${tabId}"]`)?.classList.add("active");
+    this.element.querySelectorAll("[data-tab]").forEach((b) => b.classList.remove("active"));
+    this.element.querySelector(`[data-tab="${tabId}"]`)?.classList.add("active");
 
     this.element.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
     const panel = this.element.querySelector(`.tab-panel[data-tab="${tabId}"]`);
@@ -1438,6 +1487,206 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     list[index].level = clampNumber((list[index].level || 1) + delta, 1, 5);
     return this.#updateAdvantageList(listId, list);
+  }
+
+  #prepareHemomancySelection(system) {
+    this._hemomancyMode = clampNumber(this._hemomancyMode ?? 1, 1, 5);
+    const selectedIndex = Number.isInteger(this._selectedHemomancyIndex) ? this._selectedHemomancyIndex : -1;
+    const visiblePowers = system.hemomancy.powers
+      .map((power, index) => ({ ...power, index }))
+      .filter((power) => power.level === this._hemomancyMode);
+    const index = visiblePowers.some((power) => power.index === selectedIndex)
+      ? selectedIndex
+      : (visiblePowers[0]?.index ?? -1);
+
+    this._selectedHemomancyIndex = index;
+    system.hemomancy.mode = this._hemomancyMode;
+    system.hemomancy.modeRoman = toRomanLevel(this._hemomancyMode);
+    system.hemomancy.modeTabs = [1, 2, 3, 4, 5].map((level) => ({
+      level,
+      roman: toRomanLevel(level),
+      active: level === this._hemomancyMode
+    }));
+    system.hemomancy.powers = system.hemomancy.powers.map((power, index) => ({
+      ...power,
+      selected: index === this._selectedHemomancyIndex,
+      hidden: power.level !== this._hemomancyMode
+    }));
+
+    const selected = index >= 0 ? system.hemomancy.powers[index] : null;
+    system.hemomancy.selectedPower = selected ? {
+      ...selected,
+      index,
+      rollFormula: `Inteligencia + Hemomancia (${system.attributes.intelligence.value} + ${system.hemomancy.level})`,
+      dicePool: Math.max(1, Number(system.attributes.intelligence.value) + Number(system.hemomancy.level))
+    } : null;
+  }
+
+  #getHemomancyPowers() {
+    const actorData = this.actor.toObject();
+    const powers = Array.isArray(actorData.system?.hemomancy?.powers) ? actorData.system.hemomancy.powers : [];
+
+    return powers.map((power) => {
+      const normalized = normalizeHemomancyPower(power);
+      return {
+        name: normalized.name === "Sem nome" ? "" : normalized.name,
+        description: normalized.description,
+        level: normalized.level,
+        cost: normalized.cost,
+        editing: normalized.editing
+      };
+    });
+  }
+
+  #updateHemomancyPowers(powers) {
+    return this.actor.update({ "system.hemomancy.powers": powers });
+  }
+
+  #getHemomancyPowersFromSheet({ closeEditing = false } = {}) {
+    return this.#getHemomancyPowers().map((power, index) => {
+      if (!power.editing) return power;
+
+      const nameInput = this.element.querySelector(`.hemomancy-name-input[data-index='${index}']`);
+      const costInput = this.element.querySelector(`.hemomancy-cost-input[data-index='${index}']`);
+      const descriptionInput = this.element.querySelector(`.hemomancy-description-input[data-index='${index}']`);
+
+      return {
+        ...power,
+        name: nameInput?.value?.trim() || power.name || "Sem nome",
+        cost: clampNumber(costInput?.value ?? power.cost, 1, 5),
+        description: descriptionInput?.value?.trim() || "",
+        editing: closeEditing ? false : power.editing
+      };
+    });
+  }
+
+  async #saveEditingHemomancyPowers() {
+    const hasEditing = this.#getHemomancyPowers().some((power) => power.editing);
+    const powers = this.#getHemomancyPowersFromSheet({ closeEditing: true });
+    if (hasEditing) await this.#updateHemomancyPowers(powers);
+    return powers;
+  }
+
+  async #onSetHemomancyMode(event) {
+    event.preventDefault();
+    await this.#saveEditingHemomancyPowers();
+    this._hemomancyMode = clampNumber(event.currentTarget.dataset.level, 1, 5);
+    this._selectedHemomancyIndex = -1;
+    return this.render({ force: true });
+  }
+
+  async #onAddHemomancyPower(event) {
+    event.preventDefault();
+    const powers = this.#getHemomancyPowersFromSheet({ closeEditing: true });
+    const level = clampNumber(this._hemomancyMode ?? 1, 1, 5);
+    powers.push({ name: "", description: "", level, cost: 1, editing: true });
+    this._selectedHemomancyIndex = powers.length - 1;
+    return this.#updateHemomancyPowers(powers);
+  }
+
+  async #onSelectHemomancyPower(event) {
+    event.preventDefault();
+    await this.#saveEditingHemomancyPowers();
+    this._selectedHemomancyIndex = Number(event.currentTarget.dataset.index);
+    return this.render({ force: true });
+  }
+
+  async #onEditHemomancyPower(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedHemomancyIndex);
+    const powers = this.#getHemomancyPowers();
+    if (!Number.isInteger(index) || !powers[index]) return;
+
+    powers[index].editing = true;
+    this._selectedHemomancyIndex = index;
+    return this.#updateHemomancyPowers(powers);
+  }
+
+  async #onSaveHemomancyPower(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedHemomancyIndex);
+    const powers = this.#getHemomancyPowers();
+    if (!Number.isInteger(index) || !powers[index]) return;
+
+    const nameInput = this.element.querySelector(`.hemomancy-name-input[data-index='${index}']`);
+    const costInput = this.element.querySelector(`.hemomancy-cost-input[data-index='${index}']`);
+    const descriptionInput = this.element.querySelector(`.hemomancy-description-input[data-index='${index}']`);
+    const name = nameInput?.value?.trim();
+    if (!name) {
+      ui.notifications.warn("Defina um nome para a magia de Hemomancia.");
+      return;
+    }
+
+    powers[index] = {
+      name,
+      description: descriptionInput?.value?.trim() || "",
+      level: powers[index].level,
+      cost: clampNumber(costInput?.value, 1, 5),
+      editing: false
+    };
+    this._selectedHemomancyIndex = index;
+    return this.#updateHemomancyPowers(powers);
+  }
+
+  async #onDeleteHemomancyPower(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedHemomancyIndex);
+    const powers = this.#getHemomancyPowers();
+    if (!Number.isInteger(index) || !powers[index]) return;
+
+    powers.splice(index, 1);
+    this._selectedHemomancyIndex = -1;
+    return this.#updateHemomancyPowers(powers);
+  }
+
+  async #onRollHemomancyPower(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedHemomancyIndex);
+    const powers = this.#getHemomancyPowers();
+    if (!Number.isInteger(index) || !powers[index]) return;
+    const power = normalizeHemomancyPower(powers[index]);
+
+    const costRoll = await new Roll(`${power.cost}d10`).evaluate();
+    const costValues = getRollValues(costRoll);
+    const failures = costValues.filter((value) => value < 6).length;
+    await createDicePoolMessage({
+      actor: this.actor,
+      title: `Custo de ${power.name}`,
+      kicker: "Queima de Hemomancia",
+      diceCount: power.cost,
+      useCriticals: false,
+      preRolledValues: costValues,
+      preRolledRoll: costRoll,
+      suppressReroll: true
+    });
+
+    if (failures > 0) {
+      const resource = this.#getResource("health");
+      for (let i = 0; i < failures; i += 1) this.#applySuperficialDamage(resource);
+      await this.#updateResource("health", resource);
+    }
+
+    const intelligence = Number(this.actor.system.attributes?.intelligence?.value) || 1;
+    const hemomancyLevel = clampNumber(this.actor.system.hemomancy?.level, 0, 5);
+    const diceCount = Math.max(1, intelligence + hemomancyLevel);
+    return createDicePoolMessage({
+      actor: this.actor,
+      title: power.name,
+      kicker: `Hemomancia Nivel ${power.levelRoman}`,
+      diceCount
+    });
+  }
+
+  async #onHemomancyLevelClick(event) {
+    event.preventDefault();
+    const level = clampNumber((Number(this.actor.system.hemomancy?.level) || 0) + 1, 0, 5);
+    return this.actor.update({ "system.hemomancy.level": level });
+  }
+
+  async #onHemomancyLevelContext(event) {
+    event.preventDefault();
+    const level = clampNumber((Number(this.actor.system.hemomancy?.level) || 0) - 1, 0, 5);
+    return this.actor.update({ "system.hemomancy.level": level });
   }
 
   #onEditImage(event) {
