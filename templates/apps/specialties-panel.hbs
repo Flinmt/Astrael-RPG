@@ -1,0 +1,33 @@
+<section class="specialties-panel-shell">
+  <header class="specialties-panel-head">
+    <div class="specialties-panel-titlemark" aria-hidden="true"></div>
+    <div>
+      <span>Pericias treinadas</span>
+      <h2>Especialidades</h2>
+    </div>
+    <button type="button" class="specialties-panel-add" data-action="add-specialty-row" title="Adicionar especialidade">+</button>
+  </header>
+
+  <div class="specialties-panel-list">
+    {{#each specialties as |spec|}}
+    <article class="specialties-panel-row" data-index="{{spec.index}}">
+      <span class="specialties-panel-rank" data-action="shift-specialty-level" data-level="{{spec.level}}" role="button" tabindex="0" aria-label="Nivel {{spec.level}}">{{spec.levelRoman}}</span>
+      <div class="specialties-panel-summary">
+        <span>{{spec.skillLabel}}</span>
+        <strong>{{#if spec.description}}{{spec.description}}{{else}}Sem definicao{{/if}}</strong>
+      </div>
+      <div class="specialties-panel-actions">
+        <button type="button" class="specialties-panel-action edit" data-action="edit-specialty-row" data-index="{{spec.index}}" title="Editar"><i class="fas fa-pen"></i></button>
+        <button type="button" class="specialties-panel-action delete" data-action="delete-specialty-row" data-index="{{spec.index}}" title="Excluir"><i class="fas fa-trash"></i></button>
+      </div>
+    </article>
+    {{/each}}
+
+    {{#unless specialties.length}}
+    <div class="specialties-panel-empty">
+      <span>Nenhuma especialidade registrada</span>
+      <p>Use o marcador acima para criar uma especialidade.</p>
+    </div>
+    {{/unless}}
+  </div>
+</section>

@@ -184,6 +184,9 @@
           <section class="section-card skills-card">
             <div class="section-title">
               <h2>{{localize "ASTRAEL.Skills.Title"}}</h2>
+              <button type="button" class="specialty-open" data-action="open-specialties" title="Especialidades" aria-label="Especialidades">
+                <span class="specialty-open-icon" aria-hidden="true"></span>
+              </button>
             </div>
             <div class="three-columns skill-columns">
               <article class="trait-group physical">
@@ -388,22 +391,6 @@
               </article>
             </div>
           </section>
-
-          <details class="section-card specialty-card">
-            <summary class="section-title">
-              <h2>Especialidades</h2>
-              <span>Clique para Expandir ou Recolher</span>
-            </summary>
-            <div class="specialty-grid">
-              {{#each system.specialties as |spec|}}
-              <div class="specialty-entry" data-index="{{@index}}" data-action="edit-specialty">
-                <span class="specialty-skill">{{spec.skillLabel}}</span>
-                <span class="specialty-desc">{{spec.description}}</span>
-              </div>
-              {{/each}}
-              <button type="button" class="specialty-add" data-action="add-specialty">+</button>
-            </div>
-          </details>
 
           <details class="section-card custom-roll-card">
             <summary class="section-title">

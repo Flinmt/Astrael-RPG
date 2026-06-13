@@ -1308,6 +1308,133 @@
   font-style: italic;
 }
 
+.astrael-dialog .specialty-edit-dialog {
+  gap: 14px;
+}
+
+.astrael-dialog .specialty-edit-hero {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(193, 117, 57, 0.42);
+  background:
+    radial-gradient(circle at 12% 50%, rgba(193, 117, 57, 0.18), transparent 38%),
+    linear-gradient(90deg, rgba(193, 117, 57, 0.12), transparent 60%),
+    rgba(5, 7, 8, 0.44);
+}
+
+.astrael-dialog .specialty-edit-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(193, 117, 57, 0.62);
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.26), transparent 64%),
+    #080a0b;
+}
+
+.astrael-dialog .specialty-edit-icon::before {
+  content: "";
+  width: 23px;
+  height: 23px;
+  background: currentColor;
+  mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+}
+
+.astrael-dialog .specialty-edit-hero span,
+.astrael-dialog .specialty-edit-field > span {
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.astrael-dialog .specialty-edit-hero h3 {
+  margin: 3px 0 0;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-dialog .specialty-edit-grid {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: end;
+  gap: 12px;
+}
+
+.astrael-dialog .specialty-edit-field {
+  display: grid;
+  gap: 6px;
+}
+
+.astrael-dialog .specialty-level-field {
+  justify-items: start;
+}
+
+.astrael-dialog .specialty-definition-field input,
+.astrael-dialog .specialty-skill-field select {
+  min-height: 36px;
+}
+
+.astrael-dialog .specialty-definition-field input {
+  padding: 8px 10px;
+  border: 1px solid rgba(193, 117, 57, 0.42);
+  color: var(--astrael-text);
+  background: rgba(5, 7, 8, 0.72);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.astrael-dialog .specialty-definition-field input:focus {
+  border-color: var(--astrael-gold-bright);
+  box-shadow: 0 0 0 1px rgba(193, 117, 57, 0.22), inset 0 0 16px rgba(0, 0, 0, 0.34);
+  outline: none;
+}
+
+.astrael-dialog .specialty-definition-field input::placeholder {
+  color: rgba(174, 178, 170, 0.55);
+  font-weight: 500;
+}
+
+.astrael-dialog .specialty-dialog-rank {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.68);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.26), transparent 64%),
+    #090b0c;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.18s, filter 0.18s, transform 0.18s;
+}
+
+.astrael-dialog .specialty-dialog-rank:hover {
+  border-color: var(--astrael-gold-bright);
+  filter: brightness(1.16);
+  transform: scale(1.05);
+}
+
 .astrael-dialog .window-title {
   color: var(--astrael-text);
   font-family: "Cinzel", Georgia, serif;
@@ -1421,90 +1548,312 @@
   font-size: 10px !important;
 }
 
-.astrael-rpg .specialty-card {
-  margin-top: 16px;
-}
-
-.astrael-rpg .specialty-card .section-title {
-  cursor: pointer;
-  list-style: none;
-}
-
-.astrael-rpg .specialty-card .section-title::-webkit-details-marker {
-  display: none;
-}
-
-.astrael-rpg .specialty-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(320px, 1fr));
-  gap: 12px;
-}
-
-.astrael-rpg .specialty-entry {
-  display: grid;
-  grid-template-columns: 140px minmax(0, 1fr);
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border: 1px solid rgba(90, 80, 68, 0.48);
-  background: rgba(11, 12, 13, 0.2);
-  cursor: pointer;
-  transition: border-color 0.2s;
-}
-
-.astrael-rpg .specialty-entry:hover {
-  border-color: rgba(193, 117, 57, 0.4);
-}
-
-.astrael-rpg .specialty-skill {
-  color: var(--astrael-muted);
-  font-family: "IBM Plex Mono", Consolas, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.astrael-rpg .specialty-desc {
-  color: var(--astrael-text);
-  font-size: 13px;
-  border-bottom: 1px solid rgba(182, 138, 58, 0.34);
-  padding-bottom: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.astrael-rpg .specialty-remove {
+.astrael-rpg .specialty-open {
   display: grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
+  width: 34px;
+  height: 34px;
   padding: 0;
-  border: 0;
-  color: var(--astrael-dim);
-  font-size: 14px;
-  line-height: 1;
-  background: transparent;
+  border: 1px solid rgba(193, 117, 57, 0.5);
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.18), transparent 62%),
+    rgba(11, 12, 13, 0.5);
   cursor: pointer;
-  opacity: 0.4;
-  transition: opacity 0.2s, color 0.2s;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
+.astrael-rpg .specialty-open:hover {
+  border-color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(214, 154, 85, 0.32), transparent 64%),
+    rgba(11, 12, 13, 0.52);
+  box-shadow: 0 0 16px rgba(193, 117, 57, 0.22);
+  transform: scale(1.06);
+}
 
-.astrael-rpg .specialty-add {
+.astrael-rpg .specialty-open-icon {
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+}
+
+.application.astrael-rpg.specialties-panel {
+  box-sizing: border-box;
+  border: 1px solid rgba(90, 80, 68, 0.72);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.56), inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.application.astrael-rpg.specialties-panel .window-content {
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(236, 228, 211, 0.025), transparent 160px),
+    radial-gradient(circle at 18% 0, rgba(193, 117, 57, 0.12), transparent 46%),
+    var(--astrael-panel);
+}
+
+.application.astrael-rpg.specialties-panel .window-content > * {
+  height: 100%;
+  min-height: 0;
+}
+
+.astrael-rpg .specialties-panel-shell {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
+  padding: 12px;
+}
+
+.astrael-rpg .specialties-panel-head {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 30px;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.5);
+}
+
+.astrael-rpg .specialties-panel-titlemark {
   display: grid;
   place-items: center;
-  min-height: 50px;
-  border: 1px dashed rgba(90, 80, 68, 0.62);
-  color: var(--astrael-dim);
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(193, 117, 57, 0.56);
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.24), transparent 64%),
+    rgba(5, 7, 8, 0.58);
+}
+
+.astrael-rpg .specialties-panel-titlemark::before {
+  content: "";
+  width: 22px;
+  height: 22px;
+  background: currentColor;
+  mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+}
+
+.astrael-rpg .specialties-panel-head span {
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .specialties-panel-head h2 {
+  margin: 3px 0 0;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .specialties-panel-add {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.52);
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.2), transparent 62%),
+    rgba(11, 12, 13, 0.52);
   font-size: 18px;
   font-weight: 700;
-  background: transparent;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  transition: transform 0.18s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.astrael-rpg .specialties-panel-add:hover {
+  border-color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(214, 154, 85, 0.34), transparent 64%),
+    rgba(11, 12, 13, 0.52);
+  box-shadow: 0 0 16px rgba(193, 117, 57, 0.22);
+  transform: scale(1.06);
+}
+
+.astrael-rpg .specialties-panel-list {
+  box-sizing: border-box;
+  display: grid;
+  align-content: start;
+  grid-auto-rows: min-content;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 5px 0 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(214, 154, 85, 0.32) transparent;
+}
+
+.astrael-rpg .specialties-panel-row {
+  box-sizing: border-box;
+  position: relative;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 62px;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 7px 8px;
+  overflow: hidden;
+  border: 0;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.38);
+  background: rgba(8, 10, 11, 0.16);
+  transition: background 0.18s, border-color 0.18s;
+}
+
+.astrael-rpg .specialties-panel-row:hover {
+  border-bottom-color: rgba(193, 117, 57, 0.42);
+  background: rgba(193, 117, 57, 0.06);
+}
+
+.astrael-rpg .specialties-panel-rank {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  justify-self: center;
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.68);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.24), transparent 64%),
+    #090b0c;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s, filter 0.2s, transform 0.2s;
+}
+
+.astrael-rpg .specialties-panel-rank:hover {
+  border-color: var(--astrael-gold-bright);
+  filter: brightness(1.16);
+  transform: scale(1.04);
+}
+
+.astrael-rpg .specialties-panel-row::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: rgba(193, 117, 57, 0.7);
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+
+.astrael-rpg .specialties-panel-row:hover::before {
+  opacity: 1;
+}
+
+.astrael-rpg .specialties-panel-summary {
+  min-width: 0;
+}
+
+.astrael-rpg .specialties-panel-summary span {
+  display: block;
+  overflow: hidden;
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.astrael-rpg .specialties-panel-summary strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--astrael-text);
+  font-size: 12px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-rpg .specialties-panel-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.astrael-rpg .specialties-panel-action {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.42);
+  color: var(--astrael-gold-bright);
+  background: rgba(11, 12, 13, 0.5);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.astrael-rpg .specialties-panel-action:hover {
+  border-color: var(--astrael-gold-bright);
+  background: rgba(193, 117, 57, 0.16);
+  transform: translateY(-1px);
+}
+
+.astrael-rpg .specialties-panel-action.delete {
+  border-color: rgba(136, 53, 49, 0.7);
+  color: #cf6a62;
+}
+
+.astrael-rpg .specialties-panel-action.delete:hover {
+  border-color: #cf6a62;
+  background: rgba(136, 53, 49, 0.18);
+}
+
+.astrael-rpg .specialties-panel-empty {
+  display: grid;
+  place-items: center;
+  align-self: stretch;
+  min-height: 100%;
+  padding: 18px;
+  border: 1px dashed rgba(90, 80, 68, 0.52);
+  text-align: center;
+}
+
+.astrael-rpg .specialties-panel-empty span {
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .specialties-panel-empty p {
+  margin: 8px 0 0;
+  color: var(--astrael-dim);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
 }
 
 .astrael-rpg .advantage-column-header span {

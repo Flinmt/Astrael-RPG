@@ -1,5 +1,6 @@
 const SYSTEM_ID = "astrael-rpg";
 const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character-sheet.hbs`;
+const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
 const DICE_POOL_CHAT_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/dice-pool-card.hbs`;
 const RESOURCE_MINIMUMS = { health: 4, willpower: 2 };
 const ATTRIBUTE_KEYS = ["strength", "dexterity", "stamina", "charisma", "manipulation", "composure", "intelligence", "wits", "resolve"];
@@ -129,6 +130,15 @@ function clampNumber(value, min, max) {
 
 function isNumeric(value) {
   return value !== null && value !== undefined && Number.isFinite(Number(value));
+}
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function toRomanLevel(value) {
@@ -385,8 +395,251 @@ async function showRerollDialog(actor, originalValues, useCriticals, card, msg) 
   }, { classes: ["astrael-dialog"] }).render(true);
 }
 
-const { HandlebarsApplicationMixin } = foundry.applications.api;
+const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
+
+class AstraelSpecialtiesPanel extends HandlebarsApplicationMixin(ApplicationV2) {
+  static DEFAULT_OPTIONS = {
+    classes: ["astrael-rpg", "specialties-panel"],
+    position: {
+      width: 380,
+      height: 680
+    },
+    window: {
+      title: "Especialidades",
+      resizable: false
+    }
+  };
+
+  static PARTS = {
+    form: {
+      template: SPECIALTIES_PANEL_TEMPLATE
+    }
+  };
+
+  constructor(actor, ownerSheet, options = {}) {
+    super(options);
+    this.actor = actor;
+    this.ownerSheet = ownerSheet;
+  }
+
+  get title() {
+    return `${this.actor.name}: Especialidades`;
+  }
+
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    const actorData = this.actor.toObject();
+    const specialties = Array.isArray(actorData.system?.specialties) ? actorData.system.specialties : [];
+
+    context.actor = this.actor;
+    context.specialties = specialties.map((spec, index) => this.#prepareSpecialty(spec, index));
+
+    return context;
+  }
+
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+
+    this.element.querySelector("[data-action='add-specialty-row']")?.addEventListener("click", this.#onAddSpecialty.bind(this));
+    this.element.querySelectorAll("[data-action='edit-specialty-row']").forEach((button) => {
+      button.addEventListener("click", this.#onEditSpecialty.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='delete-specialty-row']").forEach((button) => {
+      button.addEventListener("click", this.#onDeleteSpecialty.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='shift-specialty-level']").forEach((button) => {
+      button.addEventListener("click", this.#onSpecialtyLevelClick.bind(this));
+      button.addEventListener("contextmenu", this.#onSpecialtyLevelContext.bind(this));
+    });
+  }
+
+  async close(options) {
+    if (this.ownerSheet?._specialtiesPanel === this) this.ownerSheet._specialtiesPanel = null;
+    return super.close(options);
+  }
+
+  anchorToSheet() {
+    const sheetPosition = this.ownerSheet?.position;
+    if (!sheetPosition) return;
+    const top = sheetPosition.top || 0;
+    const width = 380;
+    const rightLeft = (sheetPosition.left || 0) + (sheetPosition.width || 900) + 8;
+    const left = rightLeft + width > window.innerWidth - 12
+      ? Math.max(12, (sheetPosition.left || 0) - width - 8)
+      : rightLeft;
+
+    return this.setPosition({
+      left,
+      top,
+      width,
+      height: sheetPosition.height || 680
+    });
+  }
+
+  #prepareSpecialty(spec = {}, index) {
+    const skill = spec.skill || "";
+    return {
+      index,
+      skill,
+      description: spec.description || "",
+      level: normalizeAdvantageLevel(spec),
+      levelRoman: toRomanLevel(normalizeAdvantageLevel(spec)),
+      skillLabel: LOCALIZE_SKILL[skill] ? game.i18n.localize(LOCALIZE_SKILL[skill]) : "Perícia"
+    };
+  }
+
+  #getSkillOptions(selected = "") {
+    return SKILL_KEYS
+      .filter(key => (foundry.utils.getProperty(this.actor.system, `skills.${key}.value`) || 0) > 0 || key === selected)
+      .map(key => ({
+        key,
+        label: game.i18n.localize(LOCALIZE_SKILL[key]),
+        selected: key === selected
+      }));
+  }
+
+  #getSpecialties() {
+    const actorData = this.actor.toObject();
+    return Array.isArray(actorData.system?.specialties) ? [...actorData.system.specialties] : [];
+  }
+
+  #onAddSpecialty(event) {
+    event.preventDefault();
+    return this.#openSpecialtyDialog();
+  }
+
+  #onEditSpecialty(event) {
+    event.preventDefault();
+    return this.#openSpecialtyDialog(Number(event.currentTarget.dataset.index));
+  }
+
+  async #onDeleteSpecialty(event) {
+    event.preventDefault();
+    const row = event.currentTarget.closest(".specialties-panel-row");
+    if (!row) return;
+
+    const index = Number(row.dataset.index);
+    if (index < 0) return;
+
+    const specialties = this.#getSpecialties();
+    specialties.splice(index, 1);
+    await this.actor.update({ "system.specialties": specialties });
+    return this.render({ force: true });
+  }
+
+  #openSpecialtyDialog(index = -1) {
+    const specialties = this.#getSpecialties();
+    const current = index >= 0 && specialties[index] ? specialties[index] : { skill: "", description: "", level: 1 };
+    const skillOptions = this.#getSkillOptions(current.skill).map(option => (
+      `<option value="${option.key}" ${option.selected ? "selected" : ""}>${escapeHtml(option.label)}</option>`
+    )).join("");
+    const level = normalizeAdvantageLevel(current);
+    const title = index >= 0 ? "Editar Especialidade" : "Nova Especialidade";
+
+    return new Dialog({
+      title,
+      content: `
+        <form class="astrael-dialog-form specialty-edit-dialog">
+          <header class="specialty-edit-hero">
+            <div class="specialty-edit-icon" aria-hidden="true"></div>
+            <div>
+              <span>Registro tatico</span>
+              <h3>${title}</h3>
+            </div>
+          </header>
+          <div class="specialty-edit-grid">
+            <div class="specialty-edit-field specialty-level-field">
+              <span>Nível</span>
+              <button type="button" class="specialty-dialog-rank" data-level="${level}" aria-label="Nível ${level}">${toRomanLevel(level)}</button>
+              <input type="hidden" name="level" value="${level}">
+            </div>
+            <label class="specialty-edit-field specialty-skill-field">
+              <span>Perícia</span>
+              <select name="skill">${skillOptions || '<option value="">Nenhuma perícia com pontos</option>'}</select>
+            </label>
+          </div>
+          <label class="specialty-edit-field specialty-definition-field">
+            <span>Definição</span>
+            <input type="text" name="description" value="${escapeHtml(current.description || "")}" placeholder="Ex: Cenas de crime, Duelos...">
+          </label>
+        </form>
+      `,
+      buttons: {
+        save: {
+          icon: '<i class="fas fa-save"></i>',
+          label: "Salvar",
+          callback: async (html) => {
+            const skill = html.find("[name='skill']").val();
+            if (!skill) {
+              ui.notifications.warn("Selecione uma perícia.");
+              return false;
+            }
+
+            const next = {
+              skill,
+              description: html.find("[name='description']").val()?.trim() || "",
+              level: normalizeAdvantageLevel({ level: html.find("[name='level']").val() })
+            };
+            const list = this.#getSpecialties();
+            if (index >= 0 && list[index]) list[index] = next;
+            else list.push(next);
+            await this.actor.update({ "system.specialties": list });
+            return this.render({ force: true });
+          }
+        }
+      },
+      default: "save",
+      render: (html) => {
+        const updateLevel = (button, delta) => {
+          const nextLevel = clampNumber((Number(button.dataset.level) || 1) + delta, 1, 5);
+          button.dataset.level = String(nextLevel);
+          button.textContent = toRomanLevel(nextLevel);
+          button.setAttribute("aria-label", `Nível ${nextLevel}`);
+          html.find("[name='level']").val(String(nextLevel));
+        };
+
+        html.find(".specialty-dialog-rank").on("click", function(event) {
+          event.preventDefault();
+          updateLevel(this, 1);
+        });
+        html.find(".specialty-dialog-rank").on("contextmenu", function(event) {
+          event.preventDefault();
+          updateLevel(this, -1);
+        });
+      }
+    }, { classes: ["astrael-dialog"], jQuery: true }).render(true);
+  }
+
+  async #onSpecialtyLevelClick(event) {
+    event.preventDefault();
+    return this.#shiftSpecialtyLevel(event.currentTarget, 1);
+  }
+
+  async #onSpecialtyLevelContext(event) {
+    event.preventDefault();
+    return this.#shiftSpecialtyLevel(event.currentTarget, -1);
+  }
+
+  async #shiftSpecialtyLevel(button, delta) {
+    const row = button.closest(".specialties-panel-row");
+    if (!row) return;
+
+    const level = clampNumber((Number(button.dataset.level) || 1) + delta, 1, 5);
+    button.dataset.level = String(level);
+    button.textContent = toRomanLevel(level);
+
+    const index = Number(row.dataset.index);
+    if (index < 0) return;
+
+    const specialties = this.#getSpecialties();
+    if (!specialties[index]) return;
+
+    specialties[index] = { ...specialties[index], level };
+    await this.actor.update({ "system.specialties": specialties });
+    return this.render({ force: true });
+  }
+}
 
 class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
@@ -490,10 +743,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       el.addEventListener("click", this.#onRollClick.bind(this));
     });
 
-    this.element.querySelector("[data-action='add-specialty']")?.addEventListener("click", this.#onAddSpecialty.bind(this));
-    this.element.querySelectorAll("[data-action='edit-specialty']").forEach((el) => {
-      el.addEventListener("click", this.#onEditSpecialty.bind(this));
-    });
+    this.element.querySelector("[data-action='open-specialties']")?.addEventListener("click", this.#onOpenSpecialties.bind(this));
 
     this.element.querySelector("[data-action='add-custom-roll']")?.addEventListener("click", this.#onAddCustomRoll.bind(this));
 
@@ -935,7 +1185,15 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   setPosition(position) {
     if (position) position.width = 900;
-    return super.setPosition(position);
+    const result = super.setPosition(position);
+    this._specialtiesPanel?.anchorToSheet();
+    return result;
+  }
+
+  async close(options) {
+    await this._specialtiesPanel?.close();
+    this._specialtiesPanel = null;
+    return super.close(options);
   }
 
   #prepareAdvantageSelection(system) {
@@ -1206,117 +1464,13 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
   }
 
-  async #onAddSpecialty(event) {
+  async #onOpenSpecialties(event) {
     event.preventDefault();
+    if (this._specialtiesPanel) return this._specialtiesPanel.close();
 
-    const skillOptions = SKILL_KEYS
-      .filter(key => (foundry.utils.getProperty(this.actor.system, `skills.${key}.value`) || 0) > 0)
-      .map(key => ({ key, label: game.i18n.localize(LOCALIZE_SKILL[key]) }));
-
-    const optionsHtml = skillOptions.length
-      ? skillOptions.map(o => `<option value="${o.key}">${o.label}</option>`).join("")
-      : '<option value="">Nenhuma perícia com pontos</option>';
-
-    return new Dialog({
-      title: "Adicionar Especialidade",
-      content: `
-        <form class="astrael-dialog-form">
-          <div class="form-group">
-            <label>Perícia Associada</label>
-            <select name="skill">${optionsHtml}</select>
-          </div>
-          <div class="form-group">
-            <label>Definição</label>
-            <input type="text" name="description" placeholder="Ex: Cenas de crime, Duelos...">
-          </div>
-        </form>
-      `,
-      buttons: {
-        add: {
-          icon: '<i class="fas fa-plus"></i>',
-          label: "Confirmar",
-          callback: async (html) => {
-            const skill = html.find("[name='skill']").val();
-            if (!skill) {
-              ui.notifications.warn("Selecione uma perícia.");
-              return false;
-            }
-            const description = html.find("[name='description']").val() || "";
-            const actorData = this.actor.toObject();
-            const specialties = Array.isArray(actorData.system.specialties) ? actorData.system.specialties : [];
-            specialties.push({ skill, description });
-            return this.actor.update({ "system.specialties": specialties });
-          }
-        }
-      },
-      default: "add"
-    }, { classes: ["astrael-dialog"] }).render(true);
-  }
-
-  async #onEditSpecialty(event) {
-    event.preventDefault();
-    const index = Number(event.currentTarget.dataset.index);
-    const actorData = this.actor.toObject();
-    const specialties = Array.isArray(actorData.system.specialties) ? actorData.system.specialties : [];
-    const spec = specialties[index];
-    if (!spec) return;
-
-    const skillOptions = SKILL_KEYS
-      .filter(key => (foundry.utils.getProperty(this.actor.system, `skills.${key}.value`) || 0) > 0 || key === spec.skill)
-      .map(key => ({ key, label: game.i18n.localize(LOCALIZE_SKILL[key]) }));
-
-    const optionsHtml = skillOptions.map(o =>
-      `<option value="${o.key}" ${o.key === spec.skill ? "selected" : ""}>${o.label}</option>`
-    ).join("");
-
-    return new Dialog({
-      title: "Registro de Especialidade",
-      content: `
-        <form class="astrael-dialog-form">
-          <div class="form-group">
-            <label>Perícia Associada</label>
-            <select name="skill">${optionsHtml}</select>
-          </div>
-          <div class="form-group">
-            <label>Definição</label>
-            <input type="text" name="description" value="${spec.description || ""}" placeholder="Ex: Cenas de crime, Duelos...">
-          </div>
-        </form>
-      `,
-      buttons: {
-        save: {
-          icon: '<i class="fas fa-save"></i>',
-          label: "Salvar",
-          callback: async (html) => {
-            const skill = html.find("[name='skill']").val();
-            if (!skill) {
-              ui.notifications.warn("Selecione uma perícia.");
-              return false;
-            }
-            const description = html.find("[name='description']").val() || "";
-            const data = this.actor.toObject();
-            const list = Array.isArray(data.system.specialties) ? [...data.system.specialties] : [];
-            if (list[index]) list[index] = { skill, description };
-            return this.actor.update({ "system.specialties": list });
-          }
-        },
-        delete: {
-          icon: '<i class="fas fa-trash"></i>',
-          label: "Deletar",
-          condition: true,
-          callback: async () => {
-            const data = this.actor.toObject();
-            const list = Array.isArray(data.system.specialties) ? [...data.system.specialties] : [];
-            list.splice(index, 1);
-            return this.actor.update({ "system.specialties": list });
-          }
-        }
-      },
-      default: "save",
-      render: (html) => {
-        html.closest(".app").find(".dialog-button.delete").addClass("delete");
-      }
-    }, { classes: ["astrael-dialog"], jQuery: true }).render(true);
+    this._specialtiesPanel = new AstraelSpecialtiesPanel(this.actor, this);
+    await this._specialtiesPanel.render({ force: true });
+    return this._specialtiesPanel.anchorToSheet();
   }
 
   async #onAddCustomRoll(event) {
