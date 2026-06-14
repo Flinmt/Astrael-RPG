@@ -120,6 +120,8 @@ class AstraelCharacterData extends TypeDataModel {
         selectedAbilityLevel: new NumberField({ required: true, integer: true, min: 1, max: 5, initial: 1 }),
         marks: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
       }),
+      sangria: traitValueField(5, 0),
+      vazio: traitValueField(0, 0),
       specialties: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       customRolls: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
     };
@@ -331,10 +333,10 @@ function summarizeDicePool(values, { useCriticals = true } = {}) {
   return { successes: totalBase + pairBonus };
 }
 
-function prepareDicePoolResults(values, { useCriticals = true } = {}) {
+function prepareDicePoolResults(values, { useCriticals = true, bloodCount = 0, voidCount = 0 } = {}) {
   let pairedCriticals = useCriticals ? Math.floor(values.filter((value) => value === 10).length / 2) * 2 : 0;
 
-  return values.map((value) => {
+  return values.map((value, index) => {
     const classification = classifyDie(value, { useCriticals });
     const isPairedCritical = value === 10 && pairedCriticals > 0;
 
@@ -344,7 +346,9 @@ function prepareDicePoolResults(values, { useCriticals = true } = {}) {
       value,
       ...classification,
       type: isPairedCritical ? `${classification.type} paired-critical` : classification.type,
-      label: isPairedCritical ? "Par critico" : classification.label
+      label: isPairedCritical ? "Par critico" : classification.label,
+      isBlood: index < bloodCount,
+      isVoid: index >= bloodCount && index < bloodCount + voidCount
     };
   });
 }
@@ -359,7 +363,7 @@ async function renderAstraelTemplate(path, data) {
   return renderer(path, data);
 }
 
-async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriticals = true, preRolledValues = null, preRolledRoll = null, suppressReroll = false }) {
+async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriticals = true, preRolledValues = null, preRolledRoll = null, suppressReroll = false, bloodCount = 0, voidCount = 0 }) {
   let values;
   let roll;
   if (preRolledValues) {
@@ -370,7 +374,7 @@ async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriti
     values = getRollValues(roll);
   }
   const summary = summarizeDicePool(values, { useCriticals });
-  const dice = prepareDicePoolResults(values, { useCriticals });
+  const dice = prepareDicePoolResults(values, { useCriticals, bloodCount, voidCount });
   const isRouseCheck = suppressReroll || (!useCriticals && diceCount === 1);
   const content = await renderAstraelTemplate(DICE_POOL_CHAT_TEMPLATE, {
     title,
@@ -379,6 +383,8 @@ async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriti
     actorId: actor.id,
     useCriticals,
     isRouseCheck,
+    bloodCount,
+    voidCount,
     dice,
     ...summary
   });
@@ -391,9 +397,15 @@ async function createDicePoolMessage({ actor, title, kicker, diceCount, useCriti
 }
 
 async function showRerollDialog(actor, originalValues, useCriticals, card, msg) {
+  const bloodCount = Number(card?.dataset?.bloodCount) || 0;
+  const voidCount = Number(card?.dataset?.voidCount) || 0;
   const diceHtml = originalValues.map((v, i) => {
     const cls = v >= 10 ? "critical" : v >= 6 ? "success" : "failure";
-    return `<span class="reroll-die ${cls}" data-index="${i}">${v}</span>`;
+    const isBlood = i < bloodCount;
+    const isVoid = i >= bloodCount && i < bloodCount + voidCount;
+    const specClass = isBlood ? " blood-die" : isVoid ? " void-die" : "";
+    const specAttr = isBlood ? ' data-blood="true"' : isVoid ? ' data-void="true"' : "";
+    return `<span class="reroll-die ${cls}${specClass}" data-index="${i}"${specAttr}>${v}</span>`;
   }).join("");
 
   const rerollPrompt = game.i18n.localize("ASTRAEL.Chat.RerollPrompt");
@@ -440,7 +452,7 @@ async function showRerollDialog(actor, originalValues, useCriticals, card, msg) 
           const kicker = card?.querySelector(".astrael-chat-kicker")?.textContent?.trim() || "";
           const actorName = card?.querySelector(".astrael-chat-header p")?.textContent?.trim() || "";
           const summary = summarizeDicePool(newValues, { useCriticals });
-          const dice = prepareDicePoolResults(newValues, { useCriticals });
+          const dice = prepareDicePoolResults(newValues, { useCriticals, bloodCount, voidCount });
           const newContent = await renderAstraelTemplate(DICE_POOL_CHAT_TEMPLATE, {
             title,
             kicker,
@@ -449,6 +461,8 @@ async function showRerollDialog(actor, originalValues, useCriticals, card, msg) 
             useCriticals,
             isRouseCheck: false,
             rerolled: true,
+            bloodCount,
+            voidCount,
             dice,
             ...summary
           });
@@ -461,7 +475,7 @@ async function showRerollDialog(actor, originalValues, useCriticals, card, msg) 
     },
     default: "reroll",
     render: (html) => {
-      html.find(".reroll-die").on("click", function() {
+      html.find(".reroll-die:not([data-blood]):not([data-void])").on("click", function() {
         const count = html.find(".reroll-die.selected").length;
         if ($(this).hasClass("selected")) {
           $(this).removeClass("selected");
@@ -877,10 +891,10 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.system.resources.willpower = normalizeResource("willpower", context.system.resources.willpower);
     context.system.resources.health.activeRoman = toRoman(context.system.resources.health.active);
     context.system.resources.willpower.activeRoman = toRoman(context.system.resources.willpower.active);
-    context.system.sangria ??= {};
+    context.system.sangria ??= { value: 5 };
     if (!Number.isFinite(Number(context.system.sangria.value))) context.system.sangria.value = 5;
-    context.system.vazio ??= {};
-    context.system.vazio.value = 5;
+    context.system.vazio ??= { value: 0 };
+    if (!Number.isFinite(Number(context.system.vazio.value))) context.system.vazio.value = 0;
     context.system.attributes ??= {};
     for (const key of ATTRIBUTE_KEYS) {
       const attr = context.system.attributes[key];
@@ -995,6 +1009,15 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         this._selectedStrangerMarkAbilityIndex = -1;
       }
     }
+    {
+      const hasMarkLevel = (context.system.strangerMark?.marks || []).some(m => Number(m.level) >= 1);
+      const minVazio = hasMarkLevel ? 1 : 0;
+      const currentVazio = Number(context.system.vazio?.value) ?? 0;
+      if (currentVazio < minVazio) {
+        context.system.vazio.value = minVazio;
+        await this.actor.update({ "system.vazio.value": minVazio });
+      }
+    }
     context.system.specialties = context.system.specialties.map(spec => ({
       ...spec,
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
@@ -1007,8 +1030,14 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return context;
   }
 
+  _preRender(options) {
+    this.#saveSheetScroll();
+  }
+
   async _onRender(context, options) {
     await super._onRender(context, options);
+
+    this.#restoreSheetScroll();
 
     this.element.querySelectorAll(".resource-box").forEach((box) => {
       box.addEventListener("click", this.#onResourceBoxClick.bind(this));
@@ -1031,6 +1060,10 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll(".dot-track").forEach((track) => {
       track.addEventListener("click", this.#onDotClick.bind(this));
       track.addEventListener("contextmenu", this.#onDotContext.bind(this));
+    });
+
+    this.element.querySelectorAll("[data-action='adjust-resource']").forEach((btn) => {
+      btn.addEventListener("click", this.#onAdjustResource.bind(this));
     });
 
     this.element.querySelectorAll(".rollable").forEach((el) => {
@@ -1251,11 +1284,17 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
             const titleSuffix = specialty ? ` (${specialty})` : "";
 
+            const rawBlood = Math.max(0, 5 - (Number(this.actor.system.sangria?.value) || 5));
+            const rawVoid = Math.max(0, Number(this.actor.system.vazio?.value) || 0);
+            const actualBlood = Math.min(rawBlood, diceCount);
+            const actualVoid = Math.min(rawVoid, diceCount - actualBlood);
             return createDicePoolMessage({
               actor: this.actor,
               title: `${titleLeft} + ${titleRight}${titleSuffix}`,
               kicker: "Teste de Perícia",
-              diceCount: diceCount
+              diceCount: diceCount,
+              bloodCount: actualBlood,
+              voidCount: actualVoid
             });
           }
         }
@@ -1397,6 +1436,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async #onDotClick(event) {
     event.preventDefault();
     const track = event.currentTarget;
+    if (track.classList.contains("dot-track--sangria") || track.classList.contains("dot-track--vazio")) return;
     const name = track.dataset.name;
     const min = this.#dotMin(name);
     const rect = track.getBoundingClientRect();
@@ -1412,6 +1452,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async #onDotContext(event) {
     event.preventDefault();
     const track = event.currentTarget;
+    if (track.classList.contains("dot-track--sangria") || track.classList.contains("dot-track--vazio")) return;
     const name = track.dataset.name;
 
     return this.actor.update({ [name]: this.#dotMin(name) });
@@ -1556,11 +1597,19 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   setPosition(position) {
     if (position) {
       position.width = 900;
-      if (position.height !== undefined && position.height < 450) {
-        position.height = 450;
+      const savedHeight = game.settings?.get("astrael-rpg", "sheetHeight") ?? 680;
+      if (position.height === this.constructor.DEFAULT_OPTIONS.position.height) {
+        position.height = Math.max(savedHeight, 450);
       }
+      if (position.height < 450) position.height = 450;
     }
     const result = super.setPosition(position);
+    if (position?.height !== undefined) {
+      const saved = game.settings?.get("astrael-rpg", "sheetHeight") ?? 680;
+      if (position.height !== saved) {
+        game.settings?.set("astrael-rpg", "sheetHeight", position.height);
+      }
+    }
     this._specialtiesPanel?.anchorToSheet();
     this._strangerMarksPanel?.anchorToSheet();
     return result;
@@ -1606,6 +1655,19 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       actionLabel: listId === "flaws" ? "Desvantagem" : "Vantagem"
     } : null;
     system.advantageModeFlaws = this._advantageMode === "flaws";
+  }
+
+  #saveSheetScroll() {
+    const body = this.element?.querySelector('.sheet-body');
+    if (body) this._savedSheetScroll = body.scrollTop;
+  }
+
+  #restoreSheetScroll() {
+    if (this._savedSheetScroll === undefined) return;
+    requestAnimationFrame(() => {
+      const body = this.element?.querySelector('.sheet-body');
+      if (body) body.scrollTop = this._savedSheetScroll;
+    });
   }
 
   #saveAdvantageScrolls() {
@@ -1993,20 +2055,22 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       const currentBlood = Number(this.actor.system.sangria?.value ?? 5);
       const nextBlood = Math.max(0, currentBlood - failures);
       await this.actor.update({ "system.sangria.value": nextBlood });
-
-      const resource = this.#getResource("health");
-      for (let i = 0; i < failures; i += 1) this.#applySuperficialDamage(resource);
-      await this.#updateResource("health", resource);
     }
 
     const intelligence = Number(this.actor.system.attributes?.intelligence?.value) || 1;
     const hemomancyLevel = clampNumber(this.actor.system.hemomancy?.level, 0, 5);
     const diceCount = Math.max(1, intelligence + hemomancyLevel);
+    const rawBlood = Math.max(0, 5 - (Number(this.actor.system.sangria?.value) || 5));
+    const rawVoid = Math.max(0, Number(this.actor.system.vazio?.value) || 0);
+    const actualBlood = Math.min(rawBlood, diceCount);
+    const actualVoid = Math.min(rawVoid, diceCount - actualBlood);
     return createDicePoolMessage({
       actor: this.actor,
       title: power.name,
       kicker: `Hemomancia Nivel ${power.levelRoman}`,
-      diceCount
+      diceCount,
+      bloodCount: actualBlood,
+      voidCount: actualVoid
     });
   }
 
@@ -2335,6 +2399,22 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     return picker.browse();
+  }
+
+  async #onAdjustResource(event) {
+    event.preventDefault();
+    const btn = event.currentTarget;
+    const resource = btn.dataset.resource;
+    const delta = Number(btn.dataset.delta);
+    const path = `system.${resource}.value`;
+    const current = Number(foundry.utils.getProperty(this.actor, path)) || 0;
+    let min = 0;
+    if (resource === "vazio") {
+      const marks = foundry.utils.getProperty(this.actor, "system.strangerMark.marks") || [];
+      if (marks.some(m => Number(m.level) >= 1)) min = 1;
+    }
+    const next = Math.max(min, Math.min(5, current + delta));
+    return this.actor.update({ [path]: next });
   }
 
   async #onRouseCheck(event) {
@@ -2798,11 +2878,17 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const titleRight = game.i18n.localize(LOCALIZE_ATTR[roll.attribute]) || roll.attribute;
     const titleSuffix = roll.specialty ? ` (${roll.specialty})` : "";
 
+    const rawBlood = Math.max(0, 5 - (Number(this.actor.system.sangria?.value) || 5));
+    const rawVoid = Math.max(0, Number(this.actor.system.vazio?.value) || 0);
+    const actualBlood = Math.min(rawBlood, diceCount);
+    const actualVoid = Math.min(rawVoid, diceCount - actualBlood);
     return createDicePoolMessage({
       actor: this.actor,
       title: `${roll.name}${titleSuffix}`,
       kicker: "Rolagem Personalizada",
-      diceCount
+      diceCount,
+      bloodCount: actualBlood,
+      voidCount: actualVoid
     });
   }
 }
@@ -2823,6 +2909,14 @@ Hooks.once("init", () => {
       label: "Astrael RPG Character Sheet"
     }
   );
+
+  game.settings.register("astrael-rpg", "sheetHeight", {
+    scope: "client",
+    config: false,
+    type: Number,
+    default: 680,
+    onChange: () => {}
+  });
 });
 
 Hooks.once("ready", () => {

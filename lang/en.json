@@ -51,6 +51,8 @@
   "ASTRAEL.Skill.Politics": "Politics",
   "ASTRAEL.Skill.Science": "Science",
   "ASTRAEL.Skill.Technology": "Technology",
+  "ASTRAEL.Resource.Health": "Health Points",
+  "ASTRAEL.Resource.Willpower": "Willpower",
   "ASTRAEL.Sangria": "Blood",
   "ASTRAEL.Vazio": "Void",
   "TYPES.Actor.character": "Character",

@@ -51,6 +51,8 @@
   "ASTRAEL.Skill.Politics": "Política",
   "ASTRAEL.Skill.Science": "Ciência",
   "ASTRAEL.Skill.Technology": "Engenharia",
+  "ASTRAEL.Resource.Health": "Pontos de Vida",
+  "ASTRAEL.Resource.Willpower": "Força de Vontade",
   "ASTRAEL.Sangria": "Sangue",
   "ASTRAEL.Vazio": "Vazio",
   "TYPES.Actor.character": "Personagem",

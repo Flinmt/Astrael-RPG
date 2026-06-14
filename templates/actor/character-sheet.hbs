@@ -36,16 +36,16 @@
           <div class="resource-row health-row">
             <section class="resource-card health-card" data-resource="health">
               <div class="resource-title">
-                <span>Vida</span>
+                <span>{{localize "ASTRAEL.Resource.Health"}}</span>
                 <strong class="resource-active-roman">{{system.resources.health.activeRoman}}</strong>
               </div>
-              <div class="box-track" aria-label="Marcadores de Vida">
+              <div class="box-track" aria-label="{{localize 'ASTRAEL.Resource.Health'}}">
                 {{#each system.resources.health.boxes as |box|}}
                   <button class="resource-box {{box.state}}" type="button" data-resource="health" data-index="{{box.index}}" data-state="{{box.state}}" title="Clique para alterar"></button>
                 {{/each}}
               </div>
             </section>
-            <div class="damage-controls" aria-label="Controles de dano de Vida">
+            <div class="damage-controls" aria-label="{{localize 'ASTRAEL.Resource.Health'}}">
               <button class="damage-card superficial-damage" type="button" data-damage="superficial" data-resource="health" title="Dano superficial">/</button>
               <button class="damage-card aggravated-damage" type="button" data-damage="aggravated" data-resource="health" title="Dano agravado">X</button>
             </div>
@@ -59,16 +59,16 @@
           <div class="resource-row will-row">
             <section class="resource-card will-card" data-resource="willpower">
               <div class="resource-title">
-                <span>Vontade</span>
+                <span>{{localize "ASTRAEL.Resource.Willpower"}}</span>
                 <strong class="resource-active-roman">{{system.resources.willpower.activeRoman}}</strong>
               </div>
-              <div class="box-track" aria-label="Marcadores de Vontade">
+              <div class="box-track" aria-label="{{localize 'ASTRAEL.Resource.Willpower'}}">
                 {{#each system.resources.willpower.boxes as |box|}}
                   <button class="resource-box {{box.state}}" type="button" data-resource="willpower" data-index="{{box.index}}" data-state="{{box.state}}" title="Clique para alterar"></button>
                 {{/each}}
               </div>
             </section>
-            <div class="damage-controls" aria-label="Controles de dano de Vontade">
+            <div class="damage-controls" aria-label="{{localize 'ASTRAEL.Resource.Willpower'}}">
               <button class="damage-card superficial-damage" type="button" data-damage="superficial" data-resource="willpower" title="Dano superficial">/</button>
               <button class="damage-card aggravated-damage" type="button" data-damage="aggravated" data-resource="willpower" title="Dano agravado">X</button>
             </div>
@@ -83,16 +83,26 @@
             <section class="marker-card marker-card--sangria">
               <div class="marker-title">
                 <span>{{localize "ASTRAEL.Sangria"}}</span>
-                <strong class="marker-value">{{system.sangria.value}}</strong>
+                <div class="marker-controls">
+                  <button type="button" class="marker-btn" data-action="adjust-resource" data-resource="sangria" data-delta="-1">−</button>
+                  <button type="button" class="marker-btn" data-action="adjust-resource" data-resource="sangria" data-delta="1">+</button>
+                </div>
               </div>
-              <div class="dot-track dot-track--sangria dots-{{system.sangria.value}}" data-name="system.sangria.value" data-value="{{system.sangria.value}}"></div>
+              <div class="dot-track dot-track--sangria dots-{{system.sangria.value}}" data-name="system.sangria.value" data-value="{{system.sangria.value}}">
+                <span class="sv-track-label">{{system.sangria.value}}/5</span>
+              </div>
             </section>
             <section class="marker-card marker-card--vazio">
               <div class="marker-title">
                 <span>{{localize "ASTRAEL.Vazio"}}</span>
-                <strong class="marker-value">{{system.vazio.value}}</strong>
+                <div class="marker-controls">
+                  <button type="button" class="marker-btn" data-action="adjust-resource" data-resource="vazio" data-delta="-1">−</button>
+                  <button type="button" class="marker-btn" data-action="adjust-resource" data-resource="vazio" data-delta="1">+</button>
+                </div>
               </div>
-              <div class="dot-track dot-track--vazio dots-{{system.vazio.value}}" data-name="system.vazio.value" data-value="{{system.vazio.value}}"></div>
+              <div class="dot-track dot-track--vazio dots-{{system.vazio.value}}" data-name="system.vazio.value" data-value="{{system.vazio.value}}">
+                <span class="sv-track-label">{{system.vazio.value}}/5</span>
+              </div>
             </section>
           </div>
 

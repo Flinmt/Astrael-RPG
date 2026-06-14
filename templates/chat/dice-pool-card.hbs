@@ -1,4 +1,4 @@
-<section class="astrael-chat-card astrael-dice-pool-card" data-actor-id="{{actorId}}" data-use-criticals="{{useCriticals}}" data-is-rouse-check="{{isRouseCheck}}">
+<section class="astrael-chat-card astrael-dice-pool-card" data-actor-id="{{actorId}}" data-use-criticals="{{useCriticals}}" data-is-rouse-check="{{isRouseCheck}}" data-blood-count="{{bloodCount}}" data-void-count="{{voidCount}}">
   <header class="astrael-chat-header">
     <span class="astrael-chat-kicker">{{kicker}}</span>
     <h2>{{title}}</h2>
@@ -14,7 +14,7 @@
     <summary class="astrael-chat-dice-label">Clique para Mostrar Dados Rolados</summary>
     <div class="astrael-chat-dice" aria-label="Dados rolados">
     {{#each dice as |die|}}
-      <span class="astrael-chat-die {{die.type}}" title="{{die.label}}">
+      <span class="astrael-chat-die {{die.type}}{{#if die.isBlood}} blood-die{{/if}}{{#if die.isVoid}} void-die{{/if}}" title="{{die.label}}">
         {{die.value}}
       </span>
     {{/each}}
