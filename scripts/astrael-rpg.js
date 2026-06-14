@@ -1,12 +1,26 @@
 const SYSTEM_ID = "astrael-rpg";
 const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character-sheet.hbs`;
 const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
+const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
 const DICE_POOL_CHAT_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/dice-pool-card.hbs`;
 const RESOURCE_MINIMUMS = { health: 4, willpower: 2 };
 const ATTRIBUTE_KEYS = ["strength", "dexterity", "stamina", "charisma", "manipulation", "composure", "intelligence", "wits", "resolve"];
 const SKILL_KEYS = ["athletics", "brawl", "crafts", "drive", "firearms", "larceny", "melee", "stealth", "survival", "animalKen", "empathy", "etiquette", "expression", "intimidation", "leadership", "persuasion", "streetwise", "subterfuge", "academics", "awareness", "finance", "investigation", "medicine", "occult", "politics", "science", "technology"];
 const LOCALIZE_ATTR = { strength: "ASTRAEL.Attribute.Strength", dexterity: "ASTRAEL.Attribute.Dexterity", stamina: "ASTRAEL.Attribute.Stamina", charisma: "ASTRAEL.Attribute.Charisma", manipulation: "ASTRAEL.Attribute.Manipulation", composure: "ASTRAEL.Attribute.Composure", intelligence: "ASTRAEL.Attribute.Intelligence", wits: "ASTRAEL.Attribute.Wits", resolve: "ASTRAEL.Attribute.Resolve" };
 const LOCALIZE_SKILL = { athletics: "ASTRAEL.Skill.Athletics", brawl: "ASTRAEL.Skill.Brawl", crafts: "ASTRAEL.Skill.Crafts", drive: "ASTRAEL.Skill.Drive", firearms: "ASTRAEL.Skill.Firearms", larceny: "ASTRAEL.Skill.Larceny", melee: "ASTRAEL.Skill.Melee", stealth: "ASTRAEL.Skill.Stealth", survival: "ASTRAEL.Skill.Survival", animalKen: "ASTRAEL.Skill.AnimalKen", empathy: "ASTRAEL.Skill.Empathy", etiquette: "ASTRAEL.Skill.Etiquette", expression: "ASTRAEL.Skill.Expression", intimidation: "ASTRAEL.Skill.Intimidation", leadership: "ASTRAEL.Skill.Leadership", persuasion: "ASTRAEL.Skill.Persuasion", streetwise: "ASTRAEL.Skill.Streetwise", subterfuge: "ASTRAEL.Skill.Subterfuge", academics: "ASTRAEL.Skill.Academics", awareness: "ASTRAEL.Skill.Awareness", finance: "ASTRAEL.Skill.Finance", investigation: "ASTRAEL.Skill.Investigation", medicine: "ASTRAEL.Skill.Medicine", occult: "ASTRAEL.Skill.Occult", politics: "ASTRAEL.Skill.Politics", science: "ASTRAEL.Skill.Science", technology: "ASTRAEL.Skill.Technology" };
+
+const STRANGER_MARK_OPTIONS = [
+  { id: "animalismo", label: "Animalismo", icon: `systems/${SYSTEM_ID}/assets/disciplines/animalismo.svg` },
+  { id: "auspex", label: "Auspex", icon: `systems/${SYSTEM_ID}/assets/disciplines/auspex.svg` },
+  { id: "celeridade", label: "Celeridade", icon: `systems/${SYSTEM_ID}/assets/disciplines/celeridade.svg` },
+  { id: "dominacao", label: "Dominação", icon: `systems/${SYSTEM_ID}/assets/disciplines/dominação.svg` },
+  { id: "fortitude", label: "Fortitude", icon: `systems/${SYSTEM_ID}/assets/disciplines/fortitude.svg` },
+  { id: "oblivio", label: "Oblívio", icon: `systems/${SYSTEM_ID}/assets/disciplines/oblivio.svg` },
+  { id: "ofuscacao", label: "Ofuscação", icon: `systems/${SYSTEM_ID}/assets/disciplines/obfuscação.svg` },
+  { id: "potencia", label: "Potência", icon: `systems/${SYSTEM_ID}/assets/disciplines/potencia.svg` },
+  { id: "presenca", label: "Presença", icon: `systems/${SYSTEM_ID}/assets/disciplines/presença.svg` },
+  { id: "proteanismo", label: "Proteanismo", icon: `systems/${SYSTEM_ID}/assets/disciplines/proteanismo.svg` }
+];
 const DEFAULT_RESOURCES = {
   health: {
     max: 8,
@@ -101,6 +115,11 @@ class AstraelCharacterData extends TypeDataModel {
         level: new NumberField({ required: true, integer: true, min: 0, max: 5, initial: 0 }),
         powers: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
       }),
+      strangerMark: new SchemaField({
+        selectedMarkId: new StringField({ required: true, initial: "" }),
+        selectedAbilityLevel: new NumberField({ required: true, integer: true, min: 1, max: 5, initial: 1 }),
+        marks: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
+      }),
       specialties: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       customRolls: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
     };
@@ -150,6 +169,11 @@ function toRomanLevel(value) {
   return levels[clampNumber(value, 1, 5)] ?? "I";
 }
 
+function toRoman(value) {
+  const map = { 1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII", 8: "VIII", 9: "IX", 10: "X" };
+  return map[clampNumber(value, 1, 10)] ?? String(value);
+}
+
 function normalizeAdvantageLevel(source = {}) {
   const rawLevel = source.level ?? source.value ?? source.points ?? 1;
   if (isNumeric(rawLevel)) return clampNumber(rawLevel, 1, 5);
@@ -184,6 +208,39 @@ function normalizeHemomancyPower(source = {}) {
     cost,
     costIcons: Array.from({ length: cost }, (_, index) => index),
     editing: Boolean(source.editing)
+  };
+}
+
+function normalizeStrangerMarkAbility(source = {}) {
+  const level = clampNumber(source.level ?? 1, 1, 5);
+  const cost = clampNumber(source.cost ?? 0, 0, 5);
+
+  return {
+    ...source,
+    name: source.name || "Sem nome",
+    description: source.description || "",
+    level,
+    levelRoman: toRomanLevel(level),
+    cost,
+    costIcons: Array.from({ length: cost }, (_, index) => index),
+    editing: Boolean(source.editing)
+  };
+}
+
+function normalizeStrangerMark(source = {}) {
+  const level = clampNumber(source.level ?? 0, 0, 5);
+  const legacyOption = { veil: "animalismo", echo: "auspex", rift: "celeridade" }[source.option] ?? source.option;
+  const option = STRANGER_MARK_OPTIONS.find((o) => o.id === legacyOption) ?? STRANGER_MARK_OPTIONS[0];
+  const abilities = Array.isArray(source.abilities) ? source.abilities.map(normalizeStrangerMarkAbility) : [];
+
+  return {
+    ...source,
+    option: option.id,
+    label: option.label,
+    icon: option.icon,
+    level,
+    levelRoman: level ? toRomanLevel(level) : "0",
+    abilities
   };
 }
 
@@ -662,6 +719,122 @@ class AstraelSpecialtiesPanel extends HandlebarsApplicationMixin(ApplicationV2) 
   }
 }
 
+class AstraelStrangerMarksPanel extends HandlebarsApplicationMixin(ApplicationV2) {
+  static DEFAULT_OPTIONS = {
+    classes: ["astrael-rpg", "stranger-marks-panel"],
+    position: {
+      width: 330,
+      height: 680
+    },
+    window: {
+      title: "Marcas",
+      resizable: false
+    }
+  };
+
+  static PARTS = {
+    form: {
+      template: STRANGER_MARKS_PANEL_TEMPLATE
+    }
+  };
+
+  constructor(actor, ownerSheet, options = {}) {
+    super(options);
+    this.actor = actor;
+    this.ownerSheet = ownerSheet;
+  }
+
+  get title() {
+    return `${this.actor.name}: Marcas`;
+  }
+
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    const sm = this.#getStrangerMarkData();
+    const sortedMarks = [...sm.marks].sort((a, b) => {
+      if (b.level !== a.level) return b.level - a.level;
+      return a.label.localeCompare(b.label);
+    });
+    const selectedMarkId = sm.selectedMarkId && sm.marks.some(m => m.option === sm.selectedMarkId)
+      ? sm.selectedMarkId
+      : (sortedMarks[0]?.option || "");
+
+    context.actor = this.actor;
+    context.marks = STRANGER_MARK_OPTIONS.map((opt) => {
+      const owned = sm.marks.find((m) => m.option === opt.id);
+      return {
+        ...opt,
+        option: opt.id,
+        level: owned ? owned.level : 0,
+        owned: !!owned,
+        selected: opt.id === selectedMarkId
+      };
+    });
+
+    return context;
+  }
+
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+
+    this.element.querySelectorAll("[data-action='select-stranger-mark']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectStrangerMark.bind(this));
+    });
+  }
+
+  async close(options) {
+    if (this.ownerSheet?._strangerMarksPanel === this) this.ownerSheet._strangerMarksPanel = null;
+    return super.close(options);
+  }
+
+  anchorToSheet() {
+    const sheetPosition = this.ownerSheet?.position;
+    if (!sheetPosition) return;
+    const width = 330;
+    const left = Math.max(12, (sheetPosition.left || 0) - width - 8);
+    const top = sheetPosition.top || 0;
+
+    return this.setPosition({
+      left,
+      top,
+      width,
+      height: sheetPosition.height || 680
+    });
+  }
+
+  #getStrangerMarkData() {
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    return {
+      selectedMarkId: sm.selectedMarkId || "",
+      selectedAbilityLevel: clampNumber(sm.selectedAbilityLevel ?? 1, 1, 5),
+      marks: Array.isArray(sm.marks) ? sm.marks.map(normalizeStrangerMark) : []
+    };
+  }
+
+  async #updateStrangerMark(data) {
+    const current = this.#getStrangerMarkData();
+    await this.actor.update({ "system.strangerMark": { ...current, ...data } });
+    await this.ownerSheet?.render({ force: true });
+    return this.render({ force: true });
+  }
+
+  async #onSelectStrangerMark(event) {
+    event.preventDefault();
+    const optionId = event.currentTarget.dataset.option;
+    const sm = this.#getStrangerMarkData();
+    const owned = sm.marks.some((m) => m.option === optionId);
+    if (!owned) {
+      sm.marks.push({ option: optionId, level: 0, abilities: [] });
+    }
+    return this.#updateStrangerMark({
+      selectedMarkId: optionId,
+      selectedAbilityLevel: 1,
+      marks: sm.marks
+    });
+  }
+}
+
 class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static DEFAULT_OPTIONS = {
     classes: ["astrael-rpg", "sheet", "actor"],
@@ -676,7 +849,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     },
     window: {
       title: "Astrael RPG Character Sheet",
-      resizable: false
+      resizable: true
     }
   };
 
@@ -702,6 +875,12 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     );
     context.system.resources.health = normalizeResource("health", context.system.resources.health);
     context.system.resources.willpower = normalizeResource("willpower", context.system.resources.willpower);
+    context.system.resources.health.activeRoman = toRoman(context.system.resources.health.active);
+    context.system.resources.willpower.activeRoman = toRoman(context.system.resources.willpower.active);
+    context.system.sangria ??= {};
+    if (!Number.isFinite(Number(context.system.sangria.value))) context.system.sangria.value = 5;
+    context.system.vazio ??= {};
+    context.system.vazio.value = 5;
     context.system.attributes ??= {};
     for (const key of ATTRIBUTE_KEYS) {
       const attr = context.system.attributes[key];
@@ -728,6 +907,94 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.system.flaws = context.system.flaws.map(prepareAdvantageEntry);
     this.#prepareAdvantageSelection(context.system);
     this.#prepareHemomancySelection(context.system);
+    context.system.strangerMark ??= { selectedMarkId: "", selectedAbilityLevel: 1, marks: [] };
+    {
+      const sm = context.system.strangerMark;
+      sm.selectedAbilityLevel = clampNumber(sm.selectedAbilityLevel ?? 1, 1, 5);
+      sm.selectedAbilityLevelRoman = toRomanLevel(sm.selectedAbilityLevel);
+      sm.marks = Array.isArray(sm.marks) ? sm.marks.map(normalizeStrangerMark) : [];
+
+      const existingIds = new Set(sm.marks.map((m) => m.option));
+      for (const opt of STRANGER_MARK_OPTIONS) {
+        if (!existingIds.has(opt.id)) {
+          sm.marks.push(normalizeStrangerMark({ option: opt.id, level: 0, abilities: [] }));
+        }
+      }
+
+      const hasSelectedMark = sm.marks.some((m) => m.option === sm.selectedMarkId);
+      if (!hasSelectedMark) {
+        const sortedMarks = [...sm.marks].sort((a, b) => {
+          if (b.level !== a.level) return b.level - a.level;
+          return a.label.localeCompare(b.label);
+        });
+        const defaultId = sortedMarks[0]?.option || "";
+        sm.selectedMarkId = defaultId;
+        if (defaultId && this.isEditable) {
+          void this.actor.update({ "system.strangerMark.selectedMarkId": defaultId });
+        }
+      }
+      sm.marks = sm.marks.map((mark) => ({
+        ...mark,
+        selected: mark.option === sm.selectedMarkId
+      }));
+
+      const selectedMark = sm.marks.find((m) => m.option === sm.selectedMarkId) ?? null;
+      sm.selectedMark = selectedMark ? { ...selectedMark } : null;
+
+      const ownedOptionIds = sm.marks.map((m) => m.option);
+      sm.availableOptions = STRANGER_MARK_OPTIONS.reduce((acc, opt) => {
+        acc[opt.id] = { ...opt, owned: ownedOptionIds.includes(opt.id) };
+        return acc;
+      }, {});
+
+      if (selectedMark) {
+        const visibleAbilities = selectedMark.abilities
+          .map((a, i) => ({ ...a, index: i }))
+          .filter((a) => a.level === sm.selectedAbilityLevel && a.level <= selectedMark.level);
+        sm.abilityLevelTabs = [1, 2, 3, 4, 5].map((level) => ({
+          level,
+          roman: toRomanLevel(level),
+          active: level === sm.selectedAbilityLevel
+        }));
+
+        const selectedAbilityIndex = Number.isInteger(this._selectedStrangerMarkAbilityIndex) ? this._selectedStrangerMarkAbilityIndex : -1;
+        const selectedAbility = selectedMark.abilities[selectedAbilityIndex];
+        const idx = selectedAbility && selectedAbility.level <= selectedMark.level
+          ? selectedAbilityIndex
+          : (visibleAbilities[0]?.index ?? -1);
+        this._selectedStrangerMarkAbilityIndex = idx;
+        sm.visibleAbilities = visibleAbilities.map((ability) => ({
+          ...ability,
+          selected: ability.index === idx
+        }));
+        sm.selectedAbility = idx >= 0
+          ? { ...selectedMark.abilities[idx], index: idx, rollFormula: `${selectedMark.label} (Nível ${selectedMark.levelRoman})` }
+          : null;
+        sm.abilityRows = [1, 2, 3, 4, 5].map((level) => ({
+          level,
+          roman: toRomanLevel(level),
+          active: level === sm.selectedAbilityLevel,
+          abilities: selectedMark.abilities
+            .map((ability, index) => ({ ...ability, index, selected: index === idx }))
+            .filter((ability) => ability.level === level)
+        }));
+      } else {
+        sm.visibleAbilities = [];
+        sm.abilityLevelTabs = [1, 2, 3, 4, 5].map((level) => ({
+          level,
+          roman: toRomanLevel(level),
+          active: level === sm.selectedAbilityLevel
+        }));
+        sm.abilityRows = [1, 2, 3, 4, 5].map((level) => ({
+          level,
+          roman: toRomanLevel(level),
+          active: false,
+          abilities: []
+        }));
+        sm.selectedAbility = null;
+        this._selectedStrangerMarkAbilityIndex = -1;
+      }
+    }
     context.system.specialties = context.system.specialties.map(spec => ({
       ...spec,
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
@@ -745,6 +1012,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     this.element.querySelectorAll(".resource-box").forEach((box) => {
       box.addEventListener("click", this.#onResourceBoxClick.bind(this));
+      box.addEventListener("contextmenu", this.#onResourceBoxContext.bind(this));
     });
 
     this.element.querySelectorAll("[data-damage]").forEach((button) => {
@@ -824,6 +1092,42 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
     this.element.querySelector(".hemomancy-level-control")?.addEventListener("click", this.#onHemomancyLevelClick.bind(this));
     this.element.querySelector(".hemomancy-level-control")?.addEventListener("contextmenu", this.#onHemomancyLevelContext.bind(this));
+
+    this.element.querySelectorAll("[data-action='open-stranger-mark-picker']").forEach((btn) => {
+      btn.addEventListener("click", this.#onOpenStrangerMarkPicker.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='add-stranger-mark']").forEach((btn) => {
+      btn.addEventListener("click", this.#onAddStrangerMark.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='select-stranger-mark']").forEach((btn) => {
+      btn.addEventListener("click", this.#onSelectStrangerMark.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='delete-stranger-mark']").forEach((btn) => {
+      btn.addEventListener("click", this.#onDeleteStrangerMark.bind(this));
+    });
+    this.element.querySelector(".stranger-mark-level-control")?.addEventListener("click", this.#onStrangerMarkLevelClick.bind(this));
+    this.element.querySelector(".stranger-mark-level-control")?.addEventListener("contextmenu", this.#onStrangerMarkLevelContext.bind(this));
+    this.element.querySelectorAll("[data-action='set-stranger-mark-ability-level']").forEach((btn) => {
+      btn.addEventListener("click", this.#onSetStrangerMarkAbilityLevel.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='add-stranger-mark-ability']").forEach((btn) => {
+      btn.addEventListener("click", this.#onAddStrangerMarkAbility.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='select-stranger-mark-ability']").forEach((btn) => {
+      btn.addEventListener("click", this.#onSelectStrangerMarkAbility.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='edit-stranger-mark-ability']").forEach((btn) => {
+      btn.addEventListener("click", this.#onEditStrangerMarkAbility.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='save-stranger-mark-ability']").forEach((btn) => {
+      btn.addEventListener("click", this.#onSaveStrangerMarkAbility.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='delete-stranger-mark-ability']").forEach((btn) => {
+      btn.addEventListener("click", this.#onDeleteStrangerMarkAbility.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='roll-stranger-mark-ability']").forEach((btn) => {
+      btn.addEventListener("click", this.#onRollStrangerMarkAbility.bind(this));
+    });
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
 
@@ -1086,7 +1390,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   #dotMin(name) {
-    return name?.startsWith("system.skills") ? 0 : 1;
+    if (name?.startsWith("system.skills") || name?.startsWith("system.sangria") || name?.startsWith("system.vazio")) return 0;
+    return 1;
   }
 
   async #onDotClick(event) {
@@ -1131,6 +1436,19 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       resource.superficial += 1;
     }
 
+    return this.#updateResource(resourceId, resource);
+  }
+
+  async #onResourceBoxContext(event) {
+    event.preventDefault();
+
+    const box = event.currentTarget;
+    const resourceId = box.dataset.resource;
+    const resource = this.#getResource(resourceId);
+
+    if (!resource || resource.active <= 0 || resource.aggravated >= resource.active) return;
+
+    this.#applySuperficialDamage(resource);
     return this.#updateResource(resourceId, resource);
   }
 
@@ -1230,18 +1548,29 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
     const panel = this.element.querySelector(`.tab-panel[data-tab="${tabId}"]`);
     if (panel) panel.classList.add("active");
+
+    if (tabId === "stranger-mark") void this.#toggleStrangerMarksPanel(true);
+    else void this.#toggleStrangerMarksPanel(false);
   }
 
   setPosition(position) {
-    if (position) position.width = 900;
+    if (position) {
+      position.width = 900;
+      if (position.height !== undefined && position.height < 450) {
+        position.height = 450;
+      }
+    }
     const result = super.setPosition(position);
     this._specialtiesPanel?.anchorToSheet();
+    this._strangerMarksPanel?.anchorToSheet();
     return result;
   }
 
   async close(options) {
     await this._specialtiesPanel?.close();
+    await this._strangerMarksPanel?.close();
     this._specialtiesPanel = null;
+    this._strangerMarksPanel = null;
     return super.close(options);
   }
 
@@ -1661,6 +1990,10 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     if (failures > 0) {
+      const currentBlood = Number(this.actor.system.sangria?.value ?? 5);
+      const nextBlood = Math.max(0, currentBlood - failures);
+      await this.actor.update({ "system.sangria.value": nextBlood });
+
       const resource = this.#getResource("health");
       for (let i = 0; i < failures; i += 1) this.#applySuperficialDamage(resource);
       await this.#updateResource("health", resource);
@@ -1689,6 +2022,309 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return this.actor.update({ "system.hemomancy.level": level });
   }
 
+  #getStrangerMarkActorData() {
+    const actorData = this.actor.toObject();
+    const marks = Array.isArray(actorData.system?.strangerMark?.marks) ? actorData.system.strangerMark.marks : [];
+    return { marks, selectedMarkId: actorData.system?.strangerMark?.selectedMarkId ?? "" };
+  }
+
+  #updateStrangerMark(data) {
+    const actorData = this.actor.toObject();
+    const current = actorData.system?.strangerMark ?? {};
+    return this.actor.update({ "system.strangerMark": { ...current, ...data } });
+  }
+
+  #getStrangerMarkAbilitiesFromSheet({ closeEditing = false } = {}) {
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? sm.marks : [];
+    const markIdx = marks.findIndex((m) => m.option === sm.selectedMarkId);
+    if (markIdx < 0) return marks;
+
+    const abilities = Array.isArray(marks[markIdx].abilities) ? marks[markIdx].abilities : [];
+    const updatedAbilities = abilities.map((ab, idx) => {
+      if (!ab.editing) return ab;
+
+      const nameInput = this.element.querySelector(`.stranger-mark-name-input[data-index='${idx}']`);
+      const costInput = this.element.querySelector(`.stranger-mark-cost-input[data-index='${idx}']`);
+      const descriptionInput = this.element.querySelector(`.stranger-mark-description-input[data-index='${idx}']`);
+
+      return {
+        ...ab,
+        name: nameInput?.value?.trim() || ab.name || "Sem nome",
+        cost: clampNumber(costInput?.value ?? ab.cost, 1, 5),
+        description: descriptionInput?.value?.trim() || "",
+        editing: closeEditing ? false : ab.editing
+      };
+    });
+    marks[markIdx] = { ...marks[markIdx], abilities: updatedAbilities };
+    return marks;
+  }
+
+  async #saveEditingStrangerMarkAbilities() {
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? sm.marks : [];
+    const markIdx = marks.findIndex((m) => m.option === sm.selectedMarkId);
+    if (markIdx < 0) return marks;
+    const hasEditing = (marks[markIdx].abilities ?? []).some((a) => a.editing);
+    if (!hasEditing) return marks;
+    return this.#getStrangerMarkAbilitiesFromSheet({ closeEditing: true });
+  }
+
+  async #onOpenStrangerMarkPicker(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? sm.marks : [];
+    const owned = marks.map((m) => m.option);
+    const available = STRANGER_MARK_OPTIONS.filter((opt) => !owned.includes(opt.id));
+    if (available.length === 0) {
+      ui.notifications.warn("Voce ja possui todas as opcoes de marca disponiveis.");
+      return;
+    }
+
+    const content = `<div class="stranger-mark-picker">
+      <p>Escolha uma opcao de marca:</p>
+      <div class="stranger-mark-picker-options">
+        ${STRANGER_MARK_OPTIONS.map((opt) => `
+          <button type="button" class="stranger-mark-picker-option ${owned.includes(opt.id) ? "owned" : ""}" data-option="${opt.id}" ${owned.includes(opt.id) ? "disabled" : ""}>
+            <img src="${opt.icon}" alt="">
+            <span>${opt.label}</span>
+          </button>
+        `).join("")}
+      </div>
+    </div>`;
+
+    const dialog = new Dialog({
+      title: "Nova Marca",
+      content,
+      buttons: {},
+      render: (html) => {
+        html.find(".stranger-mark-picker-option").on("click", async (event) => {
+            const optionId = event.currentTarget.dataset.option;
+            if (owned.includes(optionId)) return;
+            const marks2 = this.#getStrangerMarkActorData().marks;
+            marks2.push({ option: optionId, level: 0, abilities: [] });
+            await this.#updateStrangerMark({
+              selectedMarkId: optionId,
+              selectedAbilityLevel: 1,
+              marks: marks2
+            });
+            this._selectedStrangerMarkAbilityIndex = -1;
+            dialog.close();
+            return this.render({ force: true });
+        });
+      }
+    }, { classes: ["astrael-dialog"], jQuery: true });
+    dialog.render(true);
+  }
+
+  async #onAddStrangerMark(event) {
+    event.preventDefault();
+    return this.#onOpenStrangerMarkPicker(event);
+  }
+
+  async #onSelectStrangerMark(event) {
+    event.preventDefault();
+    await this.#saveEditingStrangerMarkAbilities();
+    const optionId = event.currentTarget.dataset.option;
+    this._selectedStrangerMarkAbilityIndex = -1;
+    return this.#updateStrangerMark({ selectedMarkId: optionId, selectedAbilityLevel: 1 });
+  }
+
+  async #onDeleteStrangerMark(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? [...sm.marks] : [];
+    const idx = marks.findIndex((m) => m.option === event.currentTarget.dataset.option);
+    if (idx < 0) return;
+    marks.splice(idx, 1);
+    const nextId = marks.length > 0 ? marks[0].option : "";
+    await this.#updateStrangerMark({
+      selectedMarkId: nextId,
+      selectedAbilityLevel: 1,
+      marks
+    });
+    this._selectedStrangerMarkAbilityIndex = -1;
+    return this.render({ force: true });
+  }
+
+  async #onStrangerMarkLevelClick(event) {
+    event.preventDefault();
+    const optionId = event.currentTarget.dataset.option;
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? [...sm.marks] : [];
+    const mark = marks.find((m) => m.option === optionId);
+    if (!mark) return;
+    mark.level = clampNumber(mark.level + 1, 0, 5);
+
+    const sorted = marks.map(normalizeStrangerMark).sort((a, b) => {
+      if (b.level !== a.level) return b.level - a.level;
+      return a.label.localeCompare(b.label);
+    });
+    const bestId = sorted[0]?.option || optionId;
+
+    return this.#updateStrangerMark({ marks, selectedMarkId: bestId });
+  }
+
+  async #onStrangerMarkLevelContext(event) {
+    event.preventDefault();
+    const optionId = event.currentTarget.dataset.option;
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? [...sm.marks] : [];
+    const mark = marks.find((m) => m.option === optionId);
+    if (!mark) return;
+    mark.level = clampNumber(mark.level - 1, 0, 5);
+
+    const sorted = marks.map(normalizeStrangerMark).sort((a, b) => {
+      if (b.level !== a.level) return b.level - a.level;
+      return a.label.localeCompare(b.label);
+    });
+    const bestId = sorted[0]?.option || optionId;
+
+    return this.#updateStrangerMark({ marks, selectedMarkId: bestId });
+  }
+
+  async #onSetStrangerMarkAbilityLevel(event) {
+    event.preventDefault();
+    const level = clampNumber(event.currentTarget.dataset.level, 1, 5);
+    this._selectedStrangerMarkAbilityIndex = -1;
+    return this.#updateStrangerMark({ selectedAbilityLevel: level });
+  }
+
+  async #onAddStrangerMarkAbility(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const markIdx = Array.isArray(sm.marks) ? sm.marks.findIndex((m) => m.option === sm.selectedMarkId) : -1;
+    if (markIdx < 0) return;
+
+    const level = clampNumber(event.currentTarget.dataset.level ?? sm.selectedAbilityLevel ?? 1, 1, 5);
+    const marks = Array.isArray(sm.marks) ? [...sm.marks] : [];
+    if (level > Number(marks[markIdx].level || 1)) {
+      ui.notifications.warn("Esta marca ainda nao possui nivel suficiente para essa habilidade.");
+      return;
+    }
+    const abilities = Array.isArray(marks[markIdx].abilities) ? [...marks[markIdx].abilities] : [];
+    abilities.push({ name: "", description: "", level, cost: 0, editing: true });
+    marks[markIdx] = { ...marks[markIdx], abilities };
+    this._selectedStrangerMarkAbilityIndex = abilities.length - 1;
+    return this.#updateStrangerMark({ selectedAbilityLevel: level, marks });
+  }
+
+  async #onSelectStrangerMarkAbility(event) {
+    event.preventDefault();
+    await this.#saveEditingStrangerMarkAbilities();
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const mark = Array.isArray(sm.marks) ? sm.marks.find((m) => m.option === sm.selectedMarkId) : null;
+    const index = Number(event.currentTarget.dataset.index);
+    this._selectedStrangerMarkAbilityIndex = index;
+    const abilityLevel = mark?.abilities?.[index]?.level ?? sm.selectedAbilityLevel ?? 1;
+    return this.#updateStrangerMark({ selectedAbilityLevel: abilityLevel });
+  }
+
+  async #onEditStrangerMarkAbility(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? [...sm.marks] : [];
+    const markIdx = marks.findIndex((m) => m.option === sm.selectedMarkId);
+    if (markIdx < 0) return;
+    const abilities = Array.isArray(marks[markIdx].abilities) ? [...marks[markIdx].abilities] : [];
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedStrangerMarkAbilityIndex);
+    if (!Number.isInteger(index) || !abilities[index]) return;
+    abilities[index] = { ...abilities[index], editing: true };
+    marks[markIdx] = { ...marks[markIdx], abilities };
+    this._selectedStrangerMarkAbilityIndex = index;
+    return this.#updateStrangerMark({ marks });
+  }
+
+  async #onSaveStrangerMarkAbility(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? [...sm.marks] : [];
+    const markIdx = marks.findIndex((m) => m.option === sm.selectedMarkId);
+    if (markIdx < 0) return;
+    const abilities = Array.isArray(marks[markIdx].abilities) ? [...marks[markIdx].abilities] : [];
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedStrangerMarkAbilityIndex);
+    if (!Number.isInteger(index) || !abilities[index]) return;
+
+    const nameInput = this.element.querySelector(`.stranger-mark-name-input[data-index='${index}']`);
+    const costInput = this.element.querySelector(`.stranger-mark-cost-input[data-index='${index}']`);
+    const descriptionInput = this.element.querySelector(`.stranger-mark-description-input[data-index='${index}']`);
+    const name = nameInput?.value?.trim();
+    if (!name) {
+      ui.notifications.warn("Defina um nome para a habilidade.");
+      return;
+    }
+
+    abilities[index] = {
+      name,
+      description: descriptionInput?.value?.trim() || "",
+      level: abilities[index].level,
+      cost: clampNumber(costInput?.value, 0, 5),
+      editing: false
+    };
+    marks[markIdx] = { ...marks[markIdx], abilities };
+    this._selectedStrangerMarkAbilityIndex = index;
+    return this.#updateStrangerMark({ marks });
+  }
+
+  async #onDeleteStrangerMarkAbility(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? [...sm.marks] : [];
+    const markIdx = marks.findIndex((m) => m.option === sm.selectedMarkId);
+    if (markIdx < 0) return;
+    const abilities = Array.isArray(marks[markIdx].abilities) ? [...marks[markIdx].abilities] : [];
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedStrangerMarkAbilityIndex);
+    if (!Number.isInteger(index) || !abilities[index]) return;
+    abilities.splice(index, 1);
+    marks[markIdx] = { ...marks[markIdx], abilities };
+    this._selectedStrangerMarkAbilityIndex = -1;
+    return this.#updateStrangerMark({ marks });
+  }
+
+  async #onRollStrangerMarkAbility(event) {
+    event.preventDefault();
+    const actorData = this.actor.toObject();
+    const sm = actorData.system?.strangerMark ?? {};
+    const marks = Array.isArray(sm.marks) ? sm.marks : [];
+    const mark = marks.find((m) => m.option === sm.selectedMarkId);
+    if (!mark) return;
+    const abilities = Array.isArray(mark.abilities) ? mark.abilities : [];
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedStrangerMarkAbilityIndex);
+    if (!Number.isInteger(index) || !abilities[index]) return;
+    const ability = normalizeStrangerMarkAbility(abilities[index]);
+
+    const costRoll = await new Roll(`${ability.cost}d10`).evaluate();
+    const costValues = getRollValues(costRoll);
+    const failures = costValues.filter((value) => value < 6).length;
+    await createDicePoolMessage({
+      actor: this.actor,
+      title: `Custo de ${ability.name}`,
+      kicker: "Queima de Marcas",
+      diceCount: ability.cost,
+      useCriticals: false,
+      preRolledValues: costValues,
+      preRolledRoll: costRoll,
+      suppressReroll: true
+    });
+
+    if (failures > 0) {
+      const resource = this.#getResource("health");
+      for (let i = 0; i < failures; i += 1) this.#applySuperficialDamage(resource);
+      await this.#updateResource("health", resource);
+    }
+  }
+
   #onEditImage(event) {
     event.preventDefault();
 
@@ -1704,12 +2340,24 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async #onRouseCheck(event) {
     event.preventDefault();
 
+    const roll = await new Roll("1d10").evaluate();
+    const values = getRollValues(roll);
+    const isFailure = values[0] < 6;
+
+    if (isFailure) {
+      const current = Number(this.actor.system.sangria?.value ?? 5);
+      const next = Math.max(0, current - 1);
+      await this.actor.update({ "system.sangria.value": next });
+    }
+
     return createDicePoolMessage({
       actor: this.actor,
       title: "Teste de Queima",
-      kicker: "Queima",
+      kicker: isFailure ? "Queima — falha, -1 Sangue" : "Queima",
       diceCount: 1,
-      useCriticals: false
+      useCriticals: false,
+      preRolledValues: values,
+      preRolledRoll: roll
     });
   }
 
@@ -1720,6 +2368,21 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this._specialtiesPanel = new AstraelSpecialtiesPanel(this.actor, this);
     await this._specialtiesPanel.render({ force: true });
     return this._specialtiesPanel.anchorToSheet();
+  }
+
+  async #toggleStrangerMarksPanel(force) {
+    if (force === false) {
+      await this._strangerMarksPanel?.close();
+      this._strangerMarksPanel = null;
+      return;
+    }
+
+    if (!this._strangerMarksPanel) {
+      this._strangerMarksPanel = new AstraelStrangerMarksPanel(this.actor, this);
+      await this._strangerMarksPanel.render({ force: true });
+    }
+
+    return this._strangerMarksPanel.anchorToSheet();
   }
 
   async #onAddCustomRoll(event) {

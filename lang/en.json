@@ -51,6 +51,15 @@
   "ASTRAEL.Skill.Politics": "Politics",
   "ASTRAEL.Skill.Science": "Science",
   "ASTRAEL.Skill.Technology": "Technology",
+  "ASTRAEL.Sangria": "Blood",
+  "ASTRAEL.Vazio": "Void",
   "TYPES.Actor.character": "Character",
-  "TYPES.Item.trait": "Trait"
+  "TYPES.Item.trait": "Trait",
+  "ASTRAEL.StrangerMark.Title": "Stranger Marks",
+  "ASTRAEL.StrangerMark.Kicker": "Mark of the Strange",
+  "ASTRAEL.StrangerMark.Level": "Level",
+  "ASTRAEL.StrangerMark.Empty": "No mark selected",
+  "ASTRAEL.StrangerMark.EmptyHint": "Create a mark to open the strange codex.",
+  "ASTRAEL.StrangerMark.Burn": "Burn Cost",
+  "ASTRAEL.StrangerMark.SaveRequired": "Set a name for the Stranger Mark."
 }

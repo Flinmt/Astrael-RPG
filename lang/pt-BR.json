@@ -51,10 +51,19 @@
   "ASTRAEL.Skill.Politics": "Política",
   "ASTRAEL.Skill.Science": "Ciência",
   "ASTRAEL.Skill.Technology": "Engenharia",
+  "ASTRAEL.Sangria": "Sangue",
+  "ASTRAEL.Vazio": "Vazio",
   "TYPES.Actor.character": "Personagem",
   "TYPES.Item.trait": "Caracteristica",
   "ASTRAEL.Chat.WillpowerReroll": "Rerrolar (Força de Vontade)",
   "ASTRAEL.Chat.RerollPrompt": "Clique nos dados que deseja rerrolar (até 3):",
   "ASTRAEL.Chat.RerollLimit": "Mín. 1, máx. 3 dados.",
-  "ASTRAEL.Chat.NoWillpower": "Força de Vontade insuficiente."
+  "ASTRAEL.Chat.NoWillpower": "Força de Vontade insuficiente.",
+  "ASTRAEL.StrangerMark.Title": "Marcas",
+  "ASTRAEL.StrangerMark.Kicker": "Marca",
+  "ASTRAEL.StrangerMark.Level": "Nível",
+  "ASTRAEL.StrangerMark.Empty": "Nenhuma marca selecionada",
+  "ASTRAEL.StrangerMark.EmptyHint": "Crie uma marca para abrir o grimório estranho.",
+  "ASTRAEL.StrangerMark.Burn": "Custo de Queima",
+  "ASTRAEL.StrangerMark.SaveRequired": "Defina um nome para a Marca."
 }

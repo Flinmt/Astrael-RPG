@@ -37,7 +37,7 @@
             <section class="resource-card health-card" data-resource="health">
               <div class="resource-title">
                 <span>Vida</span>
-                <strong>{{system.resources.health.active}}</strong>
+                <strong class="resource-active-roman">{{system.resources.health.activeRoman}}</strong>
               </div>
               <div class="box-track" aria-label="Marcadores de Vida">
                 {{#each system.resources.health.boxes as |box|}}
@@ -60,7 +60,7 @@
             <section class="resource-card will-card" data-resource="willpower">
               <div class="resource-title">
                 <span>Vontade</span>
-                <strong>{{system.resources.willpower.active}}</strong>
+                <strong class="resource-active-roman">{{system.resources.willpower.activeRoman}}</strong>
               </div>
               <div class="box-track" aria-label="Marcadores de Vontade">
                 {{#each system.resources.willpower.boxes as |box|}}
@@ -79,12 +79,23 @@
             <input name="system.details.desire" type="text" value="{{system.details.desire}}" placeholder="Objetivo imediato do personagem">
           </label>
 
-          <button class="rouse-check-card" type="button" data-action="rouseCheck" title="Rolar Teste de Queima">
-            <span class="rouse-die" aria-hidden="true">
-              <img class="rouse-die-icon" src="systems/astrael-rpg/assets/icons/d10.svg" alt="">
-            </span>
-            <span class="rouse-label">Teste de Queima</span>
-          </button>
+          <div class="sangria-vazio-block">
+            <section class="marker-card marker-card--sangria">
+              <div class="marker-title">
+                <span>{{localize "ASTRAEL.Sangria"}}</span>
+                <strong class="marker-value">{{system.sangria.value}}</strong>
+              </div>
+              <div class="dot-track dot-track--sangria dots-{{system.sangria.value}}" data-name="system.sangria.value" data-value="{{system.sangria.value}}"></div>
+            </section>
+            <section class="marker-card marker-card--vazio">
+              <div class="marker-title">
+                <span>{{localize "ASTRAEL.Vazio"}}</span>
+                <strong class="marker-value">{{system.vazio.value}}</strong>
+              </div>
+              <div class="dot-track dot-track--vazio dots-{{system.vazio.value}}" data-name="system.vazio.value" data-value="{{system.vazio.value}}"></div>
+            </section>
+          </div>
+
         </div>
       </header>
 
@@ -505,7 +516,7 @@
                 <div class="hemomancy-browser-header-row">
                   <div>
                     <span>Sangue Invocado</span>
-                    <h2>Hemomancia</h2>
+                    <h2>Magias</h2>
                   </div>
                   <button type="button" class="hemomancy-add" data-action="add-hemomancy-power" title="Adicionar magia">+</button>
                 </div>
@@ -522,7 +533,6 @@
                   {{#each system.hemomancy.powers as |power|}}
                   {{#unless power.hidden}}
                   <button type="button" class="hemomancy-row {{#if power.selected}}is-selected{{/if}}" data-action="select-hemomancy-power" data-index="{{@index}}">
-                    <span class="hemomancy-row-rank" aria-label="Nivel {{power.level}}">{{power.levelRoman}}</span>
                     <span class="hemomancy-row-name">{{power.name}}</span>
                   </button>
                   {{/unless}}
@@ -534,17 +544,16 @@
             <section class="hemomancy-inspector">
               <div class="hemomancy-level-card">
                 <div>
-                  <span>Nivel do Personagem</span>
-                  <strong>Inteligencia + Hemomancia</strong>
+                  <span>Potencia da Hemomencia</span>
                 </div>
                 <button type="button" class="hemomancy-level-control" title="Clique para aumentar, botao direito para reduzir">{{system.hemomancy.levelRoman}}</button>
               </div>
+              <div class="hemomancy-detail-content">
 
               {{#if system.hemomancy.selectedPower}}
               {{#if system.hemomancy.selectedPower.editing}}
               <div class="hemomancy-inspector-edit-header">
-                <span class="hemomancy-inspector-kicker">HEMOMANCIA NIVEL {{system.hemomancy.selectedPower.levelRoman}}</span>
-                <span class="hemomancy-rank">{{system.hemomancy.selectedPower.levelRoman}}</span>
+                <span class="hemomancy-inspector-kicker">Sangue Invocado</span>
               </div>
               <div class="hemomancy-inspector-form">
                 <label>
@@ -561,10 +570,9 @@
                 </label>
               </div>
               {{else}}
-              <div class="hemomancy-inspector-kicker">HEMOMANCIA NIVEL {{system.hemomancy.selectedPower.levelRoman}}</div>
+              <div class="hemomancy-inspector-kicker">Sangue Invocado</div>
               <div class="hemomancy-inspector-title-row">
                 <h2>{{system.hemomancy.selectedPower.name}}</h2>
-                <span class="hemomancy-rank">{{system.hemomancy.selectedPower.levelRoman}}</span>
               </div>
               <div class="hemomancy-meta-row">
                 <div class="hemomancy-cost" title="Custo de Queima">
@@ -596,10 +604,119 @@
                 <p>Crie uma magia no circulo {{system.hemomancy.modeRoman}} para abrir o grimorio de sangue.</p>
               </div>
               {{/if}}
+              </div>
             </section>
           </div>
         </div>
-        <div class="tab-panel" data-tab="stranger-mark"></div>
+        <div class="tab-panel" data-tab="stranger-mark">
+          {{#if system.strangerMark.selectedMark}}
+          <div class="stranger-mark-browser">
+            <aside class="stranger-mark-sidebar">
+              <header class="stranger-mark-browser-header">
+                <div class="stranger-mark-browser-header-row">
+                  <div>
+                    <span>Marca ativa</span>
+                    <h2>Habilidades</h2>
+                  </div>
+                  <button type="button" class="stranger-mark-add" data-action="add-stranger-mark-ability" title="Adicionar habilidade">+</button>
+                </div>
+              </header>
+
+              <div class="stranger-mark-mode-tabs">
+                {{#each system.strangerMark.abilityLevelTabs as |tab|}}
+                <button type="button" class="stranger-mark-mode-tab {{#if tab.active}}active{{/if}}" data-action="set-stranger-mark-ability-level" data-level="{{tab.level}}">{{tab.roman}}</button>
+                {{/each}}
+              </div>
+
+              <div class="stranger-mark-list-container">
+                <div class="stranger-mark-list">
+                  {{#each system.strangerMark.visibleAbilities as |ability|}}
+                  <button type="button" class="stranger-mark-row {{#if ability.selected}}is-selected{{/if}}" data-action="select-stranger-mark-ability" data-index="{{ability.index}}">
+                    <span class="stranger-mark-row-name">{{ability.name}}</span>
+                  </button>
+                  {{else}}
+                  <div class="stranger-mark-list-empty">
+                    <span>Nenhuma habilidade neste nivel</span>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+            </aside>
+
+            <section class="stranger-mark-inspector">
+              <div class="stranger-mark-level-card">
+                <div>
+                  <span>Potencia da marca</span>
+                  <strong>{{system.strangerMark.selectedMark.label}}</strong>
+                </div>
+                <button type="button" class="stranger-mark-level-control" data-option="{{system.strangerMark.selectedMark.option}}" title="Clique para aumentar, botao direito para reduzir">{{system.strangerMark.selectedMark.levelRoman}}</button>
+              </div>
+              <div class="stranger-mark-detail-content">
+
+              {{#if system.strangerMark.selectedAbility}}
+              {{#if system.strangerMark.selectedAbility.editing}}
+              <div class="stranger-mark-inspector-edit-header">
+                <span class="stranger-mark-inspector-kicker">Marca do Estranho</span>
+              </div>
+              <div class="stranger-mark-inspector-form">
+                <label>
+                  <span>Nome</span>
+                  <input class="stranger-mark-name-input" type="text" data-index="{{system.strangerMark.selectedAbility.index}}" value="{{system.strangerMark.selectedAbility.name}}" placeholder="Nome da habilidade">
+                </label>
+                <label>
+                  <span>Custo</span>
+                  <input class="stranger-mark-cost-input" type="number" min="1" max="5" data-index="{{system.strangerMark.selectedAbility.index}}" value="{{system.strangerMark.selectedAbility.cost}}">
+                </label>
+                <label class="stranger-mark-description-field">
+                  <span>Descricao</span>
+                  <textarea class="stranger-mark-description-input" data-index="{{system.strangerMark.selectedAbility.index}}" placeholder="Descreva o efeito da habilidade.">{{system.strangerMark.selectedAbility.description}}</textarea>
+                </label>
+              </div>
+              {{else}}
+              <div class="stranger-mark-inspector-kicker">Marca do Estranho</div>
+              <div class="stranger-mark-inspector-title-row">
+                <h2>{{system.strangerMark.selectedAbility.name}}</h2>
+              </div>
+              <div class="stranger-mark-meta-row">
+                <div class="stranger-mark-cost" title="Custo de Queima">
+                  {{#each system.strangerMark.selectedAbility.costIcons as |icon|}}
+                  <img src="systems/astrael-rpg/assets/icons/d10.svg" alt="" class="stranger-mark-cost-icon">
+                  {{/each}}
+                </div>
+                <span>{{system.strangerMark.selectedAbility.rollFormula}}</span>
+              </div>
+              <div class="stranger-mark-inspector-copy">
+                <p>{{#if system.strangerMark.selectedAbility.description}}{{system.strangerMark.selectedAbility.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+              </div>
+              {{/if}}
+
+              <div class="stranger-mark-inspector-actions">
+                {{#unless system.strangerMark.selectedAbility.editing}}
+                <button type="button" class="stranger-mark-command stranger-mark-roll" data-action="roll-stranger-mark-ability" data-index="{{system.strangerMark.selectedAbility.index}}">Rolar</button>
+                {{/unless}}
+                {{#if system.strangerMark.selectedAbility.editing}}
+                <button type="button" class="stranger-mark-command" data-action="save-stranger-mark-ability" data-index="{{system.strangerMark.selectedAbility.index}}">Salvar</button>
+                {{else}}
+                <button type="button" class="stranger-mark-command" data-action="edit-stranger-mark-ability" data-index="{{system.strangerMark.selectedAbility.index}}">Editar</button>
+                {{/if}}
+                <button type="button" class="stranger-mark-command danger" data-action="delete-stranger-mark-ability" data-index="{{system.strangerMark.selectedAbility.index}}">Excluir</button>
+              </div>
+              {{else}}
+              <div class="stranger-mark-empty-inspector">
+                <span>Nenhuma habilidade selecionada</span>
+                <p>Crie uma habilidade no circulo {{system.strangerMark.selectedAbilityLevelRoman}} desta marca.</p>
+              </div>
+              {{/if}}
+              </div>
+            </section>
+          </div>
+          {{else}}
+          <div class="stranger-mark-no-mark">
+            <span>Nenhuma marca selecionada</span>
+            <p>Use a janela lateral para adicionar ou selecionar uma Marca.</p>
+          </div>
+          {{/if}}
+        </div>
         <div class="tab-panel" data-tab="convictions"></div>
         <div class="tab-panel" data-tab="settings"></div>
       </section>

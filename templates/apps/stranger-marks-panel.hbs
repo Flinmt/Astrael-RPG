@@ -1,0 +1,22 @@
+<section class="stranger-marks-panel-shell">
+  <header class="stranger-marks-panel-head">
+    <div>
+      <span>Marcas</span>
+      <h2>Marcas</h2>
+    </div>
+  </header>
+
+  <div class="stranger-marks-panel-list">
+    {{#each marks as |mark|}}
+    <article class="stranger-marks-panel-row {{#if mark.selected}}is-selected{{/if}} {{#unless mark.level}}is-unowned{{/unless}}" data-option="{{mark.option}}">
+      <button type="button" class="stranger-marks-panel-select" data-action="select-stranger-mark" data-option="{{mark.option}}">
+        <span class="stranger-marks-panel-icon"><img src="{{mark.icon}}" alt=""></span>
+        <span class="stranger-marks-panel-summary">
+          <strong>{{mark.label}}</strong>
+          <span>Marca</span>
+        </span>
+      </button>
+    </article>
+    {{/each}}
+  </div>
+</section>
