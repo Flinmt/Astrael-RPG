@@ -1161,8 +1161,19 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll("[data-action='roll-stranger-mark-ability']").forEach((btn) => {
       btn.addEventListener("click", this.#onRollStrangerMarkAbility.bind(this));
     });
+    this.element.querySelectorAll("[data-action='toggle-stranger-marks-panel']").forEach((btn) => {
+      btn.addEventListener("click", this.#onToggleStrangerMarksPanel.bind(this));
+    });
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
+
+    {
+      const card = this.element.querySelector(".custom-roll-card");
+      if (card) {
+        if (this._customRollsOpen) card.setAttribute("open", "");
+        card.addEventListener("toggle", () => { this._customRollsOpen = card.open; });
+      }
+    }
 
     if (this._activeTab) this.#activateTab(this._activeTab);
     else this.element.dataset.activeTab = "attributes";
@@ -1590,8 +1601,10 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const panel = this.element.querySelector(`.tab-panel[data-tab="${tabId}"]`);
     if (panel) panel.classList.add("active");
 
-    if (tabId === "stranger-mark") void this.#toggleStrangerMarksPanel(true);
-    else void this.#toggleStrangerMarksPanel(false);
+    if (tabId !== "stranger-mark") {
+      this._strangerMarksPanel?.close();
+      this._strangerMarksPanel = null;
+    }
   }
 
   setPosition(position) {
@@ -2368,6 +2381,19 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (!Number.isInteger(index) || !abilities[index]) return;
     const ability = normalizeStrangerMarkAbility(abilities[index]);
 
+    const vazio = Number(foundry.utils.getProperty(this.actor, "system.vazio.value")) || 0;
+
+    if (vazio >= 5) {
+      const resource = this.#getResource("willpower");
+      for (let i = 0; i < ability.cost; i += 1) this.#applyAggravatedDamage(resource);
+      await this.#updateResource("willpower", resource);
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+        content: `<section class="astrael-chat-card"><header class="astrael-chat-header"><span class="astrael-chat-kicker">Marca do Estranho</span><h2>${ability.name}</h2><p>${this.actor.name}</p></header><div class="astrael-chat-result"><span>Vazio Transborda</span><strong style="font-size:32px;color:#8aacbe;text-shadow:0 0 14px rgba(74,124,158,0.4)">${ability.cost}</strong><span style="font-size:11px;opacity:0.8">dano(s) agravado(s) na Força de Vontade</span></div></section>`
+      });
+      return;
+    }
+
     const costRoll = await new Roll(`${ability.cost}d10`).evaluate();
     const costValues = getRollValues(costRoll);
     const failures = costValues.filter((value) => value < 6).length;
@@ -2383,9 +2409,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
 
     if (failures > 0) {
-      const resource = this.#getResource("health");
-      for (let i = 0; i < failures; i += 1) this.#applySuperficialDamage(resource);
-      await this.#updateResource("health", resource);
+      const novoVazio = Math.min(5, vazio + failures);
+      await this.actor.update({ "system.vazio.value": novoVazio });
     }
   }
 
@@ -2450,18 +2475,17 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return this._specialtiesPanel.anchorToSheet();
   }
 
-  async #toggleStrangerMarksPanel(force) {
-    if (force === false) {
-      await this._strangerMarksPanel?.close();
+  async #onToggleStrangerMarksPanel(event) {
+    event.preventDefault();
+
+    if (this._strangerMarksPanel) {
+      await this._strangerMarksPanel.close();
       this._strangerMarksPanel = null;
       return;
     }
 
-    if (!this._strangerMarksPanel) {
-      this._strangerMarksPanel = new AstraelStrangerMarksPanel(this.actor, this);
-      await this._strangerMarksPanel.render({ force: true });
-    }
-
+    this._strangerMarksPanel = new AstraelStrangerMarksPanel(this.actor, this);
+    await this._strangerMarksPanel.render({ force: true });
     return this._strangerMarksPanel.anchorToSheet();
   }
 

@@ -528,7 +528,6 @@
                     <span>Sangue Invocado</span>
                     <h2>Magias</h2>
                   </div>
-                  <button type="button" class="hemomancy-add" data-action="add-hemomancy-power" title="Adicionar magia">+</button>
                 </div>
               </header>
 
@@ -547,6 +546,7 @@
                   </button>
                   {{/unless}}
                   {{/each}}
+                  <button type="button" class="hemomancy-add" data-action="add-hemomancy-power" title="Adicionar magia" {{#if (eq system.hemomancy.level 0)}}disabled{{/if}}>+</button>
                 </div>
               </div>
             </aside>
@@ -624,11 +624,13 @@
             <aside class="stranger-mark-sidebar">
               <header class="stranger-mark-browser-header">
                 <div class="stranger-mark-browser-header-row">
-                  <div>
-                    <span>Marca ativa</span>
-                    <h2>Habilidades</h2>
+                  <div class="stranger-mark-title-row">
+                    <button type="button" class="stranger-mark-panel-toggle" data-action="toggle-stranger-marks-panel" title="Abrir painel de marcas">☰</button>
+                    <div class="stranger-mark-title-text">
+                      <span>Marca ativa</span>
+                      <h2>{{system.strangerMark.selectedMark.label}}</h2>
+                    </div>
                   </div>
-                  <button type="button" class="stranger-mark-add" data-action="add-stranger-mark-ability" title="Adicionar habilidade">+</button>
                 </div>
               </header>
 
@@ -644,11 +646,8 @@
                   <button type="button" class="stranger-mark-row {{#if ability.selected}}is-selected{{/if}}" data-action="select-stranger-mark-ability" data-index="{{ability.index}}">
                     <span class="stranger-mark-row-name">{{ability.name}}</span>
                   </button>
-                  {{else}}
-                  <div class="stranger-mark-list-empty">
-                    <span>Nenhuma habilidade neste nivel</span>
-                  </div>
                   {{/each}}
+                  <button type="button" class="stranger-mark-add" data-action="add-stranger-mark-ability" title="Adicionar habilidade" {{#if (eq system.strangerMark.selectedMark.level 0)}}disabled{{/if}}>+</button>
                 </div>
               </div>
             </aside>
@@ -723,7 +722,7 @@
           {{else}}
           <div class="stranger-mark-no-mark">
             <span>Nenhuma marca selecionada</span>
-            <p>Use a janela lateral para adicionar ou selecionar uma Marca.</p>
+            <button type="button" data-action="toggle-stranger-marks-panel">Abrir painel de marcas</button>
           </div>
           {{/if}}
         </div>
