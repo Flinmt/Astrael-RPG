@@ -2050,6 +2050,18 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (!Number.isInteger(index) || !powers[index]) return;
     const power = normalizeHemomancyPower(powers[index]);
 
+    const currentBlood = Number(this.actor.system.sangria?.value ?? 5);
+    if (currentBlood <= 0) {
+      const resource = this.#getResource("health");
+      for (let i = 0; i < power.cost; i += 1) this.#applyAggravatedDamage(resource);
+      await this.#updateResource("health", resource);
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+        content: `<section class="astrael-chat-card"><header class="astrael-chat-header"><span class="astrael-chat-kicker">Sangue Invocado</span><h2>${power.name}</h2><p>${this.actor.name}</p></header><div class="astrael-chat-result"><span>Sangue Esgotado</span><strong style="font-size:32px;color:#b2202b;text-shadow:0 0 14px rgba(178,32,43,0.4)">${power.cost}</strong><span style="font-size:11px;opacity:0.8">dano(s) agravado(s) na Vida</span></div></section>`
+      });
+      return;
+    }
+
     const costRoll = await new Roll(`${power.cost}d10`).evaluate();
     const costValues = getRollValues(costRoll);
     const failures = costValues.filter((value) => value < 6).length;
