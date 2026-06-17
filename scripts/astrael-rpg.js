@@ -1605,6 +1605,11 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       this._strangerMarksPanel?.close();
       this._strangerMarksPanel = null;
     }
+
+    if (tabId !== "attributes") {
+      this._specialtiesPanel?.close();
+      this._specialtiesPanel = null;
+    }
   }
 
   setPosition(position) {
