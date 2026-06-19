@@ -1091,6 +1091,11 @@
   background: #0d111a;
 }
 
+.astrael-rpg .tab-panel[data-tab="convictions"].active {
+  height: 100%;
+  min-height: 0;
+}
+
 .astrael-rpg .section-card {
   margin-bottom: 16px;
   padding: 16px;
@@ -5612,6 +5617,348 @@
   font-size: 11px;
 }
 
+.astrael-rpg .convictions-panel {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+}
+
+.astrael-rpg .convictions-fracture-header {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px 13px;
+  border: 1px solid rgba(90, 80, 68, 0.68);
+  background:
+    linear-gradient(90deg, rgba(193, 117, 57, 0.14), transparent 44%),
+    radial-gradient(circle at 50% 50%, rgba(193, 117, 57, 0.08), transparent 58%),
+    rgba(11, 12, 13, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.astrael-rpg .convictions-fracture-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 42px;
+  height: 2px;
+  background: var(--astrael-gold);
+}
+
+.astrael-rpg .fracture-title {
+  min-width: 0;
+}
+
+.astrael-rpg .fracture-title span {
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .fracture-title h2 {
+  margin: 3px 0 0;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 15px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .fracture-track {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+
+.astrael-rpg .fracture-box {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid rgba(229, 221, 204, 0.35);
+  background: #101112;
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.astrael-rpg .fracture-box.filled {
+  border-color: rgba(214, 154, 85, 0.76);
+  background:
+    linear-gradient(180deg, #d69a55, #7d4d2a),
+    rgba(11, 12, 13, 0.6);
+  box-shadow:
+    0 0 12px rgba(193, 117, 57, 0.24),
+    inset 0 0 0 2px rgba(70, 40, 18, 0.38);
+}
+
+.astrael-rpg .fracture-box:hover {
+  border-color: var(--astrael-gold-bright);
+  box-shadow:
+    0 0 12px rgba(193, 117, 57, 0.2),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+.astrael-rpg .conviction-edit-field span,
+.astrael-rpg .conviction-pillar-head span {
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .conviction-icon-button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.5);
+  color: var(--astrael-dim);
+  background: rgba(11, 12, 13, 0.46);
+  flex: 0 0 auto;
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s;
+}
+
+.astrael-rpg .conviction-icon-button:hover {
+  border-color: var(--astrael-gold-bright);
+  color: var(--astrael-gold-bright);
+  background: rgba(193, 117, 57, 0.16);
+  transform: translateY(-1px);
+}
+
+.astrael-rpg .conviction-icon-button.danger {
+  border-color: rgba(136, 53, 49, 0.58);
+  color: #cf6a62;
+}
+
+.astrael-rpg .conviction-icon-button.danger:hover {
+  border-color: #cf6a62;
+  background: rgba(136, 53, 49, 0.18);
+}
+
+.astrael-rpg .conviction-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: stretch;
+  min-height: 100%;
+}
+
+.astrael-rpg .conviction-column {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+  min-height: 100%;
+}
+
+.astrael-rpg .conviction-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  gap: 14px;
+  min-width: 0;
+  min-height: 100%;
+  padding: 14px;
+  border: 1px solid rgba(90, 80, 68, 0.68);
+  background:
+    linear-gradient(180deg, rgba(236, 228, 211, 0.025), transparent 150px),
+    radial-gradient(circle at 20% 0, rgba(193, 117, 57, 0.08), transparent 48%),
+    rgba(11, 12, 13, 0.24);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+.astrael-rpg .conviction-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 48px;
+  height: 2px;
+  background: var(--astrael-gold);
+}
+
+.astrael-rpg .conviction-card.is-editing {
+  border-color: rgba(214, 154, 85, 0.64);
+  background:
+    linear-gradient(180deg, rgba(236, 228, 211, 0.035), transparent 150px),
+    radial-gradient(circle at 20% 0, rgba(193, 117, 57, 0.14), transparent 48%),
+    rgba(11, 12, 13, 0.3);
+}
+
+.astrael-rpg .conviction-card-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.44);
+}
+
+.astrael-rpg .conviction-card-title h3 {
+  margin: 0;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 17px;
+  letter-spacing: 0.06em;
+  line-height: 1.18;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.astrael-rpg .conviction-description p {
+  margin: 0;
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.astrael-rpg .conviction-edit-field {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.astrael-rpg .conviction-name-input,
+.astrael-rpg .conviction-description-input,
+.astrael-rpg .pillar-name-input,
+.astrael-rpg .pillar-type-input,
+.astrael-rpg .pillar-type-locked {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(90, 80, 68, 0.54);
+  color: var(--astrael-text);
+  background: rgba(8, 10, 11, 0.42);
+  outline: 0;
+}
+
+.astrael-rpg .conviction-name-input,
+.astrael-rpg .pillar-name-input,
+.astrael-rpg .pillar-type-input,
+.astrael-rpg .pillar-type-locked {
+  min-height: 34px;
+  padding: 7px 9px;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+}
+
+.astrael-rpg .pillar-type-locked {
+  display: flex;
+  align-items: center;
+  color: var(--astrael-gold-bright);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .conviction-description-input {
+  min-height: 92px;
+  padding: 9px;
+  resize: vertical;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.astrael-rpg .conviction-name-input:focus,
+.astrael-rpg .conviction-description-input:focus,
+.astrael-rpg .pillar-name-input:focus,
+.astrael-rpg .pillar-type-input:focus {
+  border-color: rgba(214, 154, 85, 0.72);
+  box-shadow: 0 0 0 1px rgba(193, 117, 57, 0.16);
+}
+
+.astrael-rpg .conviction-pillar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  align-self: end;
+  padding-top: 2px;
+}
+
+.astrael-rpg .conviction-pillar-list {
+  display: grid;
+  align-content: start;
+  gap: 9px;
+  min-height: 0;
+}
+
+.astrael-rpg .conviction-pillar-card,
+.astrael-rpg .conviction-empty-pillars {
+  display: grid;
+  gap: 3px;
+  padding: 9px 10px;
+  border: 1px solid rgba(90, 80, 68, 0.46);
+  background:
+    linear-gradient(90deg, rgba(193, 117, 57, 0.12), transparent 56%),
+    rgba(8, 10, 11, 0.34);
+}
+
+.astrael-rpg .conviction-pillar-card strong {
+  color: var(--astrael-text);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+.astrael-rpg .conviction-pillar-card span,
+.astrael-rpg .conviction-empty-pillars {
+  color: var(--astrael-dim);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .conviction-pillar-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr);
+  gap: 7px;
+  align-items: center;
+}
+
+.astrael-rpg .conviction-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.astrael-rpg .conviction-command {
+  min-width: 86px;
+  min-height: 32px;
+  padding: 7px 12px;
+  border: 1px solid rgba(193, 117, 57, 0.5);
+  color: var(--astrael-gold-bright);
+  background: linear-gradient(180deg, rgba(193, 117, 57, 0.18), rgba(8, 10, 11, 0.48));
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.astrael-rpg .conviction-command:hover {
+  border-color: var(--astrael-gold-bright);
+  background: linear-gradient(180deg, rgba(193, 117, 57, 0.28), rgba(8, 10, 11, 0.56));
+}
+
 .astrael-rpg .custom-roll-card {
   margin-top: 16px;
 }
@@ -5701,5 +6048,24 @@
 @media (max-width: 720px) {
   .astrael-rpg .advantage-board {
     grid-template-columns: 1fr;
+  }
+
+  .astrael-rpg .conviction-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .astrael-rpg .convictions-fracture-header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .astrael-rpg .conviction-pillar-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .astrael-rpg .pillar-type-input {
+    grid-column: auto;
+    grid-row: auto;
   }
 }

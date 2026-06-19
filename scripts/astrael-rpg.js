@@ -4,6 +4,9 @@ const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialt
 const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
 const DICE_POOL_CHAT_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/dice-pool-card.hbs`;
 const RESOURCE_MINIMUMS = { health: 4, willpower: 2 };
+const CONVICTION_CARD_COUNT = 3;
+const CONVICTION_CENTER_INDEX = 1;
+const CONVICTION_PILLAR_TYPES = ["Local", "Objeto", "Pessoa"];
 const ATTRIBUTE_KEYS = ["strength", "dexterity", "stamina", "charisma", "manipulation", "composure", "intelligence", "wits", "resolve"];
 const SKILL_KEYS = ["athletics", "brawl", "crafts", "drive", "firearms", "larceny", "melee", "stealth", "survival", "animalKen", "empathy", "etiquette", "expression", "intimidation", "leadership", "persuasion", "streetwise", "subterfuge", "academics", "awareness", "finance", "investigation", "medicine", "occult", "politics", "science", "technology"];
 const LOCALIZE_ATTR = { strength: "ASTRAEL.Attribute.Strength", dexterity: "ASTRAEL.Attribute.Dexterity", stamina: "ASTRAEL.Attribute.Stamina", charisma: "ASTRAEL.Attribute.Charisma", manipulation: "ASTRAEL.Attribute.Manipulation", composure: "ASTRAEL.Attribute.Composure", intelligence: "ASTRAEL.Attribute.Intelligence", wits: "ASTRAEL.Attribute.Wits", resolve: "ASTRAEL.Attribute.Resolve" };
@@ -120,6 +123,7 @@ class AstraelCharacterData extends TypeDataModel {
         selectedAbilityLevel: new NumberField({ required: true, integer: true, min: 1, max: 5, initial: 1 }),
         marks: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
       }),
+      convictions: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       sangria: traitValueField(5, 0),
       vazio: traitValueField(0, 0),
       specialties: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
@@ -244,6 +248,44 @@ function normalizeStrangerMark(source = {}) {
     levelRoman: level ? toRomanLevel(level) : "0",
     abilities
   };
+}
+
+function normalizeConviction(source = {}, index = 0) {
+  const pillars = Array.isArray(source.pillars) ? source.pillars : [];
+  const sourcePillar = pillars[0] ?? {};
+  const type = index === CONVICTION_CENTER_INDEX
+    ? "Pessoa"
+    : (CONVICTION_PILLAR_TYPES.includes(sourcePillar.type) ? sourcePillar.type : "Local");
+
+  return {
+    name: source.name || "",
+    description: source.description || "",
+    fractures: clampNumber(source.fractures ?? source.fracture ?? 0, 0, 2),
+    pillars: [{
+      name: sourcePillar.name || "",
+      type
+    }]
+  };
+}
+
+function normalizeConvictionList(source = []) {
+  return Array.from({ length: CONVICTION_CARD_COUNT }, (_, index) => normalizeConviction(source[index] ?? {}, index));
+}
+
+function buildFractureBoxes(value) {
+  const active = clampNumber(value, 0, 2);
+  return Array.from({ length: 2 }, (_, index) => ({
+    index,
+    filled: index < active
+  }));
+}
+
+function getConvictionPillarTypeOptions(selectedType) {
+  return CONVICTION_PILLAR_TYPES.map((type) => ({
+    value: type,
+    label: game.i18n.localize(`ASTRAEL.Convictions.PillarType${type}`),
+    selected: type === selectedType
+  }));
 }
 
 function normalizeResource(resourceId, source = {}) {
@@ -913,6 +955,18 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.system.customRolls = Array.isArray(context.system.customRolls) ? context.system.customRolls : [];
     context.system.advantages = Array.isArray(context.system.advantages) ? context.system.advantages : [];
     context.system.flaws = Array.isArray(context.system.flaws) ? context.system.flaws : [];
+    context.system.convictions = normalizeConvictionList(Array.isArray(context.system.convictions) ? context.system.convictions : []).map((conviction, index) => {
+      const normalized = normalizeConviction(conviction, index);
+      return {
+        ...normalized,
+        index,
+        editing: index === this._editingConvictionIndex,
+        isCenter: index === CONVICTION_CENTER_INDEX,
+        pillar: normalized.pillars[0],
+        fractureBoxes: buildFractureBoxes(normalized.fractures),
+        pillarTypeOptions: getConvictionPillarTypeOptions(normalized.pillars[0].type)
+      };
+    });
     context.system.hemomancy ??= { level: 0, powers: [] };
     context.system.hemomancy.level = clampNumber(context.system.hemomancy.level, 0, 5);
     context.system.hemomancy.levelRoman = context.system.hemomancy.level ? toRomanLevel(context.system.hemomancy.level) : "0";
@@ -1044,6 +1098,11 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       box.addEventListener("contextmenu", this.#onResourceBoxContext.bind(this));
     });
 
+    this.element.querySelectorAll(".fracture-box").forEach((box) => {
+      box.addEventListener("click", this.#onFractureBoxClick.bind(this));
+      box.addEventListener("contextmenu", this.#onFractureBoxContext.bind(this));
+    });
+
     this.element.querySelectorAll("[data-damage]").forEach((button) => {
       button.addEventListener("click", this.#onDamageButtonClick.bind(this));
       button.addEventListener("contextmenu", this.#onDamageButtonContext.bind(this));
@@ -1103,6 +1162,12 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll(".advantage-rank").forEach((rank) => {
       rank.addEventListener("click", this.#onAdvantageRankClick.bind(this));
       rank.addEventListener("contextmenu", this.#onAdvantageRankContext.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='edit-conviction']").forEach((button) => {
+      button.addEventListener("click", this.#onEditConviction.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='save-conviction']").forEach((button) => {
+      button.addEventListener("click", this.#onSaveConviction.bind(this));
     });
     this.element.querySelectorAll("[data-action='set-hemomancy-mode']").forEach((button) => {
       button.addEventListener("click", this.#onSetHemomancyMode.bind(this));
@@ -1584,6 +1649,27 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
   }
 
+  #onFractureBoxClick(event) {
+    event.preventDefault();
+    const convictionIndex = Number(event.currentTarget.dataset.convictionIndex);
+    const value = clampNumber(Number(event.currentTarget.dataset.index) + 1, 0, 2);
+    return this.#updateConvictionFractures(convictionIndex, value);
+  }
+
+  #onFractureBoxContext(event) {
+    event.preventDefault();
+    return this.#updateConvictionFractures(Number(event.currentTarget.dataset.convictionIndex), 0);
+  }
+
+  #updateConvictionFractures(index, value) {
+    const convictions = this.#getConvictionsFromSheet();
+    if (!Number.isInteger(index) || !convictions[index]) return;
+
+    const current = clampNumber(convictions[index].fractures ?? 0, 0, 2);
+    convictions[index].fractures = current === value ? 0 : clampNumber(value, 0, 2);
+    return this.#updateConvictions(convictions);
+  }
+
   async #onTabClick(event) {
     event.preventDefault();
     this.#activateTab(event.currentTarget.dataset.tab);
@@ -1896,6 +1982,75 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     list[index].level = clampNumber((list[index].level || 1) + delta, 1, 5);
     return this.#updateAdvantageList(listId, list);
+  }
+
+  #getConvictions() {
+    const actorData = this.actor.toObject();
+    const list = Array.isArray(actorData.system?.convictions) ? actorData.system.convictions : [];
+    return normalizeConvictionList(list);
+  }
+
+  #readConvictionFromSheet(conviction, index) {
+    const nameInput = this.element.querySelector(`.conviction-name-input[data-index='${index}']`);
+    const descriptionInput = this.element.querySelector(`.conviction-description-input[data-index='${index}']`);
+    const pillarNameInput = this.element.querySelector(`.pillar-name-input[data-conviction-index='${index}']`);
+    const pillarTypeInput = this.element.querySelector(`.pillar-type-input[data-conviction-index='${index}']`);
+    const fallback = normalizeConviction(conviction, index);
+    const pillarType = index === CONVICTION_CENTER_INDEX
+      ? "Pessoa"
+      : (CONVICTION_PILLAR_TYPES.includes(pillarTypeInput?.value) ? pillarTypeInput.value : fallback.pillars[0].type);
+
+    return {
+      name: nameInput?.value?.trim() ?? conviction.name,
+      description: descriptionInput?.value?.trim() ?? conviction.description,
+      fractures: fallback.fractures,
+      pillars: [{
+        name: pillarNameInput?.value?.trim() ?? fallback.pillars[0].name,
+        type: pillarType
+      }]
+    };
+  }
+
+  #getConvictionsFromSheet() {
+    return this.#getConvictions().map((conviction, index) => {
+      if (index !== this._editingConvictionIndex) return conviction;
+      return this.#readConvictionFromSheet(conviction, index);
+    });
+  }
+
+  #updateConvictions(convictions) {
+    return this.actor.update({ "system.convictions": normalizeConvictionList(convictions) });
+  }
+
+  async #onEditConviction(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const convictions = this.#getConvictionsFromSheet();
+    if (!Number.isInteger(index) || !convictions[index]) return;
+
+    this._editingConvictionIndex = index;
+    return this.#updateConvictions(convictions);
+  }
+
+  async #onSaveConviction(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const convictions = this.#getConvictions();
+    if (!Number.isInteger(index) || !convictions[index]) return;
+
+    const updated = this.#readConvictionFromSheet(convictions[index], index);
+    if (!updated.name) {
+      ui.notifications.warn(game.i18n.localize("ASTRAEL.Convictions.SaveRequired"));
+      return;
+    }
+    if (!updated.pillars[0].name) {
+      ui.notifications.warn(game.i18n.localize("ASTRAEL.Convictions.PillarSaveRequired"));
+      return;
+    }
+
+    convictions[index] = updated;
+    this._editingConvictionIndex = null;
+    return this.#updateConvictions(convictions);
   }
 
   #prepareHemomancySelection(system) {

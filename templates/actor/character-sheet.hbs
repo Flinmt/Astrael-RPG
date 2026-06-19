@@ -726,7 +726,88 @@
           </div>
           {{/if}}
         </div>
-        <div class="tab-panel" data-tab="convictions"></div>
+        <div class="tab-panel" data-tab="convictions">
+          <section class="convictions-panel">
+            <div class="conviction-grid">
+              {{#each system.convictions as |conviction|}}
+              <div class="conviction-column">
+                <header class="convictions-fracture-header">
+                  <div class="fracture-title">
+                    <span>{{localize "ASTRAEL.Convictions.FracturesHint"}}</span>
+                    <h2>{{localize "ASTRAEL.Convictions.Fractures"}}</h2>
+                  </div>
+                  <div class="fracture-track" aria-label="{{localize 'ASTRAEL.Convictions.Fractures'}}">
+                    {{#each conviction.fractureBoxes as |box|}}
+                    <button class="fracture-box {{#if box.filled}}filled{{/if}}" type="button" data-conviction-index="{{conviction.index}}" data-index="{{box.index}}" title="{{localize 'ASTRAEL.Convictions.Fractures'}}"></button>
+                    {{/each}}
+                  </div>
+                </header>
+              <article class="conviction-card {{#if conviction.editing}}is-editing{{/if}}" data-index="{{conviction.index}}">
+                {{#if conviction.editing}}
+                <header class="conviction-card-title">
+                  <label class="conviction-edit-field">
+                    <span>{{localize "ASTRAEL.Convictions.Name"}}</span>
+                    <input class="conviction-name-input" type="text" data-index="{{conviction.index}}" value="{{conviction.name}}" placeholder="{{localize 'ASTRAEL.Convictions.NamePlaceholder'}}">
+                  </label>
+                </header>
+
+                <label class="conviction-edit-field">
+                  <span>{{localize "ASTRAEL.Convictions.Description"}}</span>
+                  <textarea class="conviction-description-input" data-index="{{conviction.index}}" placeholder="{{localize 'ASTRAEL.Convictions.DescriptionPlaceholder'}}">{{conviction.description}}</textarea>
+                </label>
+
+                <div class="conviction-pillar-head">
+                  <span>{{localize "ASTRAEL.Convictions.Pillar"}}</span>
+                </div>
+
+                <div class="conviction-pillar-list">
+                  <div class="conviction-pillar-row" data-conviction-index="{{conviction.index}}">
+                    <input class="pillar-name-input" type="text" data-conviction-index="{{conviction.index}}" value="{{conviction.pillar.name}}" placeholder="{{localize 'ASTRAEL.Convictions.PillarName'}}">
+                    {{#if conviction.isCenter}}
+                    <input class="pillar-type-input" type="hidden" data-conviction-index="{{conviction.index}}" value="Pessoa">
+                    <div class="pillar-type-locked">{{localize "ASTRAEL.Convictions.PillarTypePessoa"}}</div>
+                    {{else}}
+                    <select class="pillar-type-input" data-conviction-index="{{conviction.index}}">
+                      {{#each conviction.pillarTypeOptions as |option|}}
+                      <option value="{{option.value}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>
+                      {{/each}}
+                    </select>
+                    {{/if}}
+                  </div>
+                </div>
+
+                <footer class="conviction-card-actions">
+                  <button type="button" class="conviction-command" data-action="save-conviction" data-index="{{conviction.index}}">{{localize "ASTRAEL.Convictions.Save"}}</button>
+                </footer>
+                {{else}}
+                <header class="conviction-card-title">
+                  <h3>{{#if conviction.name}}{{conviction.name}}{{else}}{{localize "ASTRAEL.Convictions.EmptyName"}}{{/if}}</h3>
+                  <button type="button" class="conviction-icon-button" data-action="edit-conviction" data-index="{{conviction.index}}" title="{{localize 'ASTRAEL.Convictions.Edit'}}">
+                    <i class="fas fa-pen"></i>
+                  </button>
+                </header>
+
+                <div class="conviction-description">
+                  <p>{{#if conviction.description}}{{conviction.description}}{{else}}{{localize "ASTRAEL.Convictions.EmptyDescription"}}{{/if}}</p>
+                </div>
+
+                <div class="conviction-pillar-head">
+                  <span>{{localize "ASTRAEL.Convictions.Pillar"}}</span>
+                </div>
+
+                <div class="conviction-pillar-list">
+                  <div class="conviction-pillar-card">
+                    <strong>{{#if conviction.pillar.name}}{{conviction.pillar.name}}{{else}}{{localize "ASTRAEL.Convictions.EmptyPillarName"}}{{/if}}</strong>
+                    <span>{{conviction.pillar.type}}</span>
+                  </div>
+                </div>
+                {{/if}}
+              </article>
+              </div>
+              {{/each}}
+            </div>
+          </section>
+        </div>
         <div class="tab-panel" data-tab="settings"></div>
       </section>
     </section>
