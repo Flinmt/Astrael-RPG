@@ -1,7 +1,9 @@
 {
   "ASTRAEL.Actor.Character": "Character",
+  "ASTRAEL.Actor.PDM": "PDM",
   "ASTRAEL.Item.Trait": "Trait",
   "ASTRAEL.Sheet.Character": "Astrael Character Sheet",
+  "ASTRAEL.Sheet.PDM": "Astrael PDM Sheet",
   "ASTRAEL.Tab.Attributes": "Attributes",
   "ASTRAEL.Tab.Advantages": "Characteristics",
   "ASTRAEL.Tab.Hemomancy": "Hemomancy",
@@ -86,6 +88,7 @@
   "ASTRAEL.Convictions.Fractures": "Fractures",
   "ASTRAEL.Convictions.FracturesHint": "Narrative marker",
   "TYPES.Actor.character": "Character",
+  "TYPES.Actor.pdm": "PDM",
   "TYPES.Item.trait": "Trait",
   "ASTRAEL.StrangerMark.Title": "Stranger Marks",
   "ASTRAEL.StrangerMark.Kicker": "Mark of the Strange",

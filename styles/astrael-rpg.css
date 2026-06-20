@@ -1017,8 +1017,7 @@
 }
 
 .astrael-rpg .settings-gear {
-  margin-left: auto;
-  display: inline-flex;
+  display: none;
   align-items: center;
   justify-content: center;
   width: 38px;
@@ -6067,5 +6066,338 @@
   .astrael-rpg .pillar-type-input {
     grid-column: auto;
     grid-row: auto;
+  }
+}
+.astrael-rpg.pdm-sheet .pdm-identity-grid {
+  grid-template-columns: minmax(220px, 1fr) 180px minmax(220px, 1fr);
+  grid-template-rows: 84px 84px 72px;
+  grid-template-areas:
+    "health portrait blood"
+    "will portrait void"
+    "name name name";
+  align-items: stretch;
+}
+
+.astrael-rpg.pdm-sheet .field-name {
+  grid-area: name;
+}
+
+.astrael-rpg.pdm-sheet .health-row {
+  grid-area: health;
+}
+
+.astrael-rpg.pdm-sheet .will-row {
+  grid-area: will;
+}
+
+.astrael-rpg.pdm-sheet .portrait-cell {
+  grid-area: portrait;
+  min-height: 0;
+  padding: 10px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(214, 154, 85, 0.18), transparent 60%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.22));
+}
+
+.astrael-rpg.pdm-sheet .portrait-ring {
+  width: 136px;
+  height: 136px;
+  box-shadow:
+    0 0 0 6px rgba(11, 12, 13, 0.72),
+    0 0 0 7px rgba(182, 138, 58, 0.34),
+    0 12px 28px rgba(0, 0, 0, 0.45),
+    inset 0 0 28px rgba(0, 0, 0, 0.65);
+}
+
+.astrael-rpg.pdm-sheet .pdm-sangria-slot {
+  grid-area: blood;
+}
+
+.astrael-rpg.pdm-sheet .pdm-vazio-slot {
+  grid-area: void;
+}
+
+.astrael-rpg.pdm-sheet .pdm-header-ornament-left {
+  grid-area: ornament-left;
+}
+
+.astrael-rpg.pdm-sheet .pdm-header-ornament-right {
+  grid-area: ornament-right;
+}
+
+.astrael-rpg.pdm-sheet .pdm-header-ornament {
+  display: none;
+}
+
+.astrael-rpg.pdm-sheet .pdm-header-ornament::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border-top: 1px solid rgba(214, 154, 85, 0.28);
+  border-bottom: 1px solid rgba(214, 154, 85, 0.18);
+}
+
+.astrael-rpg.pdm-sheet .pdm-header-ornament::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  right: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(214, 154, 85, 0.42), transparent);
+}
+
+.astrael-rpg.pdm-sheet .resource-row,
+.astrael-rpg.pdm-sheet .marker-card,
+.astrael-rpg.pdm-sheet .field-name {
+  min-height: 0;
+}
+
+.astrael-rpg.pdm-sheet .resource-card,
+.astrael-rpg.pdm-sheet .marker-card {
+  height: 100%;
+}
+
+.astrael-rpg.pdm-sheet .marker-card {
+  justify-content: center;
+}
+
+.astrael-rpg .tab-button[data-tab="pdm-main"]:not(.active) {
+  color: var(--astrael-gold-bright);
+}
+
+.astrael-rpg .pdm-attribute-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.astrael-rpg .pdm-attribute-column {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.astrael-rpg .pdm-attribute-float-card {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 146px;
+  padding: 18px 14px 14px;
+  overflow: hidden;
+  border: 1px solid rgba(193, 117, 57, 0.32);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(214, 154, 85, 0.14), transparent 58%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.22));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24), inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.astrael-rpg .pdm-attribute-float-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--astrael-gold-bright), transparent);
+  opacity: 0.75;
+}
+
+.astrael-rpg .pdm-attribute-float-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(214, 154, 85, 0.68);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32), 0 0 18px rgba(193, 117, 57, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.astrael-rpg .pdm-attribute-kicker,
+.astrael-rpg .pdm-empty-list {
+  color: var(--astrael-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+
+.astrael-rpg .pdm-attribute-float-card h2 {
+  margin: 2px 0 0;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .pdm-attribute-value {
+  min-width: 68px;
+  margin: 8px 0 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 2.7rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  cursor: text;
+  text-shadow: 0 0 14px rgba(214, 154, 85, 0.16);
+}
+
+.astrael-rpg .pdm-attribute-value:hover {
+  color: #ffe0ad;
+}
+
+.astrael-rpg .pdm-attribute-value-input {
+  width: 78px;
+  margin: 8px 0 4px;
+  border: 1px solid rgba(214, 154, 85, 0.48);
+  background: rgba(0, 0, 0, 0.34);
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 2.15rem;
+  font-weight: 700;
+  text-align: center;
+  outline: 0;
+}
+
+.astrael-rpg .pdm-attribute-roll-hint {
+  color: var(--astrael-dim);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .pdm-column-skills {
+  display: grid;
+  gap: 8px;
+}
+
+.astrael-rpg .pdm-skill-float-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 64px;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid rgba(193, 117, 57, 0.24);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.025), rgba(0, 0, 0, 0.18)),
+    rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.astrael-rpg .pdm-skill-float-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(214, 154, 85, 0.56);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.26), 0 0 14px rgba(193, 117, 57, 0.08);
+}
+
+.astrael-rpg .pdm-standard-skill-name {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.astrael-rpg .pdm-skill-readout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+}
+
+.astrael-rpg .pdm-skill-readout span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.astrael-rpg .pdm-skill-readout strong {
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.astrael-rpg .pdm-skill-float-card input,
+.astrael-rpg .pdm-skill-float-card select {
+  min-width: 0;
+  border: 1px solid rgba(193, 117, 57, 0.3);
+  background: rgba(0, 0, 0, 0.26);
+  color: var(--astrael-text);
+}
+
+.astrael-rpg .pdm-skill-value-input {
+  text-align: center;
+}
+
+.astrael-rpg .pdm-column-add-skill,
+.astrael-rpg .pdm-skill-mode,
+.astrael-rpg .pdm-skill-delete {
+  border: 1px solid rgba(193, 117, 57, 0.42);
+  background: linear-gradient(180deg, rgba(193, 117, 57, 0.18), rgba(0, 0, 0, 0.24));
+  color: var(--astrael-text);
+  cursor: pointer;
+}
+
+.astrael-rpg .pdm-column-add-skill:hover {
+  border-color: var(--astrael-gold-bright);
+  color: #fff2d8;
+}
+
+.astrael-rpg .pdm-section-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.astrael-rpg .pdm-column-add-skill {
+  width: 100%;
+  height: 34px;
+  font-size: 1.2rem;
+}
+
+.astrael-rpg .pdm-skill-float-card input,
+.astrael-rpg .pdm-skill-float-card select,
+.astrael-rpg .pdm-skill-float-card button {
+  height: 34px;
+}
+
+.astrael-rpg .pdm-skill-mode,
+.astrael-rpg .pdm-skill-delete {
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.astrael-rpg .pdm-skill-delete {
+  border-color: rgba(162, 68, 62, 0.48);
+  color: #f0b0aa;
+}
+
+@media (max-width: 760px) {
+  .astrael-rpg .pdm-attribute-columns,
+  .astrael-rpg .pdm-skill-float-card {
+    grid-template-columns: 1fr;
   }
 }

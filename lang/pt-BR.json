@@ -1,7 +1,9 @@
 {
   "ASTRAEL.Actor.Character": "Personagem",
+  "ASTRAEL.Actor.PDM": "PDM",
   "ASTRAEL.Item.Trait": "Caracteristica",
   "ASTRAEL.Sheet.Character": "Dossiê do Personagem",
+  "ASTRAEL.Sheet.PDM": "Dossiê de PDM",
   "ASTRAEL.Tab.Attributes": "Atributos",
   "ASTRAEL.Tab.Advantages": "Caracteristicas",
   "ASTRAEL.Tab.Hemomancy": "Hemomancia",
@@ -86,6 +88,7 @@
   "ASTRAEL.Convictions.Fractures": "Fraturas",
   "ASTRAEL.Convictions.FracturesHint": "Marcador narrativo",
   "TYPES.Actor.character": "Personagem",
+  "TYPES.Actor.pdm": "PDM",
   "TYPES.Item.trait": "Caracteristica",
   "ASTRAEL.Chat.WillpowerReroll": "Rerrolar (Força de Vontade)",
   "ASTRAEL.Chat.RerollPrompt": "Clique nos dados que deseja rerrolar (até 3):",

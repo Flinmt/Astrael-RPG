@@ -45,7 +45,8 @@
   "download": "",
   "documentTypes": {
     "Actor": {
-      "character": {}
+      "character": {},
+      "pdm": {}
     },
     "Item": {
       "trait": {}

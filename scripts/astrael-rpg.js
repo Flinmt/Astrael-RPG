@@ -1,5 +1,6 @@
 const SYSTEM_ID = "astrael-rpg";
 const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character-sheet.hbs`;
+const PDM_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/pdm-sheet.hbs`;
 const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
 const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
 const DICE_POOL_CHAT_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/dice-pool-card.hbs`;
@@ -9,6 +10,13 @@ const CONVICTION_CENTER_INDEX = 1;
 const CONVICTION_PILLAR_TYPES = ["Local", "Objeto", "Pessoa"];
 const ATTRIBUTE_KEYS = ["strength", "dexterity", "stamina", "charisma", "manipulation", "composure", "intelligence", "wits", "resolve"];
 const SKILL_KEYS = ["athletics", "brawl", "crafts", "drive", "firearms", "larceny", "melee", "stealth", "survival", "animalKen", "empathy", "etiquette", "expression", "intimidation", "leadership", "persuasion", "streetwise", "subterfuge", "academics", "awareness", "finance", "investigation", "medicine", "occult", "politics", "science", "technology"];
+const PDM_ATTRIBUTE_KEYS = ["physical", "social", "mental"];
+const LOCALIZE_PDM_ATTR = { physical: "Fisico", mental: "Mental", social: "Social" };
+const PDM_SKILL_GROUPS = {
+  physical: ["athletics", "brawl", "drive", "stealth", "larceny", "crafts", "firearms", "melee", "survival"],
+  social: ["animalKen", "empathy", "etiquette", "expression", "intimidation", "leadership", "persuasion", "streetwise", "subterfuge"],
+  mental: ["academics", "awareness", "finance", "investigation", "medicine", "occult", "politics", "science", "technology"]
+};
 const LOCALIZE_ATTR = { strength: "ASTRAEL.Attribute.Strength", dexterity: "ASTRAEL.Attribute.Dexterity", stamina: "ASTRAEL.Attribute.Stamina", charisma: "ASTRAEL.Attribute.Charisma", manipulation: "ASTRAEL.Attribute.Manipulation", composure: "ASTRAEL.Attribute.Composure", intelligence: "ASTRAEL.Attribute.Intelligence", wits: "ASTRAEL.Attribute.Wits", resolve: "ASTRAEL.Attribute.Resolve" };
 const LOCALIZE_SKILL = { athletics: "ASTRAEL.Skill.Athletics", brawl: "ASTRAEL.Skill.Brawl", crafts: "ASTRAEL.Skill.Crafts", drive: "ASTRAEL.Skill.Drive", firearms: "ASTRAEL.Skill.Firearms", larceny: "ASTRAEL.Skill.Larceny", melee: "ASTRAEL.Skill.Melee", stealth: "ASTRAEL.Skill.Stealth", survival: "ASTRAEL.Skill.Survival", animalKen: "ASTRAEL.Skill.AnimalKen", empathy: "ASTRAEL.Skill.Empathy", etiquette: "ASTRAEL.Skill.Etiquette", expression: "ASTRAEL.Skill.Expression", intimidation: "ASTRAEL.Skill.Intimidation", leadership: "ASTRAEL.Skill.Leadership", persuasion: "ASTRAEL.Skill.Persuasion", streetwise: "ASTRAEL.Skill.Streetwise", subterfuge: "ASTRAEL.Skill.Subterfuge", academics: "ASTRAEL.Skill.Academics", awareness: "ASTRAEL.Skill.Awareness", finance: "ASTRAEL.Skill.Finance", investigation: "ASTRAEL.Skill.Investigation", medicine: "ASTRAEL.Skill.Medicine", occult: "ASTRAEL.Skill.Occult", politics: "ASTRAEL.Skill.Politics", science: "ASTRAEL.Skill.Science", technology: "ASTRAEL.Skill.Technology" };
 
@@ -128,6 +136,40 @@ class AstraelCharacterData extends TypeDataModel {
       vazio: traitValueField(0, 0),
       specialties: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       customRolls: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
+    };
+  }
+
+  static migrateData(source) {
+    source.resources ??= {};
+    migrateLegacyResource("health", source);
+    migrateLegacyResource("willpower", source);
+
+    return super.migrateData(source);
+  }
+}
+
+class AstraelPdmData extends TypeDataModel {
+  static defineSchema() {
+    return {
+      description: stringField(),
+      resources: new SchemaField({
+        health: resourceField("health"),
+        willpower: resourceField("willpower")
+      }),
+      pdmAttributes: new SchemaField(Object.fromEntries(PDM_ATTRIBUTE_KEYS.map((key) => [key, traitValueField(1, 1)]))),
+      skills: new SchemaField(Object.fromEntries(SKILL_KEYS.map((key) => [key, traitValueField(0, 0)]))),
+      pdmSkills: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+      hemomancy: new SchemaField({
+        level: new NumberField({ required: true, integer: true, min: 0, max: 5, initial: 0 }),
+        powers: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
+      }),
+      strangerMark: new SchemaField({
+        selectedMarkId: new StringField({ required: true, initial: "" }),
+        selectedAbilityLevel: new NumberField({ required: true, integer: true, min: 1, max: 5, initial: 1 }),
+        marks: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
+      }),
+      sangria: traitValueField(5, 0),
+      vazio: traitValueField(0, 0)
     };
   }
 
@@ -1229,6 +1271,38 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll("[data-action='toggle-stranger-marks-panel']").forEach((btn) => {
       btn.addEventListener("click", this.#onToggleStrangerMarksPanel.bind(this));
     });
+    this.element.querySelectorAll("[data-action='add-pdm-skill']").forEach((btn) => {
+      btn.addEventListener("click", this.#onAddPdmSkill.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='delete-pdm-skill']").forEach((btn) => {
+      btn.addEventListener("click", this.#onDeletePdmSkill.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='edit-pdm-skill']").forEach((btn) => {
+      btn.addEventListener("click", this.#onEditPdmSkill.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='save-pdm-skill']").forEach((btn) => {
+      btn.addEventListener("click", this.#onSavePdmSkill.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='roll-pdm-skill']").forEach((btn) => {
+      btn.addEventListener("click", this.#onRollPdmSkill.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='roll-pdm-standard-skill']").forEach((card) => {
+      card.addEventListener("click", this.#onRollPdmStandardSkill.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='roll-pdm-attribute']").forEach((btn) => {
+      btn.addEventListener("click", this.#onRollPdmAttribute.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='roll-pdm-attribute-card']").forEach((card) => {
+      card.addEventListener("click", this.#onRollPdmAttributeCard.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='edit-pdm-attribute']").forEach((btn) => {
+      btn.addEventListener("click", this.#onEditPdmAttribute.bind(this));
+    });
+    this.element.querySelectorAll(".pdm-attribute-value-input").forEach((input) => {
+      input.addEventListener("keydown", this.#onPdmAttributeInputKeydown.bind(this));
+      input.addEventListener("blur", this.#onPdmAttributeInputBlur.bind(this));
+      requestAnimationFrame(() => input.focus());
+    });
     this.element.querySelector("[data-action='editImage']")?.addEventListener("click", this.#onEditImage.bind(this));
     this.element.querySelector("[data-action='rouseCheck']")?.addEventListener("click", this.#onRouseCheck.bind(this));
 
@@ -1500,8 +1574,315 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async #onInputChange(event) {
     const input = event.currentTarget;
+    let value = input.value;
+    if (input.type === "number" && input.name?.startsWith("system.pdmAttributes.")) {
+      value = Math.max(1, Number(input.value) || 1);
+      input.value = value;
+    } else if (input.type === "number" && (input.name?.startsWith("system.pdmSkills.") || input.name?.startsWith("system.skills."))) {
+      value = Math.max(0, Number(input.value) || 0);
+      input.value = value;
+    }
 
-    return this.actor.update({ [input.name]: input.value });
+    return this.actor.update({ [input.name]: value });
+  }
+
+  async #onRollPdmStandardSkill(event) {
+    if (event.target.closest("input") || event.target.closest("button") || event.target.closest("select")) return;
+    event.preventDefault();
+    const skillKey = event.currentTarget.dataset.skill;
+    const defaultAttribute = PDM_ATTRIBUTE_KEYS.includes(event.currentTarget.dataset.attribute)
+      ? event.currentTarget.dataset.attribute
+      : "physical";
+    if (!SKILL_KEYS.includes(skillKey)) return;
+
+    const options = PDM_ATTRIBUTE_KEYS.map((key) => `<option value="${key}"${key === defaultAttribute ? " selected" : ""}>${LOCALIZE_PDM_ATTR[key]}</option>`).join("");
+    const skillLabel = game.i18n.localize(LOCALIZE_SKILL[skillKey]);
+    const content = `
+      <form class="astrael-dialog-form">
+        <div class="form-group">
+          <label>Atributo</label>
+          <select name="attribute">${options}</select>
+        </div>
+        <div class="form-group">
+          <label>Modificador</label>
+          <input type="number" name="modifier" value="0" step="1">
+        </div>
+      </form>
+    `;
+
+    return new Dialog({
+      title: `Rolar ${skillLabel}`,
+      content,
+      buttons: {
+        roll: {
+          label: "Rolar",
+          callback: (html) => {
+            const attrKey = html.find("[name='attribute']").val();
+            const modifier = Number(html.find("[name='modifier']").val()) || 0;
+            const attrValue = Math.max(1, Number(foundry.utils.getProperty(this.actor.system, `pdmAttributes.${attrKey}.value`)) || 1);
+            const skillValue = Math.max(0, Number(foundry.utils.getProperty(this.actor.system, `skills.${skillKey}.value`)) || 0);
+            const diceCount = Math.max(1, attrValue + skillValue + modifier);
+            const { bloodCount, voidCount } = this.#getSpecialDiceCounts(diceCount);
+
+            return createDicePoolMessage({
+              actor: this.actor,
+              title: `${skillLabel} + ${LOCALIZE_PDM_ATTR[attrKey]}`,
+              kicker: "Teste de PDM",
+              diceCount,
+              bloodCount,
+              voidCount
+            });
+          }
+        }
+      },
+      default: "roll"
+    }, { classes: ["astrael-dialog"], jQuery: true }).render(true);
+  }
+
+  #getPdmSkillsFromSheet() {
+    const actorData = this.actor.toObject();
+    const skills = Array.isArray(actorData.system?.pdmSkills) ? [...actorData.system.pdmSkills] : [];
+
+    this.element?.querySelectorAll(".pdm-skill-float-card").forEach((row) => {
+      const index = Number(row.dataset.index);
+      if (!Number.isInteger(index) || !skills[index]) return;
+
+      const keyInput = row.querySelector(".pdm-skill-key-select");
+      const valueInput = row.querySelector(".pdm-skill-value-input");
+      const key = SKILL_KEYS.includes(keyInput?.value) ? keyInput.value : (SKILL_KEYS.includes(skills[index].key) ? skills[index].key : SKILL_KEYS[0]);
+      skills[index] = {
+        key,
+        name: game.i18n.localize(LOCALIZE_SKILL[key]),
+        value: Math.max(1, Number(valueInput?.value ?? skills[index].value) || 1),
+        attribute: PDM_ATTRIBUTE_KEYS.includes(skills[index].attribute) ? skills[index].attribute : "physical",
+        editing: Boolean(skills[index].editing)
+      };
+    });
+
+    return skills.map((skill) => ({
+      key: SKILL_KEYS.includes(skill?.key) ? skill.key : SKILL_KEYS[0],
+      name: SKILL_KEYS.includes(skill?.key) ? game.i18n.localize(LOCALIZE_SKILL[skill.key]) : (skill?.name || game.i18n.localize(LOCALIZE_SKILL[SKILL_KEYS[0]])),
+      value: Math.max(1, Number(skill?.value) || 1),
+      attribute: PDM_ATTRIBUTE_KEYS.includes(skill?.attribute) ? skill.attribute : "physical",
+      editing: Boolean(skill?.editing)
+    }));
+  }
+
+  async #onAddPdmSkill(event) {
+    event.preventDefault();
+    const attribute = PDM_ATTRIBUTE_KEYS.includes(event.currentTarget.dataset.attribute)
+      ? event.currentTarget.dataset.attribute
+      : "physical";
+    const skills = this.#getPdmSkillsFromSheet();
+    const key = SKILL_KEYS[0];
+    skills.push({ key, name: game.i18n.localize(LOCALIZE_SKILL[key]), value: 1, attribute, editing: true });
+
+    return this.actor.update({ "system.pdmSkills": skills });
+  }
+
+  async #onEditPdmSkill(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const index = Number(event.currentTarget.dataset.index);
+    const skills = this.#getPdmSkillsFromSheet();
+    if (!Number.isInteger(index) || !skills[index]) return;
+
+    skills[index].editing = true;
+    return this.actor.update({ "system.pdmSkills": skills });
+  }
+
+  async #onSavePdmSkill(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const index = Number(event.currentTarget.dataset.index);
+    const skills = this.#getPdmSkillsFromSheet();
+    if (!Number.isInteger(index) || !skills[index]) return;
+
+    skills[index].editing = false;
+    return this.actor.update({ "system.pdmSkills": skills });
+  }
+
+  async #onDeletePdmSkill(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const skills = this.#getPdmSkillsFromSheet();
+    if (!Number.isInteger(index) || !skills[index]) return;
+
+    skills.splice(index, 1);
+    return this.actor.update({ "system.pdmSkills": skills });
+  }
+
+  async #onRollPdmAttribute(event) {
+    event.preventDefault();
+    const attrKey = event.currentTarget.dataset.attribute;
+    if (!PDM_ATTRIBUTE_KEYS.includes(attrKey)) return;
+
+    const attrValue = Math.max(1, Number(foundry.utils.getProperty(this.actor.system, `pdmAttributes.${attrKey}.value`)) || 1);
+    const { bloodCount, voidCount } = this.#getSpecialDiceCounts(attrValue);
+
+    return createDicePoolMessage({
+      actor: this.actor,
+      title: LOCALIZE_PDM_ATTR[attrKey],
+      kicker: "Teste de Atributo",
+      diceCount: attrValue,
+      bloodCount,
+      voidCount
+    });
+  }
+
+  async #onRollPdmAttributeCard(event) {
+    if (event.target.closest("[data-action='edit-pdm-attribute']") || event.target.closest(".pdm-attribute-value-input")) return;
+    event.preventDefault();
+    const attrKey = event.currentTarget.dataset.attribute;
+    if (!PDM_ATTRIBUTE_KEYS.includes(attrKey)) return;
+
+    const skills = this.#getPdmSkillsFromSheet();
+    const skillOptions = [
+      '<option value="">Nenhuma pericia</option>',
+      ...skills.map((skill, index) => `<option value="${index}">${escapeHtml(skill.name || `Pericia ${index + 1}`)} (${skill.value})</option>`)
+    ].join("");
+    const content = `
+      <form class="astrael-dialog-form">
+        <div class="form-group">
+          <label>Pericia</label>
+          <select name="skill">${skillOptions}</select>
+        </div>
+        <div class="form-group">
+          <label>Modificador</label>
+          <input type="number" name="modifier" value="0" step="1">
+        </div>
+      </form>
+    `;
+
+    return new Dialog({
+      title: `Rolar ${LOCALIZE_PDM_ATTR[attrKey]}`,
+      content,
+      buttons: {
+        roll: {
+          label: "Rolar",
+          callback: (html) => {
+            const skillIndex = html.find("[name='skill']").val();
+            const modifier = Number(html.find("[name='modifier']").val()) || 0;
+            const attrValue = Math.max(1, Number(foundry.utils.getProperty(this.actor.system, `pdmAttributes.${attrKey}.value`)) || 1);
+            const skill = skillIndex !== "" ? skills[Number(skillIndex)] : null;
+            const skillValue = skill ? Math.max(1, Number(skill.value) || 1) : 0;
+            const diceCount = Math.max(1, attrValue + skillValue + modifier);
+            const { bloodCount, voidCount } = this.#getSpecialDiceCounts(diceCount);
+
+            return createDicePoolMessage({
+              actor: this.actor,
+              title: skill ? `${skill.name || "Pericia"} + ${LOCALIZE_PDM_ATTR[attrKey]}` : LOCALIZE_PDM_ATTR[attrKey],
+              kicker: "Teste de PDM",
+              diceCount,
+              bloodCount,
+              voidCount
+            });
+          }
+        }
+      },
+      default: "roll"
+    }, { classes: ["astrael-dialog"], jQuery: true }).render(true);
+  }
+
+  #onEditPdmAttribute(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const attrKey = event.currentTarget.dataset.attribute;
+    if (!PDM_ATTRIBUTE_KEYS.includes(attrKey)) return;
+
+    this._editingPdmAttribute = attrKey;
+    return this.render({ force: true });
+  }
+
+  async #savePdmAttributeInput(input) {
+    const attrKey = input.dataset.attribute;
+    if (!PDM_ATTRIBUTE_KEYS.includes(attrKey)) return;
+
+    const value = Math.max(1, Number(input.value) || 1);
+    this._editingPdmAttribute = null;
+    await this.actor.update({ [`system.pdmAttributes.${attrKey}.value`]: value });
+    return this.render({ force: true });
+  }
+
+  #onPdmAttributeInputKeydown(event) {
+    event.stopPropagation();
+    if (event.key === "Enter") {
+      event.preventDefault();
+      return this.#savePdmAttributeInput(event.currentTarget);
+    }
+    if (event.key === "Escape") {
+      event.preventDefault();
+      this._editingPdmAttribute = null;
+      return this.render({ force: true });
+    }
+  }
+
+  #onPdmAttributeInputBlur(event) {
+    return this.#savePdmAttributeInput(event.currentTarget);
+  }
+
+  async #onRollPdmSkill(event) {
+    if (event.currentTarget.classList.contains("is-editing")) return;
+    if (event.target.closest("input") || event.target.closest("select") || event.target.closest("button")) return;
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const skills = this.#getPdmSkillsFromSheet();
+    const skill = skills[index];
+    if (!Number.isInteger(index) || !skill) return;
+
+    await this.actor.update({ "system.pdmSkills": skills });
+
+    const options = PDM_ATTRIBUTE_KEYS.map((key) => `<option value="${key}"${key === skill.attribute ? " selected" : ""}>${LOCALIZE_PDM_ATTR[key]}</option>`).join("");
+    const content = `
+      <form class="astrael-dialog-form">
+        <div class="form-group">
+          <label>Atributo</label>
+          <select name="attribute">${options}</select>
+        </div>
+        <div class="form-group">
+          <label>Modificador</label>
+          <input type="number" name="modifier" value="0" step="1">
+        </div>
+      </form>
+    `;
+
+    return new Dialog({
+      title: `Rolar ${escapeHtml(skill.name)}`,
+      content,
+      buttons: {
+        roll: {
+          label: "Rolar",
+          callback: (html) => {
+            const attrKey = html.find("[name='attribute']").val();
+            const modifier = Number(html.find("[name='modifier']").val()) || 0;
+            const attrValue = Math.max(1, Number(foundry.utils.getProperty(this.actor.system, `pdmAttributes.${attrKey}.value`)) || 1);
+            const skillValue = Math.max(1, Number(skill.value) || 1);
+            const diceCount = Math.max(1, attrValue + skillValue + modifier);
+            const { bloodCount, voidCount } = this.#getSpecialDiceCounts(diceCount);
+
+            return createDicePoolMessage({
+              actor: this.actor,
+              title: `${skill.name} + ${LOCALIZE_PDM_ATTR[attrKey]}`,
+              kicker: "Teste de PDM",
+              diceCount,
+              bloodCount,
+              voidCount
+            });
+          }
+        }
+      },
+      default: "roll"
+    }, { classes: ["astrael-dialog"], jQuery: true }).render(true);
+  }
+
+  #getSpecialDiceCounts(diceCount) {
+    const rawBlood = Math.max(0, 5 - (Number(this.actor.system.sangria?.value) || 5));
+    const rawVoid = Math.max(0, Number(this.actor.system.vazio?.value) || 0);
+
+    return {
+      bloodCount: Math.min(rawBlood, diceCount),
+      voidCount: Math.min(rawVoid, diceCount - Math.min(rawBlood, diceCount))
+    };
   }
 
   #dotMin(name) {
@@ -2242,7 +2623,9 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       await this.actor.update({ "system.sangria.value": nextBlood });
     }
 
-    const intelligence = Number(this.actor.system.attributes?.intelligence?.value) || 1;
+    const intelligence = this.actor.type === "pdm"
+      ? Math.max(1, Number(this.actor.system.pdmAttributes?.mental?.value) || 1)
+      : Number(this.actor.system.attributes?.intelligence?.value) || 1;
     const hemomancyLevel = clampNumber(this.actor.system.hemomancy?.level, 0, 5);
     const diceCount = Math.max(1, intelligence + hemomancyLevel);
     const rawBlood = Math.max(0, 5 - (Number(this.actor.system.sangria?.value) || 5));
@@ -3089,10 +3472,82 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 }
 
+class AstraelPdmSheet extends AstraelCharacterSheet {
+  static DEFAULT_OPTIONS = {
+    classes: ["astrael-rpg", "sheet", "actor", "pdm-sheet"],
+    position: {
+      width: 900,
+      height: 680
+    },
+    form: {
+      closeOnSubmit: false,
+      submitOnChange: false,
+      handler: updateActorSheet
+    },
+    window: {
+      title: "Astrael RPG PDM Sheet",
+      resizable: true
+    }
+  };
+
+  static PARTS = {
+    form: {
+      template: PDM_SHEET_TEMPLATE
+    }
+  };
+
+  get title() {
+    return `${game.i18n.localize("ASTRAEL.Sheet.PDM")}: ${this.actor.name}`;
+  }
+
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+
+    context.system.pdmAttributes ??= {};
+    for (const key of PDM_ATTRIBUTE_KEYS) {
+      const attr = context.system.pdmAttributes[key];
+      context.system.pdmAttributes[key] = {
+        value: Math.max(1, Number(attr?.value) || 1),
+        label: LOCALIZE_PDM_ATTR[key],
+        key,
+        editing: this._editingPdmAttribute === key
+      };
+    }
+
+    const pdmSkills = Array.isArray(context.system.pdmSkills)
+      ? context.system.pdmSkills.map((skill, index) => ({
+        index,
+        key: SKILL_KEYS.includes(skill?.key) ? skill.key : SKILL_KEYS[0],
+        name: SKILL_KEYS.includes(skill?.key) ? game.i18n.localize(LOCALIZE_SKILL[skill.key]) : (skill?.name || game.i18n.localize(LOCALIZE_SKILL[SKILL_KEYS[0]])),
+        value: Math.max(1, Number(skill?.value) || 1),
+        attribute: PDM_ATTRIBUTE_KEYS.includes(skill?.attribute) ? skill.attribute : "physical",
+        editing: Boolean(skill?.editing),
+        skillOptions: SKILL_KEYS.map((key) => ({
+          key,
+          label: game.i18n.localize(LOCALIZE_SKILL[key]),
+          selected: key === (SKILL_KEYS.includes(skill?.key) ? skill.key : SKILL_KEYS[0])
+        }))
+      }))
+      : [];
+    context.system.pdmSkills = pdmSkills;
+    context.system.pdmAttributeColumns = PDM_ATTRIBUTE_KEYS.map((key) => ({
+      ...context.system.pdmAttributes[key],
+      skills: PDM_SKILL_GROUPS[key].map((skillKey) => ({
+        key: skillKey,
+        label: game.i18n.localize(LOCALIZE_SKILL[skillKey]),
+        value: Math.max(0, Number(context.system.skills?.[skillKey]?.value) || 0)
+      }))
+    }));
+
+    return context;
+  }
+}
+
 Hooks.once("init", () => {
   console.log("Astrael RPG | Initializing system");
 
   CONFIG.Actor.dataModels.character = AstraelCharacterData;
+  CONFIG.Actor.dataModels.pdm = AstraelPdmData;
   CONFIG.Item.dataModels.trait = AstraelTraitData;
 
   foundry.applications.apps.DocumentSheetConfig.registerSheet(
@@ -3103,6 +3558,17 @@ Hooks.once("init", () => {
       types: ["character"],
       makeDefault: true,
       label: "Astrael RPG Character Sheet"
+    }
+  );
+
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(
+    Actor,
+    SYSTEM_ID,
+    AstraelPdmSheet,
+    {
+      types: ["pdm"],
+      makeDefault: true,
+      label: "Astrael RPG PDM Sheet"
     }
   );
 
