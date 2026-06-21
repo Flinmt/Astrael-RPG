@@ -113,8 +113,15 @@
         <button class="tab-button active" data-tab="attributes" type="button">{{localize "ASTRAEL.Tab.Attributes"}}</button>
         <button class="tab-button" data-tab="advantages" type="button">{{localize "ASTRAEL.Tab.Advantages"}}</button>
         <button class="tab-button" data-tab="convictions" type="button">{{localize "ASTRAEL.Tab.Convictions"}}</button>
+        {{#if system.sheetSettings.visibleTabs.virtues}}
+        <button class="tab-button" data-tab="virtues" type="button">{{localize "ASTRAEL.Tab.Virtues"}}</button>
+        {{/if}}
+        {{#if system.sheetSettings.visibleTabs.hemomancy}}
         <button class="tab-button" data-tab="hemomancy" type="button">{{localize "ASTRAEL.Tab.Hemomancy"}}</button>
+        {{/if}}
+        {{#if system.sheetSettings.visibleTabs.strangerMark}}
         <button class="tab-button" data-tab="stranger-mark" type="button">{{localize "ASTRAEL.Tab.StrangerMark"}}</button>
+        {{/if}}
         <button class="settings-gear" data-tab="settings" type="button" title="{{localize 'ASTRAEL.Tab.Settings'}}">
           <i class="fas fa-cog"></i>
         </button>
@@ -519,6 +526,118 @@
             </section>
           </div>
         </div>
+        {{#if system.sheetSettings.visibleTabs.virtues}}
+        <div class="tab-panel" data-tab="virtues">
+          <div class="virtue-browser">
+            <aside class="virtue-sidebar">
+              <header class="virtue-browser-header">
+                <div class="virtue-browser-header-row">
+                  <div>
+                    <span>Codigo de Conduta</span>
+                    <h2>Virtudes</h2>
+                  </div>
+                </div>
+              </header>
+
+              <div class="virtue-list-container">
+                <div class="virtue-list">
+                  {{#each system.virtues as |virtue|}}
+                  <button type="button" class="virtue-row {{#if virtue.selected}}is-selected{{/if}}" data-action="select-virtue" data-index="{{@index}}">
+                    <span class="virtue-row-name">{{virtue.displayName}}</span>
+                  </button>
+                  {{/each}}
+                  <button type="button" class="virtue-add" data-action="add-virtue">+</button>
+                </div>
+              </div>
+            </aside>
+
+            <section class="virtue-inspector">
+              <div class="virtue-detail-content">
+
+              {{#if system.selectedVirtue}}
+              {{#if system.selectedVirtue.editing}}
+              <div class="virtue-inspector-form">
+                <label>
+                  <span>Nome</span>
+                  <input class="virtue-name-input" type="text" data-index="{{system.selectedVirtue.index}}" value="{{system.selectedVirtue.name}}" placeholder="Nome da virtude">
+                </label>
+                <label class="virtue-description-field">
+                  <span>Descricao</span>
+                  <textarea class="virtue-description-input" data-index="{{system.selectedVirtue.index}}" placeholder="Descreva o codigo de conduta da virtude.">{{system.selectedVirtue.description}}</textarea>
+                </label>
+                <hr class="virtue-perks-divider">
+                <div class="virtue-perks-header">
+                  <span>Perks</span>
+                  <button type="button" class="virtue-perk-add" data-action="add-virtue-perk" data-index="{{system.selectedVirtue.index}}">+</button>
+                </div>
+                <div class="virtue-perks-list">
+                  {{#each system.selectedVirtue.perks as |perk pidx|}}
+                  <div class="virtue-perk-editor">
+                    <div class="virtue-perk-editor-head">
+                      <label>
+                        <span>Perk</span>
+                        <input class="virtue-perk-name-input" type="text" data-virtue="{{../system.selectedVirtue.index}}" data-index="{{pidx}}" value="{{perk.name}}" placeholder="Nome do perk">
+                      </label>
+                      <button type="button" class="virtue-perk-remove" data-action="delete-virtue-perk" data-virtue="{{../system.selectedVirtue.index}}" data-index="{{pidx}}" title="Remover perk" aria-label="Remover perk">×</button>
+                    </div>
+                    <label class="virtue-perk-description-field">
+                      <span>Descricao</span>
+                      <textarea class="virtue-perk-description-input" data-virtue="{{../system.selectedVirtue.index}}" data-index="{{pidx}}" placeholder="Descreva o perk.">{{perk.description}}</textarea>
+                    </label>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+              {{else}}
+              <div class="virtue-inspector-title-row">
+                <h2>{{system.selectedVirtue.name}}</h2>
+              </div>
+              <div class="virtue-inspector-copy">
+                <p>{{#if system.selectedVirtue.description}}{{system.selectedVirtue.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+              </div>
+              {{#if system.selectedVirtue.perks.length}}
+              <hr class="virtue-perks-divider">
+              <div class="virtue-perks-header">
+                <span>Perks</span>
+              </div>
+              <div class="virtue-perks-list">
+                {{#each system.selectedVirtue.perks as |perk pidx|}}
+                <div class="virtue-perk {{#if perk.expanded}}is-expanded{{/if}}">
+                  <button type="button" class="virtue-perk-summary" data-action="toggle-virtue-perk" data-virtue="{{../system.selectedVirtue.index}}" data-index="{{pidx}}" aria-expanded="{{#if perk.expanded}}true{{else}}false{{/if}}">
+                    <span>{{#if perk.name}}{{perk.name}}{{else}}Perk sem nome{{/if}}</span>
+                  </button>
+                  {{#if perk.expanded}}
+                  <div class="virtue-perk-body">
+                    <p class="virtue-perk-description">{{#if perk.description}}{{perk.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+                  </div>
+                  {{/if}}
+                </div>
+                {{/each}}
+              </div>
+              {{/if}}
+              {{/if}}
+
+              <div class="virtue-inspector-actions">
+                {{#unless system.selectedVirtue.editing}}
+                <button type="button" class="virtue-command" data-action="edit-virtue" data-index="{{system.selectedVirtue.index}}">Editar</button>
+                {{/unless}}
+                {{#if system.selectedVirtue.editing}}
+                <button type="button" class="virtue-command" data-action="save-virtue" data-index="{{system.selectedVirtue.index}}">Salvar</button>
+                <button type="button" class="virtue-command danger" data-action="delete-virtue" data-index="{{system.selectedVirtue.index}}">Excluir</button>
+                {{/if}}
+              </div>
+              {{else}}
+              <div class="virtue-empty-inspector">
+                <span>Nenhuma virtude selecionada</span>
+                <p>Crie uma virtude para registrar o codigo de conduta do personagem.</p>
+              </div>
+              {{/if}}
+              </div>
+            </section>
+          </div>
+        </div>
+        {{/if}}
+        {{#if system.sheetSettings.visibleTabs.hemomancy}}
         <div class="tab-panel" data-tab="hemomancy">
           <div class="hemomancy-browser">
             <aside class="hemomancy-sidebar">
@@ -526,8 +645,11 @@
                 <div class="hemomancy-browser-header-row">
                   <div>
                     <span>Sangue Invocado</span>
-                    <h2>Magias</h2>
+                    <h2>{{system.hemomancy.itemPluralTitle}}</h2>
                   </div>
+                  <button type="button" class="hemomancy-mode-switch" data-action="set-hemomancy-list-mode" data-mode="{{system.hemomancy.switchMode}}" title="Abrir {{system.hemomancy.switchLabel}}" aria-label="Abrir {{system.hemomancy.switchLabel}}">
+                    <img src="{{system.hemomancy.switchIcon}}" alt="">
+                  </button>
                 </div>
               </header>
 
@@ -539,14 +661,14 @@
 
               <div class="hemomancy-list-container">
                 <div class="hemomancy-list">
-                  {{#each system.hemomancy.powers as |power|}}
+                  {{#each system.hemomancy.activeEntries as |power|}}
                   {{#unless power.hidden}}
                   <button type="button" class="hemomancy-row {{#if power.selected}}is-selected{{/if}}" data-action="select-hemomancy-power" data-index="{{@index}}">
                     <span class="hemomancy-row-name">{{power.name}}</span>
                   </button>
                   {{/unless}}
                   {{/each}}
-                  <button type="button" class="hemomancy-add" data-action="add-hemomancy-power" title="Adicionar magia" {{#if (eq system.hemomancy.level 0)}}disabled{{/if}}>+</button>
+                  <button type="button" class="hemomancy-add" data-action="add-hemomancy-power" title="Adicionar {{system.hemomancy.itemSingular}}" {{#if (eq system.hemomancy.activeLevel 0)}}disabled{{/if}}>+</button>
                 </div>
               </div>
             </aside>
@@ -554,9 +676,9 @@
             <section class="hemomancy-inspector">
               <div class="hemomancy-level-card">
                 <div>
-                  <span>Potencia da Hemomencia</span>
+                  <span>{{system.hemomancy.levelLabel}}</span>
                 </div>
-                <button type="button" class="hemomancy-level-control" title="Clique para aumentar, botao direito para reduzir">{{system.hemomancy.levelRoman}}</button>
+                <button type="button" class="hemomancy-level-control" title="Clique para aumentar, botao direito para reduzir">{{system.hemomancy.activeLevelRoman}}</button>
               </div>
               <div class="hemomancy-detail-content">
 
@@ -568,7 +690,7 @@
               <div class="hemomancy-inspector-form">
                 <label>
                   <span>Nome</span>
-                  <input class="hemomancy-name-input" type="text" data-index="{{system.hemomancy.selectedPower.index}}" value="{{system.hemomancy.selectedPower.name}}" placeholder="Nome da magia">
+                  <input class="hemomancy-name-input" type="text" data-index="{{system.hemomancy.selectedPower.index}}" value="{{system.hemomancy.selectedPower.name}}" placeholder="Nome da {{system.hemomancy.itemSingular}}">
                 </label>
                 <label>
                   <span>Custo</span>
@@ -576,7 +698,7 @@
                 </label>
                 <label class="hemomancy-description-field">
                   <span>Descricao</span>
-                  <textarea class="hemomancy-description-input" data-index="{{system.hemomancy.selectedPower.index}}" placeholder="Descreva efeito, alcance e consequencias da magia.">{{system.hemomancy.selectedPower.description}}</textarea>
+                  <textarea class="hemomancy-description-input" data-index="{{system.hemomancy.selectedPower.index}}" placeholder="Descreva efeito, alcance e consequencias da {{system.hemomancy.itemSingular}}.">{{system.hemomancy.selectedPower.description}}</textarea>
                 </label>
               </div>
               {{else}}
@@ -610,14 +732,16 @@
               </div>
               {{else}}
               <div class="hemomancy-empty-inspector">
-                <span>Nenhuma magia selecionada</span>
-                <p>Crie uma magia no circulo {{system.hemomancy.modeRoman}} para abrir o grimorio de sangue.</p>
+                <span>{{system.hemomancy.itemEmptyTitle}}</span>
+                <p>{{system.hemomancy.itemEmptyText}}</p>
               </div>
               {{/if}}
               </div>
             </section>
           </div>
         </div>
+        {{/if}}
+        {{#if system.sheetSettings.visibleTabs.strangerMark}}
         <div class="tab-panel" data-tab="stranger-mark">
           {{#if system.strangerMark.selectedMark}}
           <div class="stranger-mark-browser">
@@ -656,7 +780,6 @@
               <div class="stranger-mark-level-card">
                 <div>
                   <span>Potencia da marca</span>
-                  <strong>{{system.strangerMark.selectedMark.label}}</strong>
                 </div>
                 <button type="button" class="stranger-mark-level-control" data-option="{{system.strangerMark.selectedMark.option}}" title="Clique para aumentar, botao direito para reduzir">{{system.strangerMark.selectedMark.levelRoman}}</button>
               </div>
@@ -726,6 +849,7 @@
           </div>
           {{/if}}
         </div>
+        {{/if}}
         <div class="tab-panel" data-tab="convictions">
           <section class="convictions-panel">
             <div class="conviction-grid">
@@ -808,7 +932,28 @@
             </div>
           </section>
         </div>
-        <div class="tab-panel" data-tab="settings"></div>
+        <div class="tab-panel" data-tab="settings">
+          <section class="settings-panel">
+            <div class="settings-panel-header">
+              <span>{{localize "ASTRAEL.Tab.Settings"}}</span>
+              <h2>{{localize "ASTRAEL.Settings.VisibleTabs"}}</h2>
+            </div>
+            <div class="settings-toggle-list">
+              <button type="button" class="settings-toggle-row {{#if system.sheetSettings.visibleTabs.virtues}}is-enabled{{/if}}" data-action="toggle-character-tab" data-key="virtues" data-visible="{{#if system.sheetSettings.visibleTabs.virtues}}true{{else}}false{{/if}}">
+                <span class="settings-toggle-indicator"></span>
+                <span>{{localize "ASTRAEL.Settings.ShowVirtues"}}</span>
+              </button>
+              <button type="button" class="settings-toggle-row {{#if system.sheetSettings.visibleTabs.hemomancy}}is-enabled{{/if}}" data-action="toggle-character-tab" data-key="hemomancy" data-visible="{{#if system.sheetSettings.visibleTabs.hemomancy}}true{{else}}false{{/if}}">
+                <span class="settings-toggle-indicator"></span>
+                <span>{{localize "ASTRAEL.Settings.ShowHemomancy"}}</span>
+              </button>
+              <button type="button" class="settings-toggle-row {{#if system.sheetSettings.visibleTabs.strangerMark}}is-enabled{{/if}}" data-action="toggle-character-tab" data-key="strangerMark" data-visible="{{#if system.sheetSettings.visibleTabs.strangerMark}}true{{else}}false{{/if}}">
+                <span class="settings-toggle-indicator"></span>
+                <span>{{localize "ASTRAEL.Settings.ShowStrangerMark"}}</span>
+              </button>
+            </div>
+          </section>
+        </div>
       </section>
     </section>
   </main>

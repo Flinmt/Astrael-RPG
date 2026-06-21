@@ -1005,6 +1005,45 @@
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.8), 0 0 8px rgba(90, 150, 200, 0.42);
 }
 
+.astrael-rpg .tab-button[data-tab="virtues"] {
+  color: #d9a96c;
+  text-shadow: 0 0 8px rgba(193, 117, 57, 0.34);
+}
+
+.astrael-rpg .tab-button[data-tab="virtues"]::before {
+  background: linear-gradient(180deg, #3f260d 0%, #170d04 100%);
+  border-color: rgba(193, 117, 57, 0.62);
+  box-shadow: inset 0 0 18px rgba(193, 117, 57, 0.14);
+}
+
+.astrael-rpg .tab-button[data-tab="virtues"]:hover {
+  color: #f8d19c;
+}
+
+.astrael-rpg .tab-button[data-tab="virtues"]:hover::before {
+  background: linear-gradient(180deg, #5a3714 0%, #241306 100%);
+  border-color: rgba(244, 190, 118, 0.72);
+}
+
+.astrael-rpg .tab-button[data-tab="virtues"].active {
+  color: #ffe0b2;
+  text-shadow: 0 0 12px rgba(244, 190, 118, 0.5);
+}
+
+.astrael-rpg .tab-button[data-tab="virtues"].active::before {
+  background: linear-gradient(180deg, #704417 0%, #2a1607 100%);
+  border: 1px solid rgba(244, 190, 118, 0.86);
+  border-top: 3px solid #f8d19c;
+  border-bottom: none;
+  box-shadow: 2px -1px 5px rgba(0, 0, 0, 0.48), inset 0 0 22px rgba(244, 190, 118, 0.16);
+}
+
+.astrael-rpg .tab-button[data-tab="virtues"].active::after {
+  background: #120904;
+  border-color: rgba(244, 190, 118, 0.9);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.8), 0 0 8px rgba(244, 190, 118, 0.42);
+}
+
 @keyframes grommetFade {
   from {
     opacity: 0;
@@ -1017,9 +1056,11 @@
 }
 
 .astrael-rpg .settings-gear {
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 38px;
+  margin-left: auto;
   width: 38px;
   height: 38px;
   padding: 0;
@@ -1074,6 +1115,143 @@
   background: #0d111a;
 }
 
+.astrael-rpg .settings-panel {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+  border: 1px solid rgba(90, 80, 68, 0.84);
+  background:
+    linear-gradient(90deg, rgba(182, 138, 58, 0.06), transparent 42%),
+    var(--astrael-panel-2);
+}
+
+.astrael-rpg .settings-panel-header {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.62);
+}
+
+.astrael-rpg .settings-panel-header span {
+  color: var(--astrael-dim);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .settings-panel-header h2 {
+  margin: 0;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 18px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .settings-toggle-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.astrael-rpg .settings-toggle-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 14px;
+  min-height: 82px;
+  padding: 14px;
+  border: 1px solid rgba(90, 80, 68, 0.72);
+  background:
+    linear-gradient(135deg, rgba(193, 117, 57, 0.08), transparent 46%),
+    rgba(10, 8, 6, 0.68);
+  color: var(--astrael-text);
+  cursor: pointer;
+  font-family: "Inter", Arial, sans-serif;
+  text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(255, 238, 200, 0.025), 0 10px 24px rgba(0, 0, 0, 0.22);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.astrael-rpg .settings-toggle-row:hover {
+  border-color: rgba(193, 117, 57, 0.78);
+  background:
+    linear-gradient(135deg, rgba(193, 117, 57, 0.14), transparent 48%),
+    rgba(16, 12, 8, 0.78);
+  transform: translateY(-1px);
+}
+
+.astrael-rpg .settings-toggle-row.is-enabled {
+  border-color: rgba(193, 117, 57, 0.92);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(193, 117, 57, 0.22), transparent 42%),
+    linear-gradient(135deg, rgba(193, 117, 57, 0.14), transparent 52%),
+    rgba(18, 12, 6, 0.84);
+  box-shadow: inset 0 0 0 1px rgba(255, 225, 170, 0.055), 0 0 18px rgba(193, 117, 57, 0.12);
+}
+
+.astrael-rpg .settings-toggle-row > span:last-child {
+  color: rgba(246, 225, 205, 0.72);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .settings-toggle-row.is-enabled > span:last-child {
+  color: #f4dcc2;
+  text-shadow: 0 0 12px rgba(193, 117, 57, 0.32);
+}
+
+.astrael-rpg .settings-toggle-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  grid-column: 2;
+  grid-row: 1;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(90, 80, 68, 0.78);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(5, 3, 4, 0.88), rgba(0, 0, 0, 0.78));
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.45);
+}
+
+.astrael-rpg .settings-toggle-row.is-enabled .settings-toggle-indicator {
+  border-color: rgba(193, 117, 57, 0.9);
+  background: radial-gradient(circle, rgba(193, 117, 57, 0.38), rgba(60, 34, 12, 0.92));
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.42), 0 0 14px rgba(193, 117, 57, 0.34);
+}
+
+.astrael-rpg .settings-toggle-row.is-enabled .settings-toggle-indicator::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--astrael-gold-bright);
+  box-shadow: 0 0 8px rgba(193, 117, 57, 0.55);
+}
+
+@media (max-width: 760px) {
+  .astrael-rpg .settings-toggle-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.astrael-rpg[data-active-tab="virtues"] .sheet-frame {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 220px),
+    radial-gradient(circle at 18% 18%, rgba(193, 117, 57, 0.14), transparent 34%),
+    #050302;
+}
+
+.astrael-rpg[data-active-tab="virtues"] .sheet-body {
+  background: #050302;
+}
+
 .astrael-rpg .tab-panel {
   display: none;
 }
@@ -1088,6 +1266,10 @@
 
 .astrael-rpg .tab-panel[data-tab="stranger-mark"].active {
   background: #0d111a;
+}
+
+.astrael-rpg .tab-panel[data-tab="virtues"].active {
+  background: #050302;
 }
 
 .astrael-rpg .tab-panel[data-tab="convictions"].active {
@@ -2542,6 +2724,40 @@
   line-height: 1.08;
   text-transform: uppercase;
   text-shadow: 0 0 16px rgba(172, 29, 45, 0.55);
+}
+
+.astrael-rpg .hemomancy-mode-switch {
+  display: grid;
+  place-items: center;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  padding: 7px;
+  border: 1px solid rgba(193, 117, 57, 0.55);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(219, 47, 62, 0.18), transparent 58%),
+    rgba(30, 4, 8, 0.78);
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.3), 0 0 0 rgba(178, 32, 43, 0);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.astrael-rpg .hemomancy-mode-switch:hover {
+  border-color: rgba(219, 47, 62, 0.9);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(219, 47, 62, 0.28), transparent 62%),
+    rgba(66, 10, 18, 0.94);
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.34), 0 0 16px rgba(178, 32, 43, 0.34);
+  transform: translateY(-1px);
+}
+
+.astrael-rpg .hemomancy-mode-switch img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: sepia(0.28) saturate(1.45) drop-shadow(0 0 7px rgba(244, 220, 194, 0.35));
+  pointer-events: none;
 }
 
 .astrael-rpg .tab-panel[data-tab="hemomancy"] .hemomancy-add {
@@ -6400,4 +6616,448 @@
   .astrael-rpg .pdm-skill-float-card {
     grid-template-columns: 1fr;
   }
+}
+
+.astrael-rpg .virtue-browser {
+  position: relative;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 18px;
+  height: 450px;
+  padding: 2px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(193, 117, 57, 0.18), transparent 34%),
+    radial-gradient(circle at 82% 16%, rgba(121, 72, 24, 0.16), transparent 36%),
+    linear-gradient(145deg, rgba(7, 4, 2, 0.92), rgba(12, 8, 4, 0.98));
+}
+
+.astrael-rpg .virtue-inspector {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 20px;
+  border: 1px solid rgba(129, 77, 25, 0.74);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(193, 117, 57, 0.28), transparent 38%),
+    linear-gradient(145deg, #050302, #0c0703 58%, #070402);
+  box-shadow: inset 0 0 0 1px rgba(244, 190, 118, 0.06), 0 18px 45px rgba(0, 0, 0, 0.38);
+}
+
+.astrael-rpg .virtue-sidebar::before,
+.astrael-rpg .virtue-inspector::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.03), transparent 30%, rgba(193, 117, 57, 0.12));
+}
+
+.astrael-rpg .virtue-sidebar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(129, 77, 25, 0.74);
+  background:
+    radial-gradient(circle at 24% 0%, rgba(193, 117, 57, 0.24), transparent 36%),
+    linear-gradient(155deg, #080402, #100904 62%, #060302);
+  box-shadow: inset 0 0 0 1px rgba(244, 190, 118, 0.05), 0 18px 45px rgba(0, 0, 0, 0.32);
+}
+
+.astrael-rpg .virtue-list-container {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+
+.astrael-rpg .virtue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.astrael-rpg .virtue-browser-header {
+  position: relative;
+  z-index: 1;
+}
+
+.astrael-rpg .virtue-browser-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.astrael-rpg .virtue-browser-header span,
+.astrael-rpg .virtue-inspector-kicker,
+.astrael-rpg .virtue-inspector-form span,
+.astrael-rpg .virtue-perks-header span,
+.astrael-rpg .virtue-perk-body label span,
+.astrael-rpg .virtue-perk-editor label span {
+  display: block;
+  color: var(--astrael-gold-bright);
+  opacity: 0.8;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .virtue-browser-header h2,
+.astrael-rpg .virtue-inspector-title-row h2 {
+  margin: 3px 0 0;
+  color: #f8d19c;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.45rem;
+  letter-spacing: 0.08em;
+  line-height: 1.08;
+  text-transform: uppercase;
+  text-shadow: 0 0 16px rgba(193, 117, 57, 0.62), 0 0 28px rgba(104, 58, 16, 0.42);
+}
+
+.astrael-rpg .tab-panel[data-tab="virtues"] .virtue-add {
+  display: grid;
+  place-items: center;
+  min-height: 40px;
+  border: 1px dashed rgba(193, 117, 57, 0.58);
+  color: rgba(248, 209, 156, 0.54);
+  font-family: "IBM Plex Mono", "Courier New", monospace;
+  font-size: 16px;
+  font-weight: 700;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.astrael-rpg .tab-panel[data-tab="virtues"] .virtue-add:hover {
+  border-color: rgba(244, 190, 118, 0.9);
+  color: #f8d19c;
+  background: rgba(193, 117, 57, 0.12);
+}
+
+.astrael-rpg .virtue-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid rgba(129, 77, 25, 0.78);
+  background:
+    linear-gradient(90deg, rgba(54, 30, 10, 0.86), rgba(10, 6, 3, 0.78));
+  color: #f0cfaa;
+  text-align: left;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.2;
+}
+
+.astrael-rpg .virtue-row:hover,
+.astrael-rpg .virtue-row.is-selected {
+  border-color: rgba(244, 190, 118, 0.9);
+  background:
+    radial-gradient(circle at 0% 50%, rgba(244, 190, 118, 0.18), transparent 42%),
+    linear-gradient(90deg, rgba(88, 50, 18, 0.94), rgba(28, 15, 5, 0.9));
+  box-shadow: inset 0 0 0 1px rgba(244, 190, 118, 0.08), 0 0 16px rgba(193, 117, 57, 0.24);
+}
+
+.astrael-rpg .virtue-row-name {
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  word-wrap: break-word;
+}
+
+.astrael-rpg .virtue-detail-content {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid rgba(193, 117, 57, 0.22);
+  background: rgba(5, 3, 4, 0.45);
+}
+
+.astrael-rpg .virtue-inspector-edit-header,
+.astrael-rpg .virtue-inspector-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.astrael-rpg .virtue-inspector-copy {
+  margin-top: 14px;
+}
+
+.astrael-rpg .virtue-inspector-copy p,
+.astrael-rpg .virtue-perk-description {
+  margin: 0;
+  color: rgba(246, 225, 205, 0.86);
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.astrael-rpg .virtue-inspector-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.astrael-rpg .virtue-inspector-form input,
+.astrael-rpg .virtue-inspector-form textarea,
+.astrael-rpg .virtue-perk-body input,
+.astrael-rpg .virtue-perk-body textarea,
+.astrael-rpg .virtue-perk-editor input,
+.astrael-rpg .virtue-perk-editor textarea {
+  width: 100%;
+  border: 1px solid rgba(193, 117, 57, 0.75);
+  background: rgba(10, 6, 3, 0.86);
+  color: #f4dcc2;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+.astrael-rpg .virtue-inspector-form input,
+.astrael-rpg .virtue-perk-body input,
+.astrael-rpg .virtue-perk-editor input {
+  height: 36px;
+  padding: 0 10px;
+}
+
+.astrael-rpg .virtue-inspector-form textarea {
+  min-height: 140px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.astrael-rpg .virtue-perk-body textarea,
+.astrael-rpg .virtue-perk-editor textarea {
+  min-height: 80px;
+  padding: 10px;
+  resize: vertical;
+}
+
+.astrael-rpg .virtue-inspector-form input:focus,
+.astrael-rpg .virtue-inspector-form textarea:focus,
+.astrael-rpg .virtue-perk-body input:focus,
+.astrael-rpg .virtue-perk-body textarea:focus,
+.astrael-rpg .virtue-perk-editor input:focus,
+.astrael-rpg .virtue-perk-editor textarea:focus {
+  border-color: rgba(214, 154, 85, 0.96);
+  box-shadow: 0 0 0 1px rgba(193, 117, 57, 0.3);
+  outline: none;
+}
+
+.astrael-rpg .virtue-perks-divider {
+  margin: 16px 0 12px;
+  border: none;
+  border-top: 1px solid rgba(193, 117, 57, 0.28);
+}
+
+.astrael-rpg .virtue-perks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(193, 117, 57, 0.28);
+}
+
+.astrael-rpg .virtue-perk-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.68;
+}
+
+.astrael-rpg .virtue-perk-add:hover {
+  opacity: 1;
+}
+
+.astrael-rpg .virtue-perks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.astrael-rpg .virtue-perk {
+  border: 0;
+  border-bottom: 1px solid rgba(193, 117, 57, 0.28);
+  background: transparent;
+}
+
+.astrael-rpg .virtue-perk.is-expanded {
+  border-bottom-color: rgba(214, 154, 85, 0.5);
+  box-shadow: none;
+}
+
+.astrael-rpg .virtue-perk-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(246, 225, 205, 0.9);
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.2;
+  text-align: left;
+}
+
+.astrael-rpg .virtue-perk-summary::after {
+  content: "+";
+  flex: 0 0 auto;
+  color: rgba(244, 190, 118, 0.72);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.astrael-rpg .virtue-perk.is-expanded .virtue-perk-summary::after {
+  content: "-";
+}
+
+.astrael-rpg .virtue-perk-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 12px 12px;
+  border-top: 0;
+}
+
+.astrael-rpg .virtue-perk-editor {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(193, 117, 57, 0.28);
+  background: rgba(5, 3, 4, 0.48);
+}
+
+.astrael-rpg .virtue-perk-editor-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: end;
+  gap: 8px;
+}
+
+.astrael-rpg .virtue-perk-editor label {
+  display: grid;
+  gap: 4px;
+}
+
+.astrael-rpg .virtue-perk-editor textarea {
+  min-height: 58px;
+}
+
+.astrael-rpg .virtue-perk-remove {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(127, 21, 31, 0.6);
+  border-radius: 4px;
+  background: rgba(66, 10, 18, 0.72);
+  color: rgba(255, 164, 148, 0.9);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.astrael-rpg .virtue-perk-remove:hover {
+  border-color: rgba(219, 47, 62, 0.86);
+  background: rgba(90, 16, 24, 0.86);
+  color: #ffd4c9;
+}
+
+.astrael-rpg .virtue-perk-actions,
+.astrael-rpg .virtue-inspector-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.astrael-rpg .virtue-inspector-actions {
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.astrael-rpg .virtue-command {
+  border: 1px solid rgba(193, 117, 57, 0.6);
+  background: rgba(66, 42, 18, 0.86);
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+
+.astrael-rpg .virtue-command:hover {
+  border-color: rgba(214, 154, 85, 0.96);
+  background: linear-gradient(180deg, rgba(94, 57, 22, 0.94), rgba(54, 32, 12, 0.94));
+}
+
+.astrael-rpg .virtue-command.danger {
+  border-color: rgba(127, 21, 31, 0.6);
+  color: rgba(219, 47, 62, 0.8);
+}
+
+.astrael-rpg .virtue-command.danger:hover {
+  background: rgba(66, 10, 18, 0.86);
+}
+
+.astrael-rpg .virtue-empty-inspector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  padding: 24px;
+  gap: 8px;
+}
+
+.astrael-rpg .virtue-empty-inspector span {
+  color: rgba(246, 225, 205, 0.48);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .virtue-empty-inspector p {
+  margin: 0;
+  color: rgba(246, 225, 205, 0.4);
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }

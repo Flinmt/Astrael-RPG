@@ -52,7 +52,7 @@ const DEFAULT_RESOURCES = {
 };
 
 const { TypeDataModel } = foundry.abstract;
-const { ArrayField, NumberField, ObjectField, SchemaField, StringField } = foundry.data.fields;
+const { ArrayField, BooleanField, NumberField, ObjectField, SchemaField, StringField } = foundry.data.fields;
 
 function stringField(initial = "") {
   return new StringField({ required: true, initial });
@@ -120,11 +120,20 @@ class AstraelCharacterData extends TypeDataModel {
         current: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
         spent: new NumberField({ required: true, integer: true, min: 0, initial: 0 })
       }),
+      sheetSettings: new SchemaField({
+        visibleTabs: new SchemaField({
+          virtues: new BooleanField({ required: true, initial: false }),
+          hemomancy: new BooleanField({ required: true, initial: false }),
+          strangerMark: new BooleanField({ required: true, initial: false })
+        })
+      }),
       advantages: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       flaws: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       hemomancy: new SchemaField({
         level: new NumberField({ required: true, integer: true, min: 0, max: 5, initial: 0 }),
-        powers: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
+        alchemyLevel: new NumberField({ required: true, integer: true, min: 0, max: 5, initial: 0 }),
+        powers: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+        formulas: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
       }),
       strangerMark: new SchemaField({
         selectedMarkId: new StringField({ required: true, initial: "" }),
@@ -132,6 +141,7 @@ class AstraelCharacterData extends TypeDataModel {
         marks: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
       }),
       convictions: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+      virtues: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       sangria: traitValueField(5, 0),
       vazio: traitValueField(0, 0),
       specialties: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
@@ -161,7 +171,9 @@ class AstraelPdmData extends TypeDataModel {
       pdmSkills: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       hemomancy: new SchemaField({
         level: new NumberField({ required: true, integer: true, min: 0, max: 5, initial: 0 }),
-        powers: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
+        alchemyLevel: new NumberField({ required: true, integer: true, min: 0, max: 5, initial: 0 }),
+        powers: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+        formulas: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
       }),
       strangerMark: new SchemaField({
         selectedMarkId: new StringField({ required: true, initial: "" }),
@@ -169,6 +181,7 @@ class AstraelPdmData extends TypeDataModel {
         marks: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
       }),
       sangria: traitValueField(5, 0),
+      virtues: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       vazio: traitValueField(0, 0)
     };
   }
@@ -259,6 +272,25 @@ function normalizeHemomancyPower(source = {}) {
   };
 }
 
+function normalizeVirtuePerk(source = {}) {
+  return {
+    name: source.name || "",
+    description: source.description || "",
+    expanded: Boolean(source.expanded),
+    editing: Boolean(source.editing)
+  };
+}
+
+function normalizeVirtue(source = {}) {
+  const perks = Array.isArray(source.perks) ? source.perks.map(normalizeVirtuePerk) : [];
+  return {
+    name: source.name || "",
+    description: source.description || "",
+    perks,
+    editing: Boolean(source.editing)
+  };
+}
+
 function normalizeStrangerMarkAbility(source = {}) {
   const level = clampNumber(source.level ?? 1, 1, 5);
   const cost = clampNumber(source.cost ?? 0, 0, 5);
@@ -289,6 +321,14 @@ function normalizeStrangerMark(source = {}) {
     level,
     levelRoman: level ? toRomanLevel(level) : "0",
     abilities
+  };
+}
+
+function normalizeVisibleTabs(source = {}) {
+  return {
+    virtues: source.virtues === true,
+    hemomancy: source.hemomancy === true,
+    strangerMark: source.strangerMark === true
   };
 }
 
@@ -973,6 +1013,11 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     );
     context.system.resources.health = normalizeResource("health", context.system.resources.health);
     context.system.resources.willpower = normalizeResource("willpower", context.system.resources.willpower);
+    context.system.sheetSettings ??= {};
+    context.system.sheetSettings.visibleTabs = normalizeVisibleTabs(context.system.sheetSettings.visibleTabs);
+    if (this.actor.type === "character" && this.#isCharacterTabHidden(this._activeTab, context.system.sheetSettings.visibleTabs)) {
+      this._activeTab = "attributes";
+    }
     context.system.resources.health.activeRoman = toRoman(context.system.resources.health.active);
     context.system.resources.willpower.activeRoman = toRoman(context.system.resources.willpower.active);
     context.system.sangria ??= { value: 5 };
@@ -1009,14 +1054,17 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         pillarTypeOptions: getConvictionPillarTypeOptions(normalized.pillars[0].type)
       };
     });
-    context.system.hemomancy ??= { level: 0, powers: [] };
+    context.system.hemomancy ??= { level: 0, alchemyLevel: 0, powers: [], formulas: [] };
     context.system.hemomancy.level = clampNumber(context.system.hemomancy.level, 0, 5);
-    context.system.hemomancy.levelRoman = context.system.hemomancy.level ? toRomanLevel(context.system.hemomancy.level) : "0";
+    context.system.hemomancy.alchemyLevel = clampNumber(context.system.hemomancy.alchemyLevel, 0, 5);
     context.system.hemomancy.powers = Array.isArray(context.system.hemomancy.powers) ? context.system.hemomancy.powers.map(normalizeHemomancyPower) : [];
+    context.system.hemomancy.formulas = Array.isArray(context.system.hemomancy.formulas) ? context.system.hemomancy.formulas.map(normalizeHemomancyPower) : [];
     context.system.advantages = context.system.advantages.map(prepareAdvantageEntry);
     context.system.flaws = context.system.flaws.map(prepareAdvantageEntry);
     this.#prepareAdvantageSelection(context.system);
     this.#prepareHemomancySelection(context.system);
+    context.system.virtues = Array.isArray(context.system.virtues) ? context.system.virtues.map(normalizeVirtue) : [];
+    this.#prepareVirtueSelection(context.system);
     context.system.strangerMark ??= { selectedMarkId: "", selectedAbilityLevel: 1, marks: [] };
     {
       const sm = context.system.strangerMark;
@@ -1214,6 +1262,9 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll("[data-action='set-hemomancy-mode']").forEach((button) => {
       button.addEventListener("click", this.#onSetHemomancyMode.bind(this));
     });
+    this.element.querySelectorAll("[data-action='set-hemomancy-list-mode']").forEach((button) => {
+      button.addEventListener("click", this.#onSetHemomancyListMode.bind(this));
+    });
     this.element.querySelector("[data-action='add-hemomancy-power']")?.addEventListener("click", this.#onAddHemomancyPower.bind(this));
     this.element.querySelectorAll("[data-action='select-hemomancy-power']").forEach((button) => {
       button.addEventListener("click", this.#onSelectHemomancyPower.bind(this));
@@ -1232,6 +1283,32 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
     this.element.querySelector(".hemomancy-level-control")?.addEventListener("click", this.#onHemomancyLevelClick.bind(this));
     this.element.querySelector(".hemomancy-level-control")?.addEventListener("contextmenu", this.#onHemomancyLevelContext.bind(this));
+
+    this.element.querySelectorAll("[data-action='select-virtue']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectVirtue.bind(this));
+    });
+    this.element.querySelector("[data-action='add-virtue']")?.addEventListener("click", this.#onAddVirtue.bind(this));
+    this.element.querySelectorAll("[data-action='edit-virtue']").forEach((button) => {
+      button.addEventListener("click", this.#onEditVirtue.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='save-virtue']").forEach((button) => {
+      button.addEventListener("click", this.#onSaveVirtue.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='delete-virtue']").forEach((button) => {
+      button.addEventListener("click", this.#onDeleteVirtue.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='add-virtue-perk']").forEach((button) => {
+      button.addEventListener("click", this.#onAddVirtuePerk.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='toggle-virtue-perk']").forEach((button) => {
+      button.addEventListener("click", this.#onToggleVirtuePerk.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='delete-virtue-perk']").forEach((button) => {
+      button.addEventListener("click", this.#onDeleteVirtuePerk.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='toggle-character-tab']").forEach((button) => {
+      button.addEventListener("click", this.#onToggleCharacterTab.bind(this));
+    });
 
     this.element.querySelectorAll("[data-action='open-stranger-mark-picker']").forEach((btn) => {
       btn.addEventListener("click", this.#onOpenStrangerMarkPicker.bind(this));
@@ -2056,8 +2133,34 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.#activateTab(event.currentTarget.dataset.tab);
   }
 
+  #isCharacterTabHidden(tabId, visibleTabs = this.#getCharacterVisibleTabs()) {
+    if (this.actor.type !== "character") return false;
+    if (tabId === "virtues") return !visibleTabs.virtues;
+    if (tabId === "hemomancy") return !visibleTabs.hemomancy;
+    if (tabId === "stranger-mark") return !visibleTabs.strangerMark;
+    return false;
+  }
+
+  #getCharacterVisibleTabs() {
+    const actorData = this.actor.toObject();
+    return normalizeVisibleTabs(actorData.system?.sheetSettings?.visibleTabs);
+  }
+
+  async #onToggleCharacterTab(event) {
+    event.preventDefault();
+    const key = event.currentTarget.dataset.key;
+    if (!['virtues', 'hemomancy', 'strangerMark'].includes(key)) return;
+
+    const checked = event.currentTarget.dataset.visible !== "true";
+    const tabId = key === "strangerMark" ? "stranger-mark" : key;
+    if (!checked && this._activeTab === tabId) this._activeTab = "attributes";
+
+    return this.actor.update({ [`system.sheetSettings.visibleTabs.${key}`]: checked });
+  }
+
   #activateTab(tabId) {
     if (!tabId) return;
+    if (this.#isCharacterTabHidden(tabId)) tabId = "attributes";
     this._activeTab = tabId;
     this.element.dataset.activeTab = tabId;
 
@@ -2436,8 +2539,13 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   #prepareHemomancySelection(system) {
     this._hemomancyMode = clampNumber(this._hemomancyMode ?? 1, 1, 5);
+    this._hemomancyListMode = this._hemomancyListMode === "formulas" ? "formulas" : "powers";
+    const listKey = this._hemomancyListMode;
+    const isFormulaMode = listKey === "formulas";
+    const activeLevel = isFormulaMode ? system.hemomancy.alchemyLevel : system.hemomancy.level;
     const selectedIndex = Number.isInteger(this._selectedHemomancyIndex) ? this._selectedHemomancyIndex : -1;
-    const visiblePowers = system.hemomancy.powers
+    const entries = Array.isArray(system.hemomancy[listKey]) ? system.hemomancy[listKey] : [];
+    const visiblePowers = entries
       .map((power, index) => ({ ...power, index }))
       .filter((power) => power.level === this._hemomancyMode);
     const index = visiblePowers.some((power) => power.index === selectedIndex)
@@ -2445,6 +2553,22 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       : (visiblePowers[0]?.index ?? -1);
 
     this._selectedHemomancyIndex = index;
+    system.hemomancy.listMode = listKey;
+    system.hemomancy.isFormulaMode = isFormulaMode;
+    system.hemomancy.activeLevel = activeLevel;
+    system.hemomancy.activeLevelRoman = activeLevel ? toRomanLevel(activeLevel) : "0";
+    system.hemomancy.levelLabel = isFormulaMode ? "Potencia da Alquimia" : "Potencia da Hemomancia";
+    system.hemomancy.itemSingular = isFormulaMode ? "fórmula" : "magia";
+    system.hemomancy.itemPluralTitle = isFormulaMode ? "Fórmulas" : "Magias";
+    system.hemomancy.itemEmptyTitle = isFormulaMode ? "Nenhuma fórmula selecionada" : "Nenhuma magia selecionada";
+    system.hemomancy.itemEmptyText = isFormulaMode
+      ? `Crie uma fórmula no circulo ${toRomanLevel(this._hemomancyMode)} para abrir o grimorio de sangue.`
+      : `Crie uma magia no circulo ${toRomanLevel(this._hemomancyMode)} para abrir o grimorio de sangue.`;
+    system.hemomancy.switchMode = isFormulaMode ? "powers" : "formulas";
+    system.hemomancy.switchLabel = isFormulaMode ? "Magias" : "Fórmulas";
+    system.hemomancy.switchIcon = isFormulaMode
+      ? `systems/${SYSTEM_ID}/assets/disciplines/bleeding-eye.svg`
+      : `systems/${SYSTEM_ID}/assets/disciplines/fizzing-flask.svg`;
     system.hemomancy.mode = this._hemomancyMode;
     system.hemomancy.modeRoman = toRomanLevel(this._hemomancyMode);
     system.hemomancy.modeTabs = [1, 2, 3, 4, 5].map((level) => ({
@@ -2452,24 +2576,32 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       roman: toRomanLevel(level),
       active: level === this._hemomancyMode
     }));
-    system.hemomancy.powers = system.hemomancy.powers.map((power, index) => ({
+    system.hemomancy.activeEntries = entries.map((power, index) => ({
       ...power,
       selected: index === this._selectedHemomancyIndex,
       hidden: power.level !== this._hemomancyMode
     }));
 
-    const selected = index >= 0 ? system.hemomancy.powers[index] : null;
+    const selected = index >= 0 ? entries[index] : null;
     system.hemomancy.selectedPower = selected ? {
       ...selected,
       index,
-      rollFormula: `Inteligencia + Hemomancia (${system.attributes.intelligence.value} + ${system.hemomancy.level})`,
+      rollFormula: isFormulaMode ? `Queima de Hemomancia (${selected.cost})` : `Inteligencia + Hemomancia (${system.attributes.intelligence.value} + ${system.hemomancy.level})`,
       dicePool: Math.max(1, Number(system.attributes.intelligence.value) + Number(system.hemomancy.level))
     } : null;
   }
 
-  #getHemomancyPowers() {
+  #getHemomancyListKey() {
+    return this._hemomancyListMode === "formulas" ? "formulas" : "powers";
+  }
+
+  #getHemomancyLevelKey() {
+    return this.#getHemomancyListKey() === "formulas" ? "alchemyLevel" : "level";
+  }
+
+  #getHemomancyPowers(listKey = this.#getHemomancyListKey()) {
     const actorData = this.actor.toObject();
-    const powers = Array.isArray(actorData.system?.hemomancy?.powers) ? actorData.system.hemomancy.powers : [];
+    const powers = Array.isArray(actorData.system?.hemomancy?.[listKey]) ? actorData.system.hemomancy[listKey] : [];
 
     return powers.map((power) => {
       const normalized = normalizeHemomancyPower(power);
@@ -2483,12 +2615,12 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     });
   }
 
-  #updateHemomancyPowers(powers) {
-    return this.actor.update({ "system.hemomancy.powers": powers });
+  #updateHemomancyPowers(powers, listKey = this.#getHemomancyListKey()) {
+    return this.actor.update({ [`system.hemomancy.${listKey}`]: powers });
   }
 
-  #getHemomancyPowersFromSheet({ closeEditing = false } = {}) {
-    return this.#getHemomancyPowers().map((power, index) => {
+  #getHemomancyPowersFromSheet({ closeEditing = false, listKey = this.#getHemomancyListKey() } = {}) {
+    return this.#getHemomancyPowers(listKey).map((power, index) => {
       if (!power.editing) return power;
 
       const nameInput = this.element.querySelector(`.hemomancy-name-input[data-index='${index}']`);
@@ -2506,10 +2638,19 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   async #saveEditingHemomancyPowers() {
-    const hasEditing = this.#getHemomancyPowers().some((power) => power.editing);
-    const powers = this.#getHemomancyPowersFromSheet({ closeEditing: true });
-    if (hasEditing) await this.#updateHemomancyPowers(powers);
+    const listKey = this.#getHemomancyListKey();
+    const hasEditing = this.#getHemomancyPowers(listKey).some((power) => power.editing);
+    const powers = this.#getHemomancyPowersFromSheet({ closeEditing: true, listKey });
+    if (hasEditing) await this.#updateHemomancyPowers(powers, listKey);
     return powers;
+  }
+
+  async #onSetHemomancyListMode(event) {
+    event.preventDefault();
+    await this.#saveEditingHemomancyPowers();
+    this._hemomancyListMode = event.currentTarget.dataset.mode === "formulas" ? "formulas" : "powers";
+    this._selectedHemomancyIndex = -1;
+    return this.render({ force: true });
   }
 
   async #onSetHemomancyMode(event) {
@@ -2522,11 +2663,12 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async #onAddHemomancyPower(event) {
     event.preventDefault();
-    const powers = this.#getHemomancyPowersFromSheet({ closeEditing: true });
+    const listKey = this.#getHemomancyListKey();
+    const powers = this.#getHemomancyPowersFromSheet({ closeEditing: true, listKey });
     const level = clampNumber(this._hemomancyMode ?? 1, 1, 5);
     powers.push({ name: "", description: "", level, cost: 1, editing: true });
     this._selectedHemomancyIndex = powers.length - 1;
-    return this.#updateHemomancyPowers(powers);
+    return this.#updateHemomancyPowers(powers, listKey);
   }
 
   async #onSelectHemomancyPower(event) {
@@ -2539,18 +2681,20 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async #onEditHemomancyPower(event) {
     event.preventDefault();
     const index = Number(event.currentTarget.dataset.index ?? this._selectedHemomancyIndex);
-    const powers = this.#getHemomancyPowers();
+    const listKey = this.#getHemomancyListKey();
+    const powers = this.#getHemomancyPowers(listKey);
     if (!Number.isInteger(index) || !powers[index]) return;
 
     powers[index].editing = true;
     this._selectedHemomancyIndex = index;
-    return this.#updateHemomancyPowers(powers);
+    return this.#updateHemomancyPowers(powers, listKey);
   }
 
   async #onSaveHemomancyPower(event) {
     event.preventDefault();
     const index = Number(event.currentTarget.dataset.index ?? this._selectedHemomancyIndex);
-    const powers = this.#getHemomancyPowers();
+    const listKey = this.#getHemomancyListKey();
+    const powers = this.#getHemomancyPowers(listKey);
     if (!Number.isInteger(index) || !powers[index]) return;
 
     const nameInput = this.element.querySelector(`.hemomancy-name-input[data-index='${index}']`);
@@ -2558,7 +2702,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const descriptionInput = this.element.querySelector(`.hemomancy-description-input[data-index='${index}']`);
     const name = nameInput?.value?.trim();
     if (!name) {
-      ui.notifications.warn("Defina um nome para a magia de Hemomancia.");
+      ui.notifications.warn(`Defina um nome para a ${listKey === "formulas" ? "fórmula" : "magia"} de Hemomancia.`);
       return;
     }
 
@@ -2570,26 +2714,29 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       editing: false
     };
     this._selectedHemomancyIndex = index;
-    return this.#updateHemomancyPowers(powers);
+    return this.#updateHemomancyPowers(powers, listKey);
   }
 
   async #onDeleteHemomancyPower(event) {
     event.preventDefault();
     const index = Number(event.currentTarget.dataset.index ?? this._selectedHemomancyIndex);
-    const powers = this.#getHemomancyPowers();
+    const listKey = this.#getHemomancyListKey();
+    const powers = this.#getHemomancyPowers(listKey);
     if (!Number.isInteger(index) || !powers[index]) return;
 
     powers.splice(index, 1);
     this._selectedHemomancyIndex = -1;
-    return this.#updateHemomancyPowers(powers);
+    return this.#updateHemomancyPowers(powers, listKey);
   }
 
   async #onRollHemomancyPower(event) {
     event.preventDefault();
     const index = Number(event.currentTarget.dataset.index ?? this._selectedHemomancyIndex);
-    const powers = this.#getHemomancyPowers();
+    const listKey = this.#getHemomancyListKey();
+    const powers = this.#getHemomancyPowers(listKey);
     if (!Number.isInteger(index) || !powers[index]) return;
     const power = normalizeHemomancyPower(powers[index]);
+    const isFormula = listKey === "formulas";
 
     const currentBlood = Number(this.actor.system.sangria?.value ?? 5);
     if (currentBlood <= 0) {
@@ -2598,7 +2745,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       await this.#updateResource("health", resource);
       await ChatMessage.create({
         speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-        content: `<section class="astrael-chat-card"><header class="astrael-chat-header"><span class="astrael-chat-kicker">Sangue Invocado</span><h2>${power.name}</h2><p>${this.actor.name}</p></header><div class="astrael-chat-result"><span>Sangue Esgotado</span><strong style="font-size:32px;color:#b2202b;text-shadow:0 0 14px rgba(178,32,43,0.4)">${power.cost}</strong><span style="font-size:11px;opacity:0.8">dano(s) agravado(s) na Vida</span></div></section>`
+        content: `<section class="astrael-chat-card"><header class="astrael-chat-header"><span class="astrael-chat-kicker">Sangue Invocado</span><h2>${escapeHtml(power.name)}</h2><p>${escapeHtml(this.actor.name)}</p></header><div class="astrael-chat-result"><span>Sangue Esgotado</span><strong style="font-size:32px;color:#b2202b;text-shadow:0 0 14px rgba(178,32,43,0.4)">${power.cost}</strong><span style="font-size:11px;opacity:0.8">dano(s) agravado(s) na Vida</span></div></section>`
       });
       return;
     }
@@ -2609,7 +2756,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     await createDicePoolMessage({
       actor: this.actor,
       title: `Custo de ${power.name}`,
-      kicker: "Queima de Hemomancia",
+      kicker: isFormula ? "Queima de Fórmula Hemomântica" : "Queima de Hemomancia",
       diceCount: power.cost,
       useCriticals: false,
       preRolledValues: costValues,
@@ -2622,6 +2769,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       const nextBlood = Math.max(0, currentBlood - failures);
       await this.actor.update({ "system.sangria.value": nextBlood });
     }
+
+    if (isFormula) return;
 
     const intelligence = this.actor.type === "pdm"
       ? Math.max(1, Number(this.actor.system.pdmAttributes?.mental?.value) || 1)
@@ -2644,14 +2793,193 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async #onHemomancyLevelClick(event) {
     event.preventDefault();
-    const level = clampNumber((Number(this.actor.system.hemomancy?.level) || 0) + 1, 0, 5);
-    return this.actor.update({ "system.hemomancy.level": level });
+    const key = this.#getHemomancyLevelKey();
+    const level = clampNumber((Number(this.actor.system.hemomancy?.[key]) || 0) + 1, 0, 5);
+    return this.actor.update({ [`system.hemomancy.${key}`]: level });
   }
 
   async #onHemomancyLevelContext(event) {
     event.preventDefault();
-    const level = clampNumber((Number(this.actor.system.hemomancy?.level) || 0) - 1, 0, 5);
-    return this.actor.update({ "system.hemomancy.level": level });
+    const key = this.#getHemomancyLevelKey();
+    const level = clampNumber((Number(this.actor.system.hemomancy?.[key]) || 0) - 1, 0, 5);
+    return this.actor.update({ [`system.hemomancy.${key}`]: level });
+  }
+
+  #prepareVirtueSelection(system) {
+    const selectedIndex = Number.isInteger(this._selectedVirtueIndex) ? this._selectedVirtueIndex : -1;
+    const virtues = Array.isArray(system.virtues) ? system.virtues : [];
+    const visible = virtues.map((v, index) => ({
+      ...v,
+      index,
+      displayName: v.name || "Virtude sem nome",
+      selected: index === selectedIndex
+    }));
+    this._selectedVirtueIndex = visible.some((v) => v.selected)
+      ? selectedIndex
+      : (visible[0]?.index ?? -1);
+    system.virtues = visible;
+    system.selectedVirtue = this._selectedVirtueIndex >= 0
+      ? { ...visible[this._selectedVirtueIndex], index: this._selectedVirtueIndex }
+      : null;
+  }
+
+  #getVirtues() {
+    const actorData = this.actor.toObject();
+    const virtues = Array.isArray(actorData.system?.virtues) ? actorData.system.virtues : [];
+    return virtues.map((v) => {
+      const norm = normalizeVirtue(v);
+      return {
+        name: norm.name,
+        description: norm.description,
+        perks: norm.perks,
+        editing: norm.editing
+      };
+    });
+  }
+
+  #updateVirtues(virtues) {
+    return this.actor.update({ "system.virtues": virtues });
+  }
+
+  #getVirtuesFromSheet({ closeEditing = false } = {}) {
+    return this.#getVirtues().map((virtue, index) => {
+      if (!virtue.editing) return virtue;
+
+      const nameInput = this.element.querySelector(`.virtue-name-input[data-index='${index}']`);
+      const descriptionInput = this.element.querySelector(`.virtue-description-input[data-index='${index}']`);
+      const perks = this.#getVirtuePerksFromSheet(index);
+
+      return {
+        ...virtue,
+        name: nameInput?.value?.trim() || virtue.name || "",
+        description: descriptionInput?.value?.trim() || "",
+        perks,
+        editing: closeEditing ? false : virtue.editing
+      };
+    });
+  }
+
+  #getVirtuePerksFromSheet(virtueIndex) {
+    const virtue = this.#getVirtues()[virtueIndex];
+    if (!virtue) return [];
+    return virtue.perks.map((perk, pIndex) => {
+      const nameInput = this.element.querySelector(`.virtue-perk-name-input[data-virtue='${virtueIndex}'][data-index='${pIndex}']`);
+      const descriptionInput = this.element.querySelector(`.virtue-perk-description-input[data-virtue='${virtueIndex}'][data-index='${pIndex}']`);
+
+      return {
+        ...perk,
+        name: nameInput ? nameInput.value.trim() : (perk.name || ""),
+        description: descriptionInput ? descriptionInput.value.trim() : (perk.description || ""),
+        editing: false
+      };
+    });
+  }
+
+  async #onSelectVirtue(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index);
+    const virtues = this.#getVirtues();
+    if (!Number.isInteger(index) || !virtues[index]) return;
+    if (index === this._selectedVirtueIndex) return;
+
+    const currentIndex = Number.isInteger(this._selectedVirtueIndex) ? this._selectedVirtueIndex : -1;
+    if (currentIndex >= 0 && virtues[currentIndex]?.editing) {
+      const updated = this.#getVirtuesFromSheet({ closeEditing: true });
+      this._selectedVirtueIndex = index;
+      return this.#updateVirtues(updated);
+    }
+
+    this._selectedVirtueIndex = index;
+    return this.render({ force: true });
+  }
+
+  async #onAddVirtue(event) {
+    event.preventDefault();
+    this._selectedVirtueIndex = this.#getVirtues().length;
+    const virtues = this.#getVirtues();
+    virtues.push({ name: "", description: "", perks: [], editing: true });
+    return this.#updateVirtues(virtues);
+  }
+
+  async #onEditVirtue(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedVirtueIndex);
+    const virtues = this.#getVirtues();
+    if (!Number.isInteger(index) || !virtues[index]) return;
+
+    virtues[index].editing = true;
+    this._selectedVirtueIndex = index;
+    return this.#updateVirtues(virtues);
+  }
+
+  async #onSaveVirtue(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedVirtueIndex);
+    const virtues = this.#getVirtues();
+    if (!Number.isInteger(index) || !virtues[index]) return;
+
+    const nameInput = this.element.querySelector(`.virtue-name-input[data-index='${index}']`);
+    const descriptionInput = this.element.querySelector(`.virtue-description-input[data-index='${index}']`);
+    const name = nameInput?.value?.trim();
+    if (!name) {
+      ui.notifications.warn("Defina um nome para a Virtude.");
+      return;
+    }
+
+    const perks = this.#getVirtuePerksFromSheet(index);
+    virtues[index] = {
+      name,
+      description: descriptionInput?.value?.trim() || "",
+      perks,
+      editing: false
+    };
+    this._selectedVirtueIndex = index;
+    return this.#updateVirtues(virtues);
+  }
+
+  async #onDeleteVirtue(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedVirtueIndex);
+    const virtues = this.#getVirtues();
+    if (!Number.isInteger(index) || !virtues[index]) return;
+
+    virtues.splice(index, 1);
+    this._selectedVirtueIndex = -1;
+    return this.#updateVirtues(virtues);
+  }
+
+  async #onAddVirtuePerk(event) {
+    event.preventDefault();
+    const index = Number(event.currentTarget.dataset.index ?? this._selectedVirtueIndex);
+    const virtues = this.#getVirtuesFromSheet();
+    if (!Number.isInteger(index) || !virtues[index]) return;
+
+    virtues[index].perks.push({ name: "", description: "", expanded: true, editing: false });
+    return this.#updateVirtues(virtues);
+  }
+
+  async #onToggleVirtuePerk(event) {
+    event.preventDefault();
+    const virtueIndex = Number(event.currentTarget.dataset.virtue ?? this._selectedVirtueIndex);
+    const perkIndex = Number(event.currentTarget.dataset.index);
+    const virtues = this.#getVirtues();
+    if (!Number.isInteger(virtueIndex) || !virtues[virtueIndex]) return;
+    if (!Number.isInteger(perkIndex) || !virtues[virtueIndex].perks[perkIndex]) return;
+
+    virtues[virtueIndex].perks[perkIndex].expanded = !virtues[virtueIndex].perks[perkIndex].expanded;
+    return this.#updateVirtues(virtues);
+  }
+
+  async #onDeleteVirtuePerk(event) {
+    event.preventDefault();
+    const virtueIndex = Number(event.currentTarget.dataset.virtue ?? this._selectedVirtueIndex);
+    const perkIndex = Number(event.currentTarget.dataset.index);
+    const virtues = this.#getVirtuesFromSheet();
+    if (!Number.isInteger(virtueIndex) || !virtues[virtueIndex]) return;
+    if (!Number.isInteger(perkIndex) || !virtues[virtueIndex].perks[perkIndex]) return;
+
+    virtues[virtueIndex].perks.splice(perkIndex, 1);
+    return this.#updateVirtues(virtues);
   }
 
   #getStrangerMarkActorData() {
