@@ -1202,7 +1202,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       input.addEventListener("change", this.#onInputChange.bind(this));
     });
 
-    this.element.querySelectorAll("[data-tab]").forEach((btn) => {
+    this.element.querySelectorAll(".sheet-tabs [data-tab]").forEach((btn) => {
       btn.addEventListener("click", this.#onTabClick.bind(this));
     });
 
@@ -2164,8 +2164,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this._activeTab = tabId;
     this.element.dataset.activeTab = tabId;
 
-    this.element.querySelectorAll("[data-tab]").forEach((b) => b.classList.remove("active"));
-    this.element.querySelector(`[data-tab="${tabId}"]`)?.classList.add("active");
+    this.element.querySelectorAll(".sheet-tabs [data-tab]").forEach((b) => b.classList.remove("active"));
+    this.element.querySelector(`.sheet-tabs [data-tab="${tabId}"]`)?.classList.add("active");
 
     this.element.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("active"));
     const panel = this.element.querySelector(`.tab-panel[data-tab="${tabId}"]`);
