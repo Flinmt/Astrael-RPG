@@ -2,7 +2,7 @@
   "id": "astrael-rpg",
   "title": "Astrael RPG",
   "description": "Sistema Astrael RPG para Foundry Virtual Tabletop.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     {
       "name": "Astrael RPG"
@@ -42,7 +42,7 @@
   ],
   "socket": false,
   "manifest": "https://github.com/Flinmt/Astrael-RPG/releases/latest/download/system.json",
-  "download": "https://github.com/Flinmt/Astrael-RPG/releases/download/v0.1.0/astrael-rpg.zip",
+  "download": "https://github.com/Flinmt/Astrael-RPG/releases/download/v0.1.1/astrael-rpg.zip",
   "documentTypes": {
     "Actor": {
       "character": {},
