@@ -41,8 +41,8 @@
     }
   ],
   "socket": false,
-  "manifest": "",
-  "download": "",
+  "manifest": "https://github.com/Flinmt/Astrael-RPG/releases/latest/download/system.json",
+  "download": "https://github.com/Flinmt/Astrael-RPG/releases/download/v0.1.0/astrael-rpg.zip",
   "documentTypes": {
     "Actor": {
       "character": {},
