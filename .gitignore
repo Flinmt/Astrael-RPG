@@ -1,4 +1,7 @@
 /ficha
 AGENTS.md
 # Foundry VTT LevelDB
-/packs
+/packs/*
+!/packs/gm-macros/
+!/packs/gm-macros/**
+/packs/gm-macros/LOCK

@@ -3974,35 +3974,6 @@ Hooks.once("ready", () => {
     }
   };
 
-  (async () => {
-    const pack = game.packs.get("astrael-rpg.gm-macros");
-    if (!pack) return;
-    const XP_ICON = "systems/astrael-rpg/assets/icons/xp-up.svg";
-    try {
-      const existing = pack.index.find(e => e.name === "Distribuir XP");
-      await pack.configure({ locked: false });
-      if (existing) {
-        if (existing.img !== XP_ICON) {
-          const macro = await pack.getDocument(existing._id);
-          await macro.update({ img: XP_ICON });
-          console.log("Astrael RPG | Ícone da macro 'Distribuir XP' atualizado");
-        }
-      } else {
-        await Macro.create({
-          name: "Distribuir XP",
-          type: "script",
-          command: "game.astrael?.distributeXP?.()",
-          scope: "global",
-          img: XP_ICON
-        }, { pack: "astrael-rpg.gm-macros" });
-        console.log("Astrael RPG | Macro 'Distribuir XP' criada no compendium");
-      }
-      await pack.configure({ locked: true });
-    } catch(err) {
-      console.warn("Astrael RPG | Erro ao gerenciar macro 'Distribuir XP':", err);
-    }
-  })();
-
   document.body.addEventListener("click", (event) => {
     const rerollBtn = event.target.closest(".astrael-reroll-btn");
     if (rerollBtn) {
