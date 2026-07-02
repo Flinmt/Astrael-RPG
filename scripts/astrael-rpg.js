@@ -1,5 +1,6 @@
 const SYSTEM_ID = "astrael-rpg";
 const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character-sheet.hbs`;
+const NPC_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/npc-sheet.hbs`;
 const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
 const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
 const DICE_POOL_CHAT_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/dice-pool-card.hbs`;
@@ -988,7 +989,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.system.resources.willpower = normalizeResource("willpower", context.system.resources.willpower);
     context.system.sheetSettings ??= {};
     context.system.sheetSettings.visibleTabs = normalizeVisibleTabs(context.system.sheetSettings.visibleTabs);
-    if (this.actor.type === "character" && this.#isCharacterTabHidden(this._activeTab, context.system.sheetSettings.visibleTabs)) {
+    if (["character", "npc"].includes(this.actor.type) && this.#isCharacterTabHidden(this._activeTab, context.system.sheetSettings.visibleTabs)) {
       this._activeTab = "attributes";
     }
     context.system.resources.health.activeRoman = toRoman(context.system.resources.health.active);
@@ -1783,7 +1784,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   #isCharacterTabHidden(tabId, visibleTabs = this.#getCharacterVisibleTabs()) {
-    if (this.actor.type !== "character") return false;
+    if (!["character", "npc"].includes(this.actor.type)) return false;
     if (tabId === "virtues") return !visibleTabs.virtues;
     if (tabId === "hemomancy") return !visibleTabs.hemomancy;
     if (tabId === "stranger-mark") return !visibleTabs.strangerMark;
@@ -3447,11 +3448,47 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 }
 
+class AstraelNpcSheet extends AstraelCharacterSheet {
+  static DEFAULT_OPTIONS = {
+    classes: ["astrael-rpg", "sheet", "actor", "npc-sheet"],
+    position: {
+      width: 900,
+      height: 680
+    },
+    form: {
+      closeOnSubmit: false,
+      submitOnChange: false,
+      handler: updateActorSheet
+    },
+    window: {
+      title: "Astrael RPG NPC Sheet",
+      resizable: true
+    }
+  };
+
+  static PARTS = {
+    form: {
+      template: NPC_SHEET_TEMPLATE
+    }
+  };
+
+  get title() {
+    return `${game.i18n.localize("ASTRAEL.Sheet.NPC")}: ${this.actor.name}`;
+  }
+
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    context.npcArchetypeLabel = this.actor.getFlag(SYSTEM_ID, "npcArchetypeLabel") || "Sem arquetipo";
+    return context;
+  }
+}
+
 Hooks.once("init", () => {
   console.log("Astrael RPG | Initializing system");
 
   removeDeprecatedActorTypes();
   CONFIG.Actor.dataModels.character = AstraelCharacterData;
+  CONFIG.Actor.dataModels.npc = AstraelCharacterData;
   CONFIG.Item.dataModels.trait = AstraelTraitData;
 
   foundry.applications.apps.DocumentSheetConfig.registerSheet(
@@ -3462,6 +3499,17 @@ Hooks.once("init", () => {
       types: ["character"],
       makeDefault: true,
       label: "Astrael RPG Character Sheet"
+    }
+  );
+
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(
+    Actor,
+    SYSTEM_ID,
+    AstraelNpcSheet,
+    {
+      types: ["npc"],
+      makeDefault: true,
+      label: "Astrael RPG NPC Sheet"
     }
   );
 

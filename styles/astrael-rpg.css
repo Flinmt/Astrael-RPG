@@ -6284,6 +6284,147 @@
     grid-row: auto;
   }
 }
+.astrael-rpg.npc-sheet .npc-identity-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 176px minmax(240px, 1fr);
+  grid-template-rows: repeat(3, 72px);
+  grid-template-areas:
+    "left portrait right"
+    "left portrait right"
+    "left portrait right";
+  gap: 12px;
+  align-items: stretch;
+}
+
+.astrael-rpg.npc-sheet .npc-portrait-cell {
+  grid-area: portrait;
+  grid-row: 1 / span 3;
+  padding: 16px 8px;
+}
+
+.astrael-rpg.npc-sheet .npc-portrait {
+  width: 136px;
+  height: 136px;
+}
+
+.astrael-rpg.npc-sheet .npc-left-stack,
+.astrael-rpg.npc-sheet .npc-right-stack {
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.astrael-rpg.npc-sheet .npc-left-stack {
+  grid-area: left;
+}
+
+.astrael-rpg.npc-sheet .npc-right-stack {
+  grid-area: right;
+}
+
+.astrael-rpg.npc-sheet .npc-name,
+.astrael-rpg.npc-sheet .npc-archetype-card,
+.astrael-rpg.npc-sheet .npc-sangria-card,
+.astrael-rpg.npc-sheet .npc-vazio-card {
+  min-height: 0;
+  justify-content: center;
+}
+
+.astrael-rpg.npc-sheet .npc-archetype-card strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.astrael-rpg.npc-sheet .npc-left-stack .field-card,
+.astrael-rpg.npc-sheet .npc-left-stack .resource-card,
+.astrael-rpg.npc-sheet .npc-left-stack .marker-card {
+  text-align: right;
+}
+
+.astrael-rpg.npc-sheet .npc-left-stack .field-card::before,
+.astrael-rpg.npc-sheet .npc-left-stack .resource-card::before {
+  left: auto;
+  right: 0;
+}
+
+.astrael-rpg.npc-sheet .npc-left-stack .resource-title {
+  flex-direction: row-reverse;
+}
+
+.astrael-rpg.npc-sheet .npc-left-stack .box-track {
+  justify-content: flex-end;
+}
+
+.astrael-rpg.npc-sheet .npc-left-stack .marker-title {
+  flex-direction: row-reverse;
+}
+
+.astrael-rpg.npc-sheet .npc-left-stack .marker-controls {
+  flex-direction: row-reverse;
+}
+
+.astrael-rpg.npc-sheet .npc-name input {
+  min-height: 40px;
+  font-size: 1.25rem;
+}
+
+.astrael-rpg.npc-sheet .npc-health-row {
+  grid-area: auto;
+  grid-template-columns: 38px minmax(0, 1fr);
+}
+
+.astrael-rpg.npc-sheet .npc-will-row {
+  grid-area: auto;
+}
+
+.astrael-rpg.npc-sheet .resource-row,
+.astrael-rpg.npc-sheet .resource-card {
+  min-height: 0;
+}
+
+.astrael-rpg.npc-sheet .resource-row,
+.astrael-rpg.npc-sheet .field-card,
+.astrael-rpg.npc-sheet .marker-card {
+  height: 72px;
+}
+
+.astrael-rpg.npc-sheet .marker-card {
+  padding: 10px 12px;
+}
+
+.astrael-rpg.npc-sheet .dot-track.dot-track--sangria,
+.astrael-rpg.npc-sheet .dot-track.dot-track--vazio {
+  height: 22px;
+}
+
+@media (max-width: 760px) {
+  .astrael-rpg.npc-sheet .npc-identity-grid {
+    grid-template-columns: 132px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "portrait left"
+      "right right";
+  }
+
+  .astrael-rpg.npc-sheet .npc-portrait-cell {
+    padding: 12px 8px;
+  }
+
+  .astrael-rpg.npc-sheet .npc-portrait {
+    width: 104px;
+    height: 104px;
+  }
+}
+
 .astrael-rpg .virtue-browser {
   position: relative;
   display: grid;
