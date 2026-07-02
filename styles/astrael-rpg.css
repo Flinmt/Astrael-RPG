@@ -1235,6 +1235,72 @@
   box-shadow: 0 0 8px rgba(193, 117, 57, 0.55);
 }
 
+.astrael-rpg .settings-action-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 2px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(90, 80, 68, 0.48);
+}
+
+.astrael-rpg .settings-action-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 34px;
+  align-items: center;
+  gap: 6px;
+  min-height: 82px;
+  padding: 14px;
+  border: 1px solid rgba(90, 80, 68, 0.72);
+  background:
+    linear-gradient(90deg, rgba(146, 61, 49, 0.2), transparent 58%),
+    rgba(7, 5, 4, 0.78);
+  color: var(--astrael-text);
+  cursor: pointer;
+  text-align: left;
+  box-shadow: inset 0 0 0 1px rgba(255, 238, 200, 0.025), 0 10px 24px rgba(0, 0, 0, 0.2);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.astrael-rpg .settings-action-row::before {
+  content: "";
+  position: absolute;
+  inset: 10px auto 10px 0;
+  width: 3px;
+  background: rgba(210, 92, 72, 0.8);
+  box-shadow: 0 0 10px rgba(210, 92, 72, 0.3);
+}
+
+.astrael-rpg .settings-action-row span {
+  grid-column: 1;
+  color: rgba(255, 226, 214, 0.92);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .settings-action-row small {
+  grid-column: 1;
+  color: rgba(221, 191, 177, 0.7);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.astrael-rpg .settings-action-row.danger {
+  border-color: rgba(146, 61, 49, 0.76);
+}
+
+.astrael-rpg .settings-action-row.danger:hover {
+  border-color: rgba(210, 92, 72, 0.9);
+  background:
+    linear-gradient(90deg, rgba(146, 61, 49, 0.3), transparent 60%),
+    rgba(16, 8, 6, 0.84);
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 1px rgba(255, 205, 190, 0.05), 0 14px 28px rgba(0, 0, 0, 0.28);
+}
+
 @media (max-width: 760px) {
   .astrael-rpg .settings-toggle-list {
     grid-template-columns: 1fr;
@@ -6422,6 +6488,262 @@
   .astrael-rpg.npc-sheet .npc-portrait {
     width: 104px;
     height: 104px;
+  }
+}
+
+.astrael-rpg.npc-sheet .npc-creator {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 16px;
+  height: 100%;
+  padding: 16px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(214, 154, 85, 0.2), transparent 38%),
+    linear-gradient(145deg, #090706, #17120e 52%, #080605);
+}
+
+.astrael-rpg.npc-sheet .npc-creator-hero {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid rgba(182, 138, 58, 0.34);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.035), rgba(0, 0, 0, 0.22));
+}
+
+.astrael-rpg.npc-sheet .npc-creator-portrait-wrap {
+  display: grid;
+  place-items: center;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-portrait {
+  width: 124px;
+  height: 124px;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-identity {
+  min-width: 0;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-identity > span,
+.astrael-rpg.npc-sheet .npc-creator-panel header span,
+.astrael-rpg.npc-sheet .npc-creator-preview header span {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-identity input {
+  width: 100%;
+  min-width: 0;
+  margin: 4px 0 8px;
+  border: 0;
+  border-bottom: 1px solid rgba(214, 154, 85, 0.42);
+  background: transparent;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 2rem;
+  font-weight: 700;
+  outline: 0;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-identity p {
+  margin: 0;
+  color: var(--astrael-muted);
+}
+
+.astrael-rpg.npc-sheet .npc-creator-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr 280px;
+  gap: 16px;
+  min-height: 0;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-panel,
+.astrael-rpg.npc-sheet .npc-creator-preview {
+  min-height: 0;
+  padding: 14px;
+  border: 1px solid rgba(129, 77, 25, 0.74);
+  background: linear-gradient(145deg, rgba(5, 3, 2, 0.94), rgba(12, 7, 3, 0.98));
+  overflow: hidden;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-panel h2,
+.astrael-rpg.npc-sheet .npc-creator-preview h2 {
+  margin: 2px 0 0;
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  line-height: 1.1;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-panel header,
+.astrael-rpg.npc-sheet .npc-creator-preview header {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-options {
+  display: grid;
+  gap: 10px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.astrael-rpg.npc-sheet .npc-choice-card {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 5px;
+  align-content: start;
+  justify-items: start;
+  width: 100%;
+  min-height: 74px;
+  padding: 12px;
+  border: 1px solid rgba(90, 80, 68, 0.86);
+  background: rgba(0, 0, 0, 0.22);
+  color: var(--astrael-text);
+  text-align: left;
+  line-height: 1.25;
+  white-space: normal;
+  cursor: pointer;
+}
+
+.astrael-rpg.npc-sheet .npc-choice-title {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.astrael-rpg.npc-sheet .npc-choice-description {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  color: var(--astrael-muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.astrael-rpg.npc-sheet .npc-choice-card.is-selected {
+  border-color: var(--astrael-gold-bright);
+  box-shadow: inset 0 0 0 1px rgba(214, 154, 85, 0.25), 0 0 18px rgba(193, 117, 57, 0.12);
+}
+
+.astrael-rpg.npc-sheet .npc-creator-preview {
+  display: grid;
+  grid-template-rows: auto auto auto auto auto;
+  gap: 12px;
+  overflow: auto;
+}
+
+.astrael-rpg.npc-sheet .npc-preview-resources {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.astrael-rpg.npc-sheet .npc-preview-resources div,
+.astrael-rpg.npc-sheet .npc-preview-extra-tab div,
+.astrael-rpg.npc-sheet .npc-preview-list {
+  padding: 10px;
+  border: 1px solid rgba(90, 80, 68, 0.72);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.astrael-rpg.npc-sheet .npc-preview-resources span,
+.astrael-rpg.npc-sheet .npc-preview-extra-tab span,
+.astrael-rpg.npc-sheet .npc-preview-list h3 {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg.npc-sheet .npc-preview-resources strong,
+.astrael-rpg.npc-sheet .npc-preview-extra-tab strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 1.2rem;
+}
+
+.astrael-rpg.npc-sheet .npc-preview-extra-tab strong {
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.astrael-rpg.npc-sheet .npc-preview-list {
+  display: grid;
+  gap: 7px;
+}
+
+.astrael-rpg.npc-sheet .npc-preview-list h3 {
+  margin: 0 0 2px;
+}
+
+.astrael-rpg.npc-sheet .npc-preview-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--astrael-text);
+}
+
+.astrael-rpg.npc-sheet .npc-preview-list strong {
+  color: var(--astrael-gold-bright);
+}
+
+.astrael-rpg.npc-sheet .npc-creator-command {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(214, 154, 85, 0.62);
+  background: linear-gradient(180deg, rgba(214, 154, 85, 0.28), rgba(193, 117, 57, 0.12));
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  cursor: pointer;
+}
+
+.astrael-rpg.npc-sheet .npc-creator-command.secondary {
+  border-color: rgba(90, 80, 68, 0.86);
+  background: rgba(0, 0, 0, 0.24);
+}
+
+.astrael-rpg.npc-sheet .npc-creator-command.full {
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .astrael-rpg.npc-sheet .npc-creator {
+    overflow: auto;
+  }
+
+  .astrael-rpg.npc-sheet .npc-creator-hero,
+  .astrael-rpg.npc-sheet .npc-creator-grid {
+    grid-template-columns: 1fr;
   }
 }
 

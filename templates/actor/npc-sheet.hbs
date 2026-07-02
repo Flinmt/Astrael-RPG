@@ -1,4 +1,109 @@
 <form class="{{cssClass}} astrael-rpg sheet actor npc-sheet" autocomplete="off">
+  {{#if npcCreator.active}}
+  <main class="npc-creator">
+    <section class="npc-creator-hero">
+      <div class="npc-creator-portrait-wrap">
+        <button class="portrait-ring npc-creator-portrait" type="button" data-action="editImage" title="Alterar retrato">
+          <img class="profile-img" src="{{actor.img}}" alt="{{actor.name}}">
+        </button>
+      </div>
+
+      <div class="npc-creator-identity">
+        <span>Criacao de NPC</span>
+        <label>
+          <input name="name" type="text" value="{{actor.name}}" placeholder="Nome do NPC">
+        </label>
+        <p>Escolha uma presenca narrativa, gere uma distribuicao e ajuste a ficha depois se quiser.</p>
+      </div>
+
+      <div class="npc-creator-actions">
+        <button type="button" class="npc-creator-command secondary" data-action="blank-npc">Ficha em Branco</button>
+        <button type="button" class="npc-creator-command" data-action="generate-npc">Gerar NPC</button>
+      </div>
+    </section>
+
+    <section class="npc-creator-grid">
+      <div class="npc-creator-panel">
+        <header>
+          <span>Escala</span>
+          <h2>Nivel</h2>
+        </header>
+        <div class="npc-creator-options">
+          {{#each npcCreator.levels as |level|}}
+          <button type="button" class="npc-choice-card {{#if level.selected}}is-selected{{/if}}" data-action="select-npc-level" data-level="{{level.id}}">
+            <span class="npc-choice-title">{{level.label}}</span>
+            <span class="npc-choice-description">{{level.description}}</span>
+          </button>
+          {{/each}}
+        </div>
+      </div>
+
+      <div class="npc-creator-panel npc-creator-archetypes">
+        <header>
+          <span>Funcao dramatica</span>
+          <h2>Arquetipo</h2>
+        </header>
+        <div class="npc-creator-options">
+          {{#each npcCreator.archetypes as |archetype|}}
+          <button type="button" class="npc-choice-card {{#if archetype.selected}}is-selected{{/if}}" data-action="select-npc-archetype" data-archetype="{{archetype.id}}">
+            <span class="npc-choice-title">{{archetype.label}}</span>
+            <span class="npc-choice-description">{{archetype.description}}</span>
+          </button>
+          {{/each}}
+        </div>
+      </div>
+
+      <aside class="npc-creator-preview">
+        <header>
+          <span>Dados do personagem</span>
+        </header>
+
+        <div class="npc-preview-resources">
+          <div>
+            <span>Vida</span>
+            <strong>{{npcCreator.draft.health}}</strong>
+          </div>
+          <div>
+            <span>Vontade</span>
+            <strong>{{npcCreator.draft.willpower}}</strong>
+          </div>
+        </div>
+
+        {{#if npcCreator.draft.optionalTabLabel}}
+        <div class="npc-preview-extra-tab">
+          <div>
+            <span>Aba Extra</span>
+            <strong>{{npcCreator.draft.optionalTabLabel}}</strong>
+          </div>
+        </div>
+        {{/if}}
+
+        <section class="npc-preview-list">
+          <h3>Atributos</h3>
+          {{#each npcCreator.draft.attributePreview as |trait|}}
+          <div><span>{{trait.label}}</span><strong>{{trait.value}}</strong></div>
+          {{/each}}
+        </section>
+
+        <section class="npc-preview-list">
+          <h3>Pericias</h3>
+          {{#each npcCreator.draft.skillPreview as |trait|}}
+          <div><span>{{trait.label}}</span><strong>{{trait.value}}</strong></div>
+          {{/each}}
+        </section>
+
+        <section class="npc-preview-list">
+          <h3>Rolagens</h3>
+          {{#each npcCreator.draft.customRolls as |roll|}}
+          <div><span>{{roll.name}}</span></div>
+          {{/each}}
+        </section>
+
+        <button type="button" class="npc-creator-command full" data-action="reroll-npc-draft">Gerar Novamente</button>
+      </aside>
+    </section>
+  </main>
+  {{else}}
   <main class="sheet-shell">
     <section class="sheet-frame">
       <header class="sheet-header npc-header">
@@ -722,9 +827,16 @@
                 <span>{{localize "ASTRAEL.Settings.ShowStrangerMark"}}</span>
               </button>
             </div>
+            <div class="settings-action-list">
+              <button type="button" class="settings-action-row danger" data-action="reset-npc-creator">
+                <span>Resetar criacao de NPC</span>
+                <small>Volta para a tela inicial de criacao sem apagar a ficha atual.</small>
+              </button>
+            </div>
           </section>
         </div>
       </section>
     </section>
   </main>
+  {{/if}}
 </form>

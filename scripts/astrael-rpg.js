@@ -44,6 +44,144 @@ const DEFAULT_RESOURCES = {
   }
 };
 
+const NPC_OPTIONAL_TABS = ["virtues", "hemomancy", "strangerMark"];
+const NPC_LEVELS = [
+  {
+    id: "common",
+    label: "Comum",
+    description: "Presenca discreta, com poucos pontos de destaque.",
+    attributeSpread: [3, 2, 2, 2, 1, 1, 1, 1, 1],
+    skillSpread: [3, 2, 2, 1, 1, 1]
+  },
+  {
+    id: "notable",
+    label: "Marcante",
+    description: "Alguem que deixa marca na cena e sustenta conflitos.",
+    attributeSpread: [4, 3, 3, 2, 2, 2, 1, 1, 1],
+    skillSpread: [4, 3, 3, 2, 2, 1, 1, 1]
+  },
+  {
+    id: "dangerous",
+    label: "Perigoso",
+    description: "Uma forca narrativa capaz de complicar os personagens.",
+    attributeSpread: [4, 3, 3, 3, 2, 2, 2, 2, 1],
+    skillSpread: [4, 4, 3, 3, 3, 2, 2, 2, 1, 1]
+  },
+  {
+    id: "unique",
+    label: "Unico",
+    description: "Figura central, rara e dificil de substituir.",
+    attributeSpread: [5, 4, 4, 3, 3, 3, 2, 2, 2],
+    skillSpread: [5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1]
+  }
+];
+const NPC_ARCHETYPES = [
+  {
+    id: "witness",
+    label: "A Testemunha",
+    description: "Viu o que nao devia. Em torno dela, a verdade vira risco.",
+    coreAttributes: ["wits", "resolve", "composure"],
+    sideAttributes: ["intelligence", "charisma", "dexterity"],
+    coreSkills: ["awareness", "investigation", "empathy"],
+    sideSkills: ["streetwise", "subterfuge", "persuasion", "academics"],
+    rolls: [
+      { name: "Dizer o Indizivel", attribute: "resolve", mode: "skill", secondKey: "empathy" },
+      { name: "Lembrar Detalhes", attribute: "wits", mode: "skill", secondKey: "awareness" }
+    ]
+  },
+  {
+    id: "guardian",
+    label: "O Guardiao",
+    description: "Protege um limite, uma promessa ou alguem que nao pode cair.",
+    coreAttributes: ["stamina", "composure", "resolve"],
+    sideAttributes: ["strength", "charisma", "wits"],
+    coreSkills: ["empathy", "leadership", "awareness"],
+    sideSkills: ["brawl", "athletics", "intimidation", "persuasion", "survival"],
+    rolls: [
+      { name: "Manter a Linha", attribute: "composure", mode: "skill", secondKey: "leadership" },
+      { name: "Proteger o Fraco", attribute: "stamina", mode: "skill", secondKey: "empathy" }
+    ]
+  },
+  {
+    id: "shadow",
+    label: "A Sombra",
+    description: "Move-se onde ninguem olha e some antes da pergunta certa.",
+    coreAttributes: ["dexterity", "wits", "composure"],
+    sideAttributes: ["resolve", "intelligence", "manipulation"],
+    coreSkills: ["stealth", "larceny", "subterfuge"],
+    sideSkills: ["investigation", "awareness", "technology", "streetwise"],
+    rolls: [
+      { name: "Entrar Sem Rastro", attribute: "dexterity", mode: "skill", secondKey: "stealth" },
+      { name: "Mentir Com Silencio", attribute: "composure", mode: "skill", secondKey: "subterfuge" }
+    ]
+  },
+  {
+    id: "desire",
+    label: "O Desejo",
+    description: "Promete algo que talvez nunca possa entregar.",
+    coreAttributes: ["charisma", "manipulation", "composure"],
+    sideAttributes: ["wits", "resolve", "dexterity"],
+    coreSkills: ["persuasion", "subterfuge", "etiquette"],
+    sideSkills: ["empathy", "expression", "streetwise", "leadership"],
+    rolls: [
+      { name: "Abrir a Porta Errada", attribute: "charisma", mode: "skill", secondKey: "persuasion" },
+      { name: "Promessa Perigosa", attribute: "manipulation", mode: "skill", secondKey: "subterfuge" }
+    ]
+  },
+  {
+    id: "wound",
+    label: "A Ferida",
+    description: "Carrega uma consequencia que ainda nao terminou.",
+    coreAttributes: ["resolve", "stamina", "wits"],
+    sideAttributes: ["composure", "strength", "manipulation"],
+    coreSkills: ["survival", "empathy", "intimidation"],
+    sideSkills: ["streetwise", "medicine", "awareness", "brawl"],
+    rolls: [
+      { name: "Continuar Apesar", attribute: "resolve", mode: "skill", secondKey: "survival" },
+      { name: "Reconhecer Dor", attribute: "wits", mode: "skill", secondKey: "empathy" }
+    ]
+  },
+  {
+    id: "oracle",
+    label: "O Oraculo",
+    description: "Sabe coisas demais, por estudo, rua, trauma ou estranho.",
+    coreAttributes: ["intelligence", "wits", "resolve"],
+    sideAttributes: ["composure", "manipulation", "charisma"],
+    coreSkills: ["occult", "investigation", "academics"],
+    sideSkills: ["awareness", "science", "politics", "subterfuge"],
+    rolls: [
+      { name: "Ler os Sinais", attribute: "intelligence", mode: "skill", secondKey: "occult" },
+      { name: "Conectar Padroes", attribute: "wits", mode: "skill", secondKey: "investigation" }
+    ]
+  },
+  {
+    id: "corruptor",
+    label: "O Corruptor",
+    description: "Oferece atalhos e faz concessoes parecerem inevitaveis.",
+    coreAttributes: ["manipulation", "wits", "charisma"],
+    sideAttributes: ["composure", "intelligence", "resolve"],
+    coreSkills: ["subterfuge", "persuasion", "politics"],
+    sideSkills: ["finance", "etiquette", "intimidation", "streetwise"],
+    rolls: [
+      { name: "Oferta Impossivel", attribute: "manipulation", mode: "skill", secondKey: "persuasion" },
+      { name: "Comprar Silencio", attribute: "wits", mode: "skill", secondKey: "subterfuge" }
+    ]
+  },
+  {
+    id: "predator",
+    label: "O Predador",
+    description: "Percebe fraqueza e se move antes que a vitima entenda.",
+    coreAttributes: ["dexterity", "wits", "strength"],
+    sideAttributes: ["stamina", "composure", "resolve"],
+    coreSkills: ["stealth", "awareness", "melee"],
+    sideSkills: ["brawl", "athletics", "intimidation", "investigation", "survival"],
+    rolls: [
+      { name: "Escolher a Presa", attribute: "wits", mode: "skill", secondKey: "awareness" },
+      { name: "Ataque Preciso", attribute: "dexterity", mode: "skill", secondKey: "melee" }
+    ]
+  }
+];
+
 const { TypeDataModel } = foundry.abstract;
 const { ArrayField, BooleanField, NumberField, ObjectField, SchemaField, StringField } = foundry.data.fields;
 
@@ -188,6 +326,143 @@ function clampNumber(value, min, max) {
 
 function isNumeric(value) {
   return value !== null && value !== undefined && Number.isFinite(Number(value));
+}
+
+function getNpcLevel(levelId) {
+  return NPC_LEVELS.find((level) => level.id === levelId) ?? NPC_LEVELS[0];
+}
+
+function getNpcArchetype(archetypeId) {
+  return NPC_ARCHETYPES.find((archetype) => archetype.id === archetypeId) ?? NPC_ARCHETYPES[0];
+}
+
+function chooseWeightedTrait(keys, archetype, type, excluded = new Set()) {
+  const core = new Set(type === "attribute" ? archetype.coreAttributes : archetype.coreSkills);
+  const side = new Set(type === "attribute" ? archetype.sideAttributes : archetype.sideSkills);
+  const candidates = keys
+    .filter((key) => !excluded.has(key))
+    .map((key) => ({
+      key,
+      weight: core.has(key) ? 8 : side.has(key) ? 4 : 1
+    }));
+  const total = candidates.reduce((sum, candidate) => sum + candidate.weight, 0);
+  let roll = Math.random() * total;
+  for (const candidate of candidates) {
+    roll -= candidate.weight;
+    if (roll <= 0) return candidate.key;
+  }
+  return candidates.at(-1)?.key ?? keys[0];
+}
+
+function buildNpcTraitValues(keys, spread, archetype, type) {
+  const values = Object.fromEntries(keys.map((key) => [key, type === "attribute" ? 1 : 0]));
+  const used = new Set();
+  for (const value of spread) {
+    const key = chooseWeightedTrait(keys, archetype, type, used);
+    used.add(key);
+    values[key] = value;
+  }
+  return values;
+}
+
+function getNpcOptionalTab(levelId) {
+  if (levelId === "common") return "";
+  return NPC_OPTIONAL_TABS[Math.floor(Math.random() * NPC_OPTIONAL_TABS.length)] ?? "";
+}
+
+function getAttributeValue(system, key) {
+  return Math.max(1, Number(system.attributes?.[key]?.value) || 1);
+}
+
+function calculateResourceActive(resourceId, system) {
+  const max = DEFAULT_RESOURCES[resourceId]?.max ?? 0;
+  const min = RESOURCE_MINIMUMS[resourceId] ?? 0;
+  if (resourceId === "health") return clampNumber(getAttributeValue(system, "stamina") + 3, min, max);
+  if (resourceId === "willpower") {
+    return clampNumber(
+      getAttributeValue(system, "composure") + getAttributeValue(system, "resolve"),
+      min,
+      max
+    );
+  }
+  return min;
+}
+
+function formatNpcTraitPreview(values, labels, minimum) {
+  return Object.entries(values)
+    .filter(([, value]) => value > minimum)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([key, value]) => ({
+      key,
+      label: labels[key] ? game.i18n.localize(labels[key]) : key,
+      value
+    }));
+}
+
+function createNpcDraft(levelId = "common", archetypeId = "witness") {
+  const level = getNpcLevel(levelId);
+  const archetype = getNpcArchetype(archetypeId);
+  const attributes = buildNpcTraitValues(ATTRIBUTE_KEYS, level.attributeSpread, archetype, "attribute");
+  const skills = buildNpcTraitValues(SKILL_KEYS, level.skillSpread, archetype, "skill");
+  const health = clampNumber((attributes.stamina || 1) + 3, RESOURCE_MINIMUMS.health, DEFAULT_RESOURCES.health.max);
+  const willpower = clampNumber((attributes.composure || 1) + (attributes.resolve || 1), RESOURCE_MINIMUMS.willpower, DEFAULT_RESOURCES.willpower.max);
+  const optionalTab = getNpcOptionalTab(level.id);
+  const customRolls = archetype.rolls.map((roll) => ({
+    name: roll.name,
+    attribute: roll.attribute,
+    mode: roll.mode,
+    secondKey: roll.secondKey,
+    modifier: 0,
+    specialty: ""
+  }));
+
+  return {
+    level,
+    archetype,
+    attributes,
+    skills,
+    health,
+    willpower,
+    optionalTab,
+    optionalTabLabel: optionalTab === "virtues" ? game.i18n.localize("ASTRAEL.Tab.Virtues") :
+      optionalTab === "hemomancy" ? game.i18n.localize("ASTRAEL.Tab.Hemomancy") :
+      optionalTab === "strangerMark" ? game.i18n.localize("ASTRAEL.Tab.StrangerMark") : "",
+    customRolls,
+    attributePreview: formatNpcTraitPreview(attributes, LOCALIZE_ATTR, 1),
+    skillPreview: formatNpcTraitPreview(skills, LOCALIZE_SKILL, 0)
+  };
+}
+
+function buildNpcDraftUpdateData(draft) {
+  const data = {
+    [`flags.${SYSTEM_ID}.npcInitialized`]: true,
+    [`flags.${SYSTEM_ID}.npcLevel`]: draft.level.id,
+    [`flags.${SYSTEM_ID}.npcLevelLabel`]: draft.level.label,
+    [`flags.${SYSTEM_ID}.npcArchetype`]: draft.archetype.id,
+    [`flags.${SYSTEM_ID}.npcArchetypeLabel`]: draft.archetype.label,
+    "system.resources.health.active": draft.health,
+    "system.resources.health.superficial": 0,
+    "system.resources.health.aggravated": 0,
+    "system.resources.willpower.active": draft.willpower,
+    "system.resources.willpower.superficial": 0,
+    "system.resources.willpower.aggravated": 0,
+    "system.sangria.value": 5,
+    "system.vazio.value": 0,
+    "system.customRolls": draft.customRolls,
+    "system.sheetSettings.visibleTabs.virtues": draft.optionalTab === "virtues",
+    "system.sheetSettings.visibleTabs.hemomancy": draft.optionalTab === "hemomancy",
+    "system.sheetSettings.visibleTabs.strangerMark": draft.optionalTab === "strangerMark"
+  };
+
+  for (const [key, value] of Object.entries(draft.attributes)) {
+    data[`system.attributes.${key}.value`] = value;
+  }
+  for (const [key, value] of Object.entries(draft.skills)) {
+    data[`system.skills.${key}.value`] = value;
+  }
+
+  return data;
 }
 
 function escapeHtml(value = "") {
@@ -346,7 +621,7 @@ function getConvictionPillarTypeOptions(selectedType) {
 
 function normalizeResource(resourceId, source = {}) {
   const fallback = DEFAULT_RESOURCES[resourceId];
-  const max = clampNumber(source.max ?? fallback.max, 0, fallback.max);
+  const max = fallback.max;
 
   if (Array.isArray(source.track) && !isNumeric(source.active)) {
     const active = source.track.filter((state) => state && state !== "empty").length;
@@ -985,8 +1260,28 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       systemData,
       { inplace: false }
     );
-    context.system.resources.health = normalizeResource("health", context.system.resources.health);
-    context.system.resources.willpower = normalizeResource("willpower", context.system.resources.willpower);
+    context.system.attributes ??= {};
+    for (const key of ATTRIBUTE_KEYS) {
+      const attr = context.system.attributes[key];
+      if (!attr || !Number.isFinite(Number(attr.value)) || Number(attr.value) < 1) {
+        context.system.attributes[key] = { value: 1 };
+      }
+    }
+    const resourceUpdate = {};
+    for (const resourceId of ["health", "willpower"]) {
+      const raw = context.system.resources[resourceId] ?? {};
+      const normalized = normalizeResource(resourceId, {
+        ...raw,
+        active: calculateResourceActive(resourceId, context.system)
+      });
+      context.system.resources[resourceId] = normalized;
+      for (const key of ["max", "active", "superficial", "aggravated"]) {
+        if (raw[key] !== normalized[key]) {
+          resourceUpdate[`system.resources.${resourceId}.${key}`] = normalized[key];
+        }
+      }
+    }
+    if (Object.keys(resourceUpdate).length) await this.actor.update(resourceUpdate);
     context.system.sheetSettings ??= {};
     context.system.sheetSettings.visibleTabs = normalizeVisibleTabs(context.system.sheetSettings.visibleTabs);
     if (["character", "npc"].includes(this.actor.type) && this.#isCharacterTabHidden(this._activeTab, context.system.sheetSettings.visibleTabs)) {
@@ -998,13 +1293,6 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (!Number.isFinite(Number(context.system.sangria.value))) context.system.sangria.value = 5;
     context.system.vazio ??= { value: 0 };
     if (!Number.isFinite(Number(context.system.vazio.value))) context.system.vazio.value = 0;
-    context.system.attributes ??= {};
-    for (const key of ATTRIBUTE_KEYS) {
-      const attr = context.system.attributes[key];
-      if (!attr || !Number.isFinite(Number(attr.value)) || Number(attr.value) < 1) {
-        context.system.attributes[key] = { value: 1 };
-      }
-    }
     context.system.skills ??= {};
     for (const key of SKILL_KEYS) {
       const skill = context.system.skills[key];
@@ -1653,9 +1941,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
     if (!resource || !Number.isInteger(index)) return;
 
-    if (state === "empty") resource.active = index + 1;
-    else if (state === "filled") resource.active = index;
-    else if (state === "superficial") resource.superficial = Math.max(0, resource.superficial - 1);
+    if (state === "empty" || state === "filled") return;
+    if (state === "superficial") resource.superficial = Math.max(0, resource.superficial - 1);
     else if (state === "aggravated") {
       resource.aggravated = Math.max(0, resource.aggravated - 1);
       resource.superficial += 1;
@@ -1743,11 +2030,17 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   #getResource(resourceId) {
     if (!DEFAULT_RESOURCES[resourceId]) return null;
 
-    return normalizeResource(resourceId, this.actor.system.resources?.[resourceId]);
+    return normalizeResource(resourceId, {
+      ...this.actor.system.resources?.[resourceId],
+      active: calculateResourceActive(resourceId, this.actor.system)
+    });
   }
 
   async #updateResource(resourceId, resource) {
-    const normalized = normalizeResource(resourceId, resource);
+    const normalized = normalizeResource(resourceId, {
+      ...resource,
+      active: calculateResourceActive(resourceId, this.actor.system)
+    });
 
     return this.actor.update({
       [`system.resources.${resourceId}.max`]: normalized.max,
@@ -3478,8 +3771,123 @@ class AstraelNpcSheet extends AstraelCharacterSheet {
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    const initialized = this.actor.getFlag(SYSTEM_ID, "npcInitialized") === true;
+    this._npcCreatorLevel ??= "common";
+    this._npcCreatorArchetype ??= "witness";
+    this._npcCreatorDraft ??= createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype);
+    if (
+      this._npcCreatorDraft.level.id !== this._npcCreatorLevel ||
+      this._npcCreatorDraft.archetype.id !== this._npcCreatorArchetype
+    ) {
+      this._npcCreatorDraft = createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype);
+    }
     context.npcArchetypeLabel = this.actor.getFlag(SYSTEM_ID, "npcArchetypeLabel") || "Sem arquetipo";
+    context.npcCreator = {
+      active: !initialized,
+      levels: NPC_LEVELS.map((level) => ({
+        ...level,
+        selected: level.id === this._npcCreatorLevel
+      })),
+      archetypes: NPC_ARCHETYPES.map((archetype) => ({
+        ...archetype,
+        selected: archetype.id === this._npcCreatorArchetype
+      })),
+      draft: this._npcCreatorDraft
+    };
     return context;
+  }
+
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+
+    this.element.querySelectorAll("[data-action='select-npc-level']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectNpcLevel.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='select-npc-archetype']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectNpcArchetype.bind(this));
+    });
+    this.element.querySelector("[data-action='reroll-npc-draft']")?.addEventListener("click", this.#onRerollNpcDraft.bind(this));
+    this.element.querySelector("[data-action='generate-npc']")?.addEventListener("click", this.#onGenerateNpc.bind(this));
+    this.element.querySelector("[data-action='blank-npc']")?.addEventListener("click", this.#onBlankNpc.bind(this));
+    this.element.querySelector("[data-action='reset-npc-creator']")?.addEventListener("click", this.#onResetNpcCreator.bind(this));
+  }
+
+  #refreshNpcDraft() {
+    this._npcCreatorDraft = createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype);
+  }
+
+  #onSelectNpcLevel(event) {
+    event.preventDefault();
+    this._npcCreatorLevel = getNpcLevel(event.currentTarget.dataset.level).id;
+    this.#refreshNpcDraft();
+    return this.render({ force: true });
+  }
+
+  #onSelectNpcArchetype(event) {
+    event.preventDefault();
+    this._npcCreatorArchetype = getNpcArchetype(event.currentTarget.dataset.archetype).id;
+    this.#refreshNpcDraft();
+    return this.render({ force: true });
+  }
+
+  #onRerollNpcDraft(event) {
+    event.preventDefault();
+    this.#refreshNpcDraft();
+    return this.render({ force: true });
+  }
+
+  #getNpcCreatorNameUpdate() {
+    const name = this.element.querySelector("input[name='name']")?.value?.trim();
+    return name ? { name } : {};
+  }
+
+  async #onGenerateNpc(event) {
+    event.preventDefault();
+    this._npcCreatorDraft ??= createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype);
+    await this.actor.update({
+      ...buildNpcDraftUpdateData(this._npcCreatorDraft),
+      ...this.#getNpcCreatorNameUpdate()
+    });
+    return this.render({ force: true });
+  }
+
+  async #onBlankNpc(event) {
+    event.preventDefault();
+    await this.actor.update({
+      [`flags.${SYSTEM_ID}.npcInitialized`]: true,
+      [`flags.${SYSTEM_ID}.npcArchetypeLabel`]: "Sem arquetipo",
+      ...this.#getNpcCreatorNameUpdate()
+    });
+    return this.render({ force: true });
+  }
+
+  async #onResetNpcCreator(event) {
+    event.preventDefault();
+    return new Dialog({
+      title: "Resetar criacao de NPC",
+      content: `
+        <div class="astrael-dialog-form">
+          <p>Voltar para a tela de criacao de NPC?</p>
+          <p>Os dados atuais da ficha nao serao apagados, mas o proximo NPC gerado pode sobrescrever atributos, pericias, recursos e rolagens.</p>
+        </div>
+      `,
+      buttons: {
+        cancel: {
+          label: "Cancelar"
+        },
+        confirm: {
+          label: "Resetar",
+          callback: async () => {
+            this._activeTab = "attributes";
+            await this.actor.update({
+              [`flags.${SYSTEM_ID}.npcInitialized`]: false
+            });
+            return this.render({ force: true });
+          }
+        }
+      },
+      default: "cancel"
+    }, { classes: ["astrael-dialog"] }).render(true);
   }
 }
 
