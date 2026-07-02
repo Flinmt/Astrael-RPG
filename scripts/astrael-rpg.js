@@ -50,29 +50,58 @@ const NPC_LEVELS = [
     id: "common",
     label: "Comum",
     description: "Presenca discreta, com poucos pontos de destaque.",
-    attributeSpread: [3, 2, 2, 2, 1, 1, 1, 1, 1],
-    skillSpread: [3, 2, 2, 1, 1, 1]
+    attributeSpread: [3, 3, 2, 2, 2, 1, 1, 1, 1],
+    skillBonusCount: 0
   },
   {
     id: "notable",
     label: "Marcante",
     description: "Alguem que deixa marca na cena e sustenta conflitos.",
-    attributeSpread: [4, 3, 3, 2, 2, 2, 1, 1, 1],
-    skillSpread: [4, 3, 3, 2, 2, 1, 1, 1]
+    attributeSpread: [4, 3, 3, 3, 2, 2, 2, 2, 1],
+    skillBonusCount: 0
   },
   {
     id: "dangerous",
     label: "Perigoso",
     description: "Uma forca narrativa capaz de complicar os personagens.",
-    attributeSpread: [4, 3, 3, 3, 2, 2, 2, 2, 1],
-    skillSpread: [4, 4, 3, 3, 3, 2, 2, 2, 1, 1]
+    attributeSpread: [4, 4, 3, 3, 3, 3, 2, 2, 2],
+    skillBonusCount: 3
   },
   {
     id: "unique",
     label: "Unico",
     description: "Figura central, rara e dificil de substituir.",
-    attributeSpread: [5, 4, 4, 3, 3, 3, 2, 2, 2],
-    skillSpread: [5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1]
+    attributeSpread: [5, 4, 4, 4, 3, 3, 3, 2, 2],
+    skillBonusCount: 6
+  }
+];
+const NPC_SKILL_DISTRIBUTIONS = [
+  {
+    id: "versatile",
+    label: "Versatil",
+    description: "Muitas competencias uteis, poucas em destaque absoluto.",
+    spreads: {
+      common: [3, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1],
+      default: [3, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    }
+  },
+  {
+    id: "balanced",
+    label: "Equilibrado",
+    description: "Algumas areas fortes, com base funcional ao redor.",
+    spreads: {
+      common: [3, 3, 2, 2, 2, 1, 1, 1, 1, 1],
+      default: [3, 3, 3, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1]
+    }
+  },
+  {
+    id: "specialist",
+    label: "Especialista",
+    description: "Poucas competencias, mas uma identidade tecnica clara.",
+    spreads: {
+      common: [4, 3, 3, 2, 2, 1, 1],
+      default: [4, 3, 3, 3, 2, 2, 2, 1, 1, 1]
+    }
   }
 ];
 const NPC_ARCHETYPES = [
@@ -83,11 +112,7 @@ const NPC_ARCHETYPES = [
     coreAttributes: ["wits", "resolve", "composure"],
     sideAttributes: ["intelligence", "charisma", "dexterity"],
     coreSkills: ["awareness", "investigation", "empathy"],
-    sideSkills: ["streetwise", "subterfuge", "persuasion", "academics"],
-    rolls: [
-      { name: "Dizer o Indizivel", attribute: "resolve", mode: "skill", secondKey: "empathy" },
-      { name: "Lembrar Detalhes", attribute: "wits", mode: "skill", secondKey: "awareness" }
-    ]
+    sideSkills: ["streetwise", "subterfuge", "persuasion", "academics"]
   },
   {
     id: "guardian",
@@ -96,11 +121,7 @@ const NPC_ARCHETYPES = [
     coreAttributes: ["stamina", "composure", "resolve"],
     sideAttributes: ["strength", "charisma", "wits"],
     coreSkills: ["empathy", "leadership", "awareness"],
-    sideSkills: ["brawl", "athletics", "intimidation", "persuasion", "survival"],
-    rolls: [
-      { name: "Manter a Linha", attribute: "composure", mode: "skill", secondKey: "leadership" },
-      { name: "Proteger o Fraco", attribute: "stamina", mode: "skill", secondKey: "empathy" }
-    ]
+    sideSkills: ["brawl", "athletics", "intimidation", "persuasion", "survival"]
   },
   {
     id: "shadow",
@@ -109,24 +130,7 @@ const NPC_ARCHETYPES = [
     coreAttributes: ["dexterity", "wits", "composure"],
     sideAttributes: ["resolve", "intelligence", "manipulation"],
     coreSkills: ["stealth", "larceny", "subterfuge"],
-    sideSkills: ["investigation", "awareness", "technology", "streetwise"],
-    rolls: [
-      { name: "Entrar Sem Rastro", attribute: "dexterity", mode: "skill", secondKey: "stealth" },
-      { name: "Mentir Com Silencio", attribute: "composure", mode: "skill", secondKey: "subterfuge" }
-    ]
-  },
-  {
-    id: "desire",
-    label: "O Desejo",
-    description: "Promete algo que talvez nunca possa entregar.",
-    coreAttributes: ["charisma", "manipulation", "composure"],
-    sideAttributes: ["wits", "resolve", "dexterity"],
-    coreSkills: ["persuasion", "subterfuge", "etiquette"],
-    sideSkills: ["empathy", "expression", "streetwise", "leadership"],
-    rolls: [
-      { name: "Abrir a Porta Errada", attribute: "charisma", mode: "skill", secondKey: "persuasion" },
-      { name: "Promessa Perigosa", attribute: "manipulation", mode: "skill", secondKey: "subterfuge" }
-    ]
+    sideSkills: ["investigation", "awareness", "technology", "streetwise"]
   },
   {
     id: "wound",
@@ -135,11 +139,7 @@ const NPC_ARCHETYPES = [
     coreAttributes: ["resolve", "stamina", "wits"],
     sideAttributes: ["composure", "strength", "manipulation"],
     coreSkills: ["survival", "empathy", "intimidation"],
-    sideSkills: ["streetwise", "medicine", "awareness", "brawl"],
-    rolls: [
-      { name: "Continuar Apesar", attribute: "resolve", mode: "skill", secondKey: "survival" },
-      { name: "Reconhecer Dor", attribute: "wits", mode: "skill", secondKey: "empathy" }
-    ]
+    sideSkills: ["streetwise", "medicine", "awareness", "brawl"]
   },
   {
     id: "oracle",
@@ -148,11 +148,7 @@ const NPC_ARCHETYPES = [
     coreAttributes: ["intelligence", "wits", "resolve"],
     sideAttributes: ["composure", "manipulation", "charisma"],
     coreSkills: ["occult", "investigation", "academics"],
-    sideSkills: ["awareness", "science", "politics", "subterfuge"],
-    rolls: [
-      { name: "Ler os Sinais", attribute: "intelligence", mode: "skill", secondKey: "occult" },
-      { name: "Conectar Padroes", attribute: "wits", mode: "skill", secondKey: "investigation" }
-    ]
+    sideSkills: ["awareness", "science", "politics", "subterfuge"]
   },
   {
     id: "corruptor",
@@ -161,11 +157,7 @@ const NPC_ARCHETYPES = [
     coreAttributes: ["manipulation", "wits", "charisma"],
     sideAttributes: ["composure", "intelligence", "resolve"],
     coreSkills: ["subterfuge", "persuasion", "politics"],
-    sideSkills: ["finance", "etiquette", "intimidation", "streetwise"],
-    rolls: [
-      { name: "Oferta Impossivel", attribute: "manipulation", mode: "skill", secondKey: "persuasion" },
-      { name: "Comprar Silencio", attribute: "wits", mode: "skill", secondKey: "subterfuge" }
-    ]
+    sideSkills: ["finance", "etiquette", "intimidation", "streetwise"]
   },
   {
     id: "predator",
@@ -174,11 +166,61 @@ const NPC_ARCHETYPES = [
     coreAttributes: ["dexterity", "wits", "strength"],
     sideAttributes: ["stamina", "composure", "resolve"],
     coreSkills: ["stealth", "awareness", "melee"],
-    sideSkills: ["brawl", "athletics", "intimidation", "investigation", "survival"],
-    rolls: [
-      { name: "Escolher a Presa", attribute: "wits", mode: "skill", secondKey: "awareness" },
-      { name: "Ataque Preciso", attribute: "dexterity", mode: "skill", secondKey: "melee" }
-    ]
+    sideSkills: ["brawl", "athletics", "intimidation", "investigation", "survival"]
+  },
+  {
+    id: "brute",
+    label: "O Brutamontes",
+    description: "Resolve problemas com presenca fisica, pressao e violencia simples.",
+    coreAttributes: ["strength", "stamina", "composure"],
+    sideAttributes: ["dexterity", "resolve", "wits"],
+    coreSkills: ["brawl", "intimidation", "athletics"],
+    sideSkills: ["melee", "survival", "streetwise", "awareness"]
+  },
+  {
+    id: "criminal",
+    label: "O Criminoso",
+    description: "Conhece a rua, seus atalhos, seus riscos e seus acordos sujos.",
+    coreAttributes: ["dexterity", "wits", "manipulation"],
+    sideAttributes: ["composure", "strength", "resolve"],
+    coreSkills: ["larceny", "streetwise", "stealth"],
+    sideSkills: ["brawl", "subterfuge", "drive", "firearms"]
+  },
+  {
+    id: "informant",
+    label: "O Informante",
+    description: "Ouve demais, fala quando convem e sabe onde procurar respostas.",
+    coreAttributes: ["wits", "manipulation", "charisma"],
+    sideAttributes: ["composure", "intelligence", "resolve"],
+    coreSkills: ["streetwise", "empathy", "investigation"],
+    sideSkills: ["subterfuge", "persuasion", "awareness", "etiquette"]
+  },
+  {
+    id: "authority",
+    label: "A Autoridade",
+    description: "Carrega cargo, influencia ou medo suficiente para dobrar uma sala.",
+    coreAttributes: ["composure", "manipulation", "charisma"],
+    sideAttributes: ["resolve", "intelligence", "wits"],
+    coreSkills: ["leadership", "politics", "intimidation"],
+    sideSkills: ["etiquette", "persuasion", "finance", "subterfuge"]
+  },
+  {
+    id: "professional",
+    label: "O Profissional",
+    description: "Tem metodo, repertorio tecnico e uma resposta pronta para o oficio.",
+    coreAttributes: ["intelligence", "resolve", "wits"],
+    sideAttributes: ["composure", "dexterity", "manipulation"],
+    coreSkills: ["academics", "technology", "investigation"],
+    sideSkills: ["medicine", "science", "finance", "politics"]
+  },
+  {
+    id: "executor",
+    label: "O Executor",
+    description: "Age com frieza quando alguem precisa sumir, cair ou se calar.",
+    coreAttributes: ["dexterity", "composure", "wits"],
+    sideAttributes: ["strength", "stamina", "resolve"],
+    coreSkills: ["firearms", "stealth", "awareness"],
+    sideSkills: ["melee", "brawl", "drive", "intimidation"]
   }
 ];
 
@@ -336,6 +378,10 @@ function getNpcArchetype(archetypeId) {
   return NPC_ARCHETYPES.find((archetype) => archetype.id === archetypeId) ?? NPC_ARCHETYPES[0];
 }
 
+function getNpcSkillDistribution(distributionId) {
+  return NPC_SKILL_DISTRIBUTIONS.find((distribution) => distribution.id === distributionId) ?? NPC_SKILL_DISTRIBUTIONS[1];
+}
+
 function chooseWeightedTrait(keys, archetype, type, excluded = new Set()) {
   const core = new Set(type === "attribute" ? archetype.coreAttributes : archetype.coreSkills);
   const side = new Set(type === "attribute" ? archetype.sideAttributes : archetype.sideSkills);
@@ -363,6 +409,22 @@ function buildNpcTraitValues(keys, spread, archetype, type) {
     values[key] = value;
   }
   return values;
+}
+
+function getNpcSkillSpread(level, distribution) {
+  if (level.id === "common") return distribution.spreads.common;
+  return distribution.spreads.default;
+}
+
+function applyNpcSkillBonuses(skills, level, archetype) {
+  const max = level.id === "notable" ? 4 : 5;
+  for (let i = 0; i < (level.skillBonusCount || 0); i++) {
+    const eligible = SKILL_KEYS.filter((key) => (skills[key] || 0) < max);
+    if (!eligible.length) break;
+    const key = chooseWeightedTrait(eligible, archetype, "skill");
+    skills[key] += 1;
+  }
+  return skills;
 }
 
 function getNpcOptionalTab(levelId) {
@@ -400,26 +462,23 @@ function formatNpcTraitPreview(values, labels, minimum) {
     }));
 }
 
-function createNpcDraft(levelId = "common", archetypeId = "witness") {
+function createNpcDraft(levelId = "common", archetypeId = "witness", distributionId = "balanced") {
   const level = getNpcLevel(levelId);
   const archetype = getNpcArchetype(archetypeId);
+  const skillDistribution = getNpcSkillDistribution(distributionId);
   const attributes = buildNpcTraitValues(ATTRIBUTE_KEYS, level.attributeSpread, archetype, "attribute");
-  const skills = buildNpcTraitValues(SKILL_KEYS, level.skillSpread, archetype, "skill");
+  const skills = applyNpcSkillBonuses(
+    buildNpcTraitValues(SKILL_KEYS, getNpcSkillSpread(level, skillDistribution), archetype, "skill"),
+    level,
+    archetype
+  );
   const health = clampNumber((attributes.stamina || 1) + 3, RESOURCE_MINIMUMS.health, DEFAULT_RESOURCES.health.max);
   const willpower = clampNumber((attributes.composure || 1) + (attributes.resolve || 1), RESOURCE_MINIMUMS.willpower, DEFAULT_RESOURCES.willpower.max);
   const optionalTab = getNpcOptionalTab(level.id);
-  const customRolls = archetype.rolls.map((roll) => ({
-    name: roll.name,
-    attribute: roll.attribute,
-    mode: roll.mode,
-    secondKey: roll.secondKey,
-    modifier: 0,
-    specialty: ""
-  }));
-
   return {
     level,
     archetype,
+    skillDistribution,
     attributes,
     skills,
     health,
@@ -428,7 +487,6 @@ function createNpcDraft(levelId = "common", archetypeId = "witness") {
     optionalTabLabel: optionalTab === "virtues" ? game.i18n.localize("ASTRAEL.Tab.Virtues") :
       optionalTab === "hemomancy" ? game.i18n.localize("ASTRAEL.Tab.Hemomancy") :
       optionalTab === "strangerMark" ? game.i18n.localize("ASTRAEL.Tab.StrangerMark") : "",
-    customRolls,
     attributePreview: formatNpcTraitPreview(attributes, LOCALIZE_ATTR, 1),
     skillPreview: formatNpcTraitPreview(skills, LOCALIZE_SKILL, 0)
   };
@@ -439,6 +497,9 @@ function buildNpcDraftUpdateData(draft) {
     [`flags.${SYSTEM_ID}.npcInitialized`]: true,
     [`flags.${SYSTEM_ID}.npcLevel`]: draft.level.id,
     [`flags.${SYSTEM_ID}.npcLevelLabel`]: draft.level.label,
+    [`flags.${SYSTEM_ID}.npcImportanceLabel`]: draft.level.label,
+    [`flags.${SYSTEM_ID}.npcSkillDistribution`]: draft.skillDistribution.id,
+    [`flags.${SYSTEM_ID}.npcSkillDistributionLabel`]: draft.skillDistribution.label,
     [`flags.${SYSTEM_ID}.npcArchetype`]: draft.archetype.id,
     [`flags.${SYSTEM_ID}.npcArchetypeLabel`]: draft.archetype.label,
     "system.resources.health.active": draft.health,
@@ -449,7 +510,6 @@ function buildNpcDraftUpdateData(draft) {
     "system.resources.willpower.aggravated": 0,
     "system.sangria.value": 5,
     "system.vazio.value": 0,
-    "system.customRolls": draft.customRolls,
     "system.sheetSettings.visibleTabs.virtues": draft.optionalTab === "virtues",
     "system.sheetSettings.visibleTabs.hemomancy": draft.optionalTab === "hemomancy",
     "system.sheetSettings.visibleTabs.strangerMark": draft.optionalTab === "strangerMark"
@@ -3774,19 +3834,32 @@ class AstraelNpcSheet extends AstraelCharacterSheet {
     const initialized = this.actor.getFlag(SYSTEM_ID, "npcInitialized") === true;
     this._npcCreatorLevel ??= "common";
     this._npcCreatorArchetype ??= "witness";
-    this._npcCreatorDraft ??= createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype);
+    this._npcCreatorSkillDistribution ??= "balanced";
+    this._npcCreatorDraft ??= createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype, this._npcCreatorSkillDistribution);
     if (
       this._npcCreatorDraft.level.id !== this._npcCreatorLevel ||
-      this._npcCreatorDraft.archetype.id !== this._npcCreatorArchetype
+      this._npcCreatorDraft.archetype.id !== this._npcCreatorArchetype ||
+      this._npcCreatorDraft.skillDistribution.id !== this._npcCreatorSkillDistribution
     ) {
-      this._npcCreatorDraft = createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype);
+      this._npcCreatorDraft = createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype, this._npcCreatorSkillDistribution);
     }
+    const currentLevelIndex = NPC_LEVELS.findIndex((level) => level.id === this._npcCreatorLevel);
+    const currentLevel = getNpcLevel(this._npcCreatorLevel);
     context.npcArchetypeLabel = this.actor.getFlag(SYSTEM_ID, "npcArchetypeLabel") || "Sem arquetipo";
     context.npcCreator = {
       active: !initialized,
+      importance: {
+        ...currentLevel,
+        canDecrease: currentLevelIndex > 0,
+        canIncrease: currentLevelIndex >= 0 && currentLevelIndex < NPC_LEVELS.length - 1
+      },
       levels: NPC_LEVELS.map((level) => ({
         ...level,
         selected: level.id === this._npcCreatorLevel
+      })),
+      skillDistributions: NPC_SKILL_DISTRIBUTIONS.map((distribution) => ({
+        ...distribution,
+        selected: distribution.id === this._npcCreatorSkillDistribution
       })),
       archetypes: NPC_ARCHETYPES.map((archetype) => ({
         ...archetype,
@@ -3800,8 +3873,10 @@ class AstraelNpcSheet extends AstraelCharacterSheet {
   async _onRender(context, options) {
     await super._onRender(context, options);
 
-    this.element.querySelectorAll("[data-action='select-npc-level']").forEach((button) => {
-      button.addEventListener("click", this.#onSelectNpcLevel.bind(this));
+    this.element.querySelector("[data-action='decrease-npc-importance']")?.addEventListener("click", this.#onChangeNpcImportance.bind(this));
+    this.element.querySelector("[data-action='increase-npc-importance']")?.addEventListener("click", this.#onChangeNpcImportance.bind(this));
+    this.element.querySelectorAll("[data-action='select-npc-skill-distribution']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectNpcSkillDistribution.bind(this));
     });
     this.element.querySelectorAll("[data-action='select-npc-archetype']").forEach((button) => {
       button.addEventListener("click", this.#onSelectNpcArchetype.bind(this));
@@ -3813,12 +3888,23 @@ class AstraelNpcSheet extends AstraelCharacterSheet {
   }
 
   #refreshNpcDraft() {
-    this._npcCreatorDraft = createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype);
+    this._npcCreatorDraft = createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype, this._npcCreatorSkillDistribution);
   }
 
-  #onSelectNpcLevel(event) {
+  #onChangeNpcImportance(event) {
     event.preventDefault();
-    this._npcCreatorLevel = getNpcLevel(event.currentTarget.dataset.level).id;
+    const direction = event.currentTarget.dataset.direction === "up" ? 1 : -1;
+    const index = NPC_LEVELS.findIndex((level) => level.id === this._npcCreatorLevel);
+    const next = NPC_LEVELS[clampNumber(index + direction, 0, NPC_LEVELS.length - 1)];
+    if (!next || next.id === this._npcCreatorLevel) return;
+    this._npcCreatorLevel = next.id;
+    this.#refreshNpcDraft();
+    return this.render({ force: true });
+  }
+
+  #onSelectNpcSkillDistribution(event) {
+    event.preventDefault();
+    this._npcCreatorSkillDistribution = getNpcSkillDistribution(event.currentTarget.dataset.distribution).id;
     this.#refreshNpcDraft();
     return this.render({ force: true });
   }
@@ -3843,7 +3929,7 @@ class AstraelNpcSheet extends AstraelCharacterSheet {
 
   async #onGenerateNpc(event) {
     event.preventDefault();
-    this._npcCreatorDraft ??= createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype);
+    this._npcCreatorDraft ??= createNpcDraft(this._npcCreatorLevel, this._npcCreatorArchetype, this._npcCreatorSkillDistribution);
     await this.actor.update({
       ...buildNpcDraftUpdateData(this._npcCreatorDraft),
       ...this.#getNpcCreatorNameUpdate()
