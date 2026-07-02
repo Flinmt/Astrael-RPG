@@ -45,8 +45,7 @@
   "download": "https://github.com/Flinmt/Astrael-RPG/releases/download/v0.1.1/astrael-rpg.zip",
   "documentTypes": {
     "Actor": {
-      "character": {},
-      "pdm": {}
+      "character": {}
     },
     "Item": {
       "trait": {}
