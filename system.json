@@ -2,6 +2,7 @@
   "id": "astrael-rpg",
   "title": "Astrael RPG",
   "description": "Sistema Astrael RPG para Foundry Virtual Tabletop.",
+  "background": "systems/astrael-rpg/assets/astrael.jpeg",
   "version": "0.1.2",
   "authors": [
     {

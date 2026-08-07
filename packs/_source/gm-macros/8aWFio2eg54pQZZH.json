@@ -1,0 +1,28 @@
+{
+  "_key": "!macros!8aWFio2eg54pQZZH",
+  "name": "Distribuir XP",
+  "type": "script",
+  "command": "game.astrael?.distributeXP?.()",
+  "scope": "global",
+  "img": "systems/astrael-rpg/assets/icons/xp-up.svg",
+  "_id": "8aWFio2eg54pQZZH",
+  "author": "DtJJf1FcF367HFh2",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0,
+    "DtJJf1FcF367HFh2": 3
+  },
+  "flags": {},
+  "_stats": {
+    "coreVersion": "14.363",
+    "systemId": "astrael-rpg",
+    "systemVersion": "0.1.0",
+    "createdTime": 1781115508187,
+    "modifiedTime": 1781115508198,
+    "lastModifiedBy": "DtJJf1FcF367HFh2",
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  }
+}

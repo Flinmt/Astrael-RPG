@@ -1,14 +1,6 @@
 /ficha
-AGENTS.md
+/node_modules/
 # Foundry VTT LevelDB
 /packs/*
-!/packs/gm-macros/
-!/packs/gm-macros/**
-/packs/gm-macros/LOCK
-/packs/gm-macros/LOG
-/packs/gm-macros/LOG.old
-/packs/gm-macros/CURRENT
-/packs/gm-macros/MANIFEST-*
-/packs/gm-macros/*.log
-/packs/gm-macros/*.ldb
-/packs/gm-macros/*.sst
+!/packs/_source/
+!/packs/_source/**
