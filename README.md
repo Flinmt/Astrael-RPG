@@ -16,6 +16,23 @@ FoundryVTT/Data/systems/astrael-rpg
 
 Depois crie um mundo novo usando o sistema `Astrael RPG`.
 
+### Fluxo de branches
+
+O checkout deste diretorio permanece na branch `develop`, que alimenta diretamente
+o Foundry em Docker. Desenvolva e valide mudancas nela com `npm run validate` e um
+teste manual no Foundry.
+
+Releases seguem este fluxo:
+
+1. Prepare a versao em `develop`, incluindo versao, manifesto e compendios.
+2. Abra um pull request de `develop` para `main`.
+3. Depois do merge, atualize o worktree de release:
+   `git -C ../Astrael-RPG-main pull --ff-only origin main`.
+4. Crie a tag `vX.Y.Z` e a GitHub Release somente a partir de `main`.
+
+O diretorio `../Astrael-RPG-main` e exclusivo para releases e nao e montado no
+Foundry.
+
 ## Compendios
 
 Os arquivos em `packs/gm-macros/` sao um banco LevelDB gerado e nao devem ser
