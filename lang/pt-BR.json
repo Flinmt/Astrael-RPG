@@ -169,5 +169,7 @@
   "ASTRAEL.CompactPortrait.Zoom": "Zoom",
   "ASTRAEL.CompactPortrait.ChangeImage": "Trocar imagem",
   "ASTRAEL.CompactPortrait.Reset": "Restaurar",
-  "ASTRAEL.CompactPortrait.ViewFull": "Visualizar imagem completa"
+  "ASTRAEL.CompactPortrait.ViewFull": "Visualizar imagem completa",
+  "ASTRAEL.CompactPortrait.FullImage": "Imagem completa do personagem",
+  "ASTRAEL.CompactPortrait.BackToSheet": "Voltar à ficha"
 }

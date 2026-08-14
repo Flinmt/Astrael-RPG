@@ -4067,7 +4067,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     },
     window: {
       title: "Astrael RPG Compact Character Sheet",
-      resizable: true
+      resizable: false
     }
   };
 
@@ -4079,6 +4079,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
+    context.compactPortraitViewer = this._compactPortraitViewer === true;
     context.compactPortrait = prepareCompactPortraitPresentation(getCompactPortraitFraming(this.actor));
     context.compactCanEditPortrait = this.actor.isOwner;
     context.compactAttributesCollapsed = game.settings.get(SYSTEM_ID, "compactAttributesCollapsed");
@@ -4193,7 +4194,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     } else {
       context.compactCharacteristicDock = null;
     }
-    context.compactResourceTooltipAvailable = !context.compactResourceTooltipsDisabled
+    context.compactResourceTooltipAvailable = !context.compactPortraitViewer
+      && !context.compactResourceTooltipsDisabled
       && !context.compactSkillEditor
       && !context.compactCharacteristicDock;
     return context;
@@ -4201,6 +4203,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
 
   async _onRender(context, options) {
     await super._onRender(context, options);
+    this.element.classList.toggle("is-portrait-viewer", context.compactPortraitViewer);
     this.element.querySelectorAll("[data-action='adjust-compact-attribute']").forEach((button) => {
       button.addEventListener("click", this.#onAdjustCompactAttribute.bind(this, 1));
       button.addEventListener("contextmenu", this.#onAdjustCompactAttribute.bind(this, -1));
@@ -4234,6 +4237,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     }
     this.element.querySelector("[data-action='edit-compact-portrait']")?.addEventListener("click", this.#onEditCompactPortrait.bind(this));
     this.element.querySelector("[data-action='view-compact-portrait']")?.addEventListener("click", this.#onViewCompactPortrait.bind(this));
+    this.element.querySelector("[data-action='close-compact-portrait-viewer']")?.addEventListener("click", this.#onCloseCompactPortraitViewer.bind(this));
     this.element.querySelector("[data-action='add-compact-skill']")?.addEventListener("click", this.#onAddCompactSkill.bind(this));
     this.element.querySelectorAll("[data-action='edit-compact-skill']").forEach((button) => {
       button.addEventListener("click", this.#onEditCompactSkill.bind(this));
@@ -4287,7 +4291,12 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     this.element.querySelector("[data-action='confirm-remove-compact-skill']")?.addEventListener("click", this.#onConfirmRemoveCompactSkill.bind(this));
     this.element.addEventListener("keydown", this.#onCompactSkillEditorKeydown.bind(this));
 
-    if (this._compactSkillNeedsInitialFocus && this._compactSkillEditor) {
+    if (context.compactPortraitViewer) {
+      this.element.querySelector("[data-action='close-compact-portrait-viewer']")?.focus();
+    } else if (this._compactPortraitViewerReturnFocus) {
+      this._compactPortraitViewerReturnFocus = false;
+      this.element.querySelector("[data-action='view-compact-portrait']")?.focus();
+    } else if (this._compactSkillNeedsInitialFocus && this._compactSkillEditor) {
       this._compactSkillNeedsInitialFocus = false;
       const focusTarget = this._compactSkillEditor.confirmingRemoval
         ? this.element.querySelector("[data-action='back-remove-compact-skill']")
@@ -4358,12 +4367,18 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   #onViewCompactPortrait(event) {
     event.preventDefault();
     event.stopPropagation();
-    const popout = new foundry.applications.apps.ImagePopout({
-      src: this.actor.img,
-      uuid: this.actor.uuid,
-      window: { title: this.actor.name }
-    });
-    return popout.render({ force: true });
+    clearTimeout(this._compactResourceTooltipTimer);
+    this._compactPortraitViewer = true;
+    return this.render({ force: true });
+  }
+
+  #onCloseCompactPortraitViewer(event) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    if (!this._compactPortraitViewer) return;
+    this._compactPortraitViewer = false;
+    this._compactPortraitViewerReturnFocus = true;
+    return this.render({ force: true });
   }
 
   #onAddCompactSkill(event) {
@@ -4455,6 +4470,11 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
 
   #onCompactSkillEditorKeydown(event) {
     if (event.key !== "Escape") return;
+    if (this._compactPortraitViewer) {
+      event.preventDefault();
+      event.stopPropagation();
+      return this.#onCloseCompactPortraitViewer();
+    }
     if (this._compactCharacteristicDock) {
       event.preventDefault();
       event.stopPropagation();

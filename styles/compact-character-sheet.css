@@ -35,6 +35,16 @@
   -webkit-backdrop-filter: none;
 }
 
+.application.astrael-rpg.compact-character-sheet.is-portrait-viewer .window-header {
+  display: none;
+}
+
+.application.astrael-rpg.compact-character-sheet.is-portrait-viewer .window-content {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .astrael-compact-sheet {
   width: 100%;
   height: 100%;
@@ -55,6 +65,124 @@
   background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+}
+
+.astrael-compact-sheet.is-portrait-viewer .astrael-compact-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait-viewer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #3c352a;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(155, 116, 69, 0.08), transparent 58%),
+    #080a08;
+  box-shadow:
+    inset 0 0 42px rgba(0, 0, 0, 0.7),
+    0 16px 38px rgba(0, 0, 0, 0.58);
+}
+
+.astrael-compact-sheet .astrael-compact-portrait-viewer-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 43px;
+  padding: 7px 10px 7px 14px;
+  border-bottom: 1px solid #5b4933;
+  color: #d8cfbc;
+  background:
+    linear-gradient(90deg, rgba(155, 116, 69, 0.14), transparent 45%),
+    #0d100d;
+  box-shadow: inset 0 -1px rgba(0, 0, 0, 0.56);
+}
+
+.astrael-compact-sheet .astrael-compact-portrait-viewer-header > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait-viewer-header > span i {
+  color: var(--astrael-nav-bronze-light);
+  font-size: 10px;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait-viewer-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  margin: 14px;
+  overflow: hidden;
+  border: 1px solid #40392e;
+  background: #070907;
+  box-shadow:
+    0 0 0 1px #080908,
+    0 8px 22px rgba(0, 0, 0, 0.46);
+}
+
+.astrael-compact-sheet .astrael-compact-portrait-viewer-stage > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  border: 0;
+  object-fit: contain !important;
+  object-position: center;
+  transform: none !important;
+  user-select: none;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait-viewer-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: auto;
+  min-height: 30px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid #80643e;
+  border-radius: 0;
+  color: #ded3bf;
+  background: rgba(12, 14, 12, 0.9);
+  box-shadow:
+    inset 2px 0 0 var(--astrael-nav-bronze-light),
+    0 4px 12px rgba(0, 0, 0, 0.52);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait-viewer-back:hover,
+.astrael-compact-sheet .astrael-compact-portrait-viewer-back:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: #f2e8d5;
+  background: rgba(38, 34, 25, 0.96);
+  outline: 1px solid rgba(198, 163, 111, 0.42);
+  outline-offset: 2px;
 }
 
 .astrael-compact-sheet .astrael-compact-frame {
@@ -480,15 +608,15 @@
 }
 
 .astrael-compact-sheet .astrael-compact-header-expanded {
-  grid-template-columns: 82px minmax(0, 1fr);
-  gap: 13px;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 14px;
   padding: 12px 13px;
 }
 
 .astrael-compact-sheet .astrael-compact-portrait {
-  width: 82px;
-  height: 104px;
-  min-width: 82px;
+  width: 88px;
+  height: 112px;
+  min-width: 88px;
   padding: 3px;
   border: 1px solid #3c484e;
   border-radius: 0;
@@ -2703,9 +2831,9 @@
 
 .astrael-compact-sheet .astrael-compact-portrait-wrap {
   position: relative;
-  width: 76px;
-  height: 96px;
-  min-width: 76px;
+  width: 88px;
+  height: 112px;
+  min-width: 88px;
   align-self: center;
 }
 
@@ -2726,13 +2854,13 @@
 .astrael-compact-sheet .astrael-compact-portrait-view {
   position: absolute;
   z-index: 5;
-  top: 5px;
-  right: 5px;
+  top: -6px;
+  right: -6px;
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  min-width: 22px;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
   margin: 0;
   padding: 0;
   border: 1px solid rgba(198, 163, 111, 0.7);

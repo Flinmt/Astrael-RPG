@@ -165,5 +165,7 @@
   "ASTRAEL.CompactPortrait.Zoom": "Zoom",
   "ASTRAEL.CompactPortrait.ChangeImage": "Change image",
   "ASTRAEL.CompactPortrait.Reset": "Reset",
-  "ASTRAEL.CompactPortrait.ViewFull": "View full image"
+  "ASTRAEL.CompactPortrait.ViewFull": "View full image",
+  "ASTRAEL.CompactPortrait.FullImage": "Full character image",
+  "ASTRAEL.CompactPortrait.BackToSheet": "Back to sheet"
 }

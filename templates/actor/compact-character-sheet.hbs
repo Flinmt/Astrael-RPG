@@ -1,5 +1,19 @@
-<form class="{{cssClass}} astrael-compact-sheet" autocomplete="off">
+<form class="{{cssClass}} astrael-compact-sheet {{#if compactPortraitViewer}}is-portrait-viewer{{/if}}" autocomplete="off">
   <main class="astrael-compact-shell">
+    {{#if compactPortraitViewer}}
+    <section class="astrael-compact-portrait-viewer" aria-label="{{localize 'ASTRAEL.CompactPortrait.FullImage'}}">
+      <header class="astrael-compact-portrait-viewer-header">
+        <span><i class="fas fa-image" aria-hidden="true"></i>{{actor.name}}</span>
+        <button type="button" class="astrael-compact-portrait-viewer-back" data-action="close-compact-portrait-viewer">
+          <i class="fas fa-arrow-left" aria-hidden="true"></i>
+          <span>{{localize "ASTRAEL.CompactPortrait.BackToSheet"}}</span>
+        </button>
+      </header>
+      <div class="astrael-compact-portrait-viewer-stage">
+        <img src="{{compactPortrait.src}}" alt="{{actor.name}}">
+      </div>
+    </section>
+    {{else}}
     <section class="astrael-compact-frame">
       <header class="astrael-compact-character-header">
         <div class="astrael-compact-header-expanded">
@@ -20,7 +34,7 @@
 
             <section class="astrael-compact-resource health-card" data-resource="health">
               <div class="astrael-compact-resource-title">
-                <span><i class="fas fa-heart-pulse" aria-hidden="true"></i>{{localize "ASTRAEL.Resource.Health"}}{{#if compactResourceTooltipsDisabled}}<button type="button" class="astrael-compact-resource-hint" data-action="set-compact-resource-tooltips" data-disabled="false" title="{{localize 'ASTRAEL.CompactHeader.EnableControlHints'}}" aria-label="{{localize 'ASTRAEL.CompactHeader.EnableControlHints'}}"><i class="fas fa-circle-info" aria-hidden="true"></i></button>{{else}}{{#if compactResourceTooltipAvailable}}<i class="fas fa-circle-info astrael-compact-resource-hint" aria-hidden="true"></i>{{/if}}{{/if}}</span>
+                <span><i class="fas fa-heart-pulse" aria-hidden="true"></i>{{localize "ASTRAEL.Resource.Health"}}{{#if compactResourceTooltipAvailable}}<i class="fas fa-circle-info astrael-compact-resource-hint" aria-hidden="true"></i>{{/if}}</span>
                 <strong>{{system.resources.health.active}}<small>/{{system.resources.health.max}}</small></strong>
               </div>
               <div class="astrael-compact-box-track" aria-label="{{localize 'ASTRAEL.Resource.Health'}}">
@@ -32,7 +46,7 @@
 
             <section class="astrael-compact-resource will-card" data-resource="willpower">
               <div class="astrael-compact-resource-title">
-                <span><i class="fas fa-shield-halved" aria-hidden="true"></i>{{localize "ASTRAEL.Resource.Willpower"}}{{#if compactResourceTooltipsDisabled}}<button type="button" class="astrael-compact-resource-hint" data-action="set-compact-resource-tooltips" data-disabled="false" title="{{localize 'ASTRAEL.CompactHeader.EnableControlHints'}}" aria-label="{{localize 'ASTRAEL.CompactHeader.EnableControlHints'}}"><i class="fas fa-circle-info" aria-hidden="true"></i></button>{{else}}{{#if compactResourceTooltipAvailable}}<i class="fas fa-circle-info astrael-compact-resource-hint" aria-hidden="true"></i>{{/if}}{{/if}}</span>
+                <span><i class="fas fa-shield-halved" aria-hidden="true"></i>{{localize "ASTRAEL.Resource.Willpower"}}{{#if compactResourceTooltipAvailable}}<i class="fas fa-circle-info astrael-compact-resource-hint" aria-hidden="true"></i>{{/if}}</span>
                 <strong>{{system.resources.willpower.active}}<small>/{{system.resources.willpower.max}}</small></strong>
               </div>
               <div class="astrael-compact-box-track" aria-label="{{localize 'ASTRAEL.Resource.Willpower'}}">
@@ -413,5 +427,6 @@
       </aside>
       {{/if}}
     </section>
+    {{/if}}
   </main>
 </form>
