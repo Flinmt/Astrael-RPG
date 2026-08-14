@@ -123,6 +123,9 @@
   "ASTRAEL.CompactSkills.Skill": "Perícia",
   "ASTRAEL.CompactSkills.Select": "Selecione uma perícia",
   "ASTRAEL.CompactSkills.SelectRequired": "Selecione uma perícia antes de salvar.",
+  "ASTRAEL.CompactSkills.Back": "Voltar",
+  "ASTRAEL.CompactSkills.RemoveConfirmTitle": "Remover esta perícia?",
+  "ASTRAEL.CompactSkills.RemoveConfirmHint": "Ela voltará para a lista de perícias disponíveis.",
   "ASTRAEL.CompactSkills.Empty": "Nenhuma perícia com pontos.",
   "ASTRAEL.CompactSkills.Roll": "Rolar"
 }

@@ -1322,9 +1322,12 @@
 /* Compact skills */
 .astrael-compact-sheet .astrael-compact-skills {
   position: relative;
-  flex: 1 0 auto;
-  min-height: calc(100% - 236px);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  flex: 1 1 0;
+  min-height: 0;
   padding: 10px 13px 14px;
+  overflow: hidden;
   border-bottom: 0;
   background:
     linear-gradient(115deg, rgba(155, 116, 69, 0.045), transparent 34%),
@@ -1403,7 +1406,16 @@
 .astrael-compact-sheet .astrael-compact-skill-list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
+  align-content: start;
   gap: 5px;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: none;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-list::-webkit-scrollbar {
+  display: none;
 }
 
 .astrael-compact-sheet .astrael-compact-skill-row {
@@ -1416,6 +1428,15 @@
   padding: 6px 7px 6px 10px;
   border: 1px solid #302f29;
   background: #151713;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-row.is-selected {
+  border-color: var(--astrael-nav-bronze);
+  background:
+    linear-gradient(90deg, rgba(155, 116, 69, 0.1), transparent 44%),
+    #171914;
+  box-shadow: inset 2px 0 0 var(--astrael-nav-bronze-light);
 }
 
 .astrael-compact-sheet .astrael-compact-skill-name {
@@ -1437,11 +1458,17 @@
 }
 
 .astrael-compact-sheet .astrael-compact-skill-level {
-  display: flex;
-  gap: 2px;
+  display: grid;
+  grid-template-columns: repeat(5, 9px);
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 61px;
 }
 
 .astrael-compact-sheet .astrael-compact-skill-level > span {
+  display: block;
+  box-sizing: border-box;
   width: 9px;
   height: 9px;
   border: 1px solid #5a5447;
@@ -1640,147 +1667,203 @@
 .astrael-compact-sheet .astrael-compact-body .tab-panel.astrael-compact-panel[data-tab="attributes"].active {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  scrollbar-width: none;
+  overflow: hidden;
 }
 
 .astrael-compact-sheet .astrael-compact-body .tab-panel.astrael-compact-panel[data-tab="attributes"]::-webkit-scrollbar {
   display: none;
 }
 
-/* Small skill editor popup */
-.compact-skill-popup-window .window-content {
-  padding: 0;
-  background: #10120f;
-}
-
-.astrael-dialog .compact-skill-popup-form {
+/* Docked skill editor */
+.astrael-compact-sheet .astrael-compact-skill-dock {
   display: grid;
-  gap: 13px;
-  padding: 14px;
+  gap: 9px;
+  margin: 10px -13px -14px;
+  padding: 11px 13px 12px;
+  border-top: 1px solid #745a37;
   background:
-    radial-gradient(circle at 18% 0, rgba(155, 116, 69, 0.1), transparent 42%),
+    linear-gradient(110deg, rgba(155, 116, 69, 0.11), transparent 42%),
     repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
-    #111411;
+    #171914;
+  box-shadow:
+    0 -8px 18px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(198, 163, 111, 0.06);
+  animation: astrael-compact-skill-dock-in 150ms ease-out;
 }
 
-.compact-skill-popup-name {
-  padding-bottom: 9px;
-  border-bottom: 1px solid #554631;
-  color: #d8cfbc;
-  font-family: "Cinzel", Georgia, serif;
-  font-size: 15px;
-  letter-spacing: 0.04em;
+@keyframes astrael-compact-skill-dock-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.compact-skill-popup-field,
-.compact-skill-popup-level {
+.astrael-compact-sheet .astrael-compact-skill-dock-fields {
   display: grid;
-  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
 }
 
-.compact-skill-popup-field > span,
-.compact-skill-popup-level > span {
+.astrael-compact-sheet .astrael-compact-skill-dock-select,
+.astrael-compact-sheet .astrael-compact-skill-dock-name,
+.astrael-compact-sheet .astrael-compact-skill-dock-level {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-dock-select > span,
+.astrael-compact-sheet .astrael-compact-skill-dock-name > span,
+.astrael-compact-sheet .astrael-compact-skill-dock-level > span,
+.astrael-compact-sheet .astrael-compact-skill-remove-confirmation > span {
   color: #958a76;
   font-family: "IBM Plex Mono", Consolas, monospace;
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
-.compact-skill-popup-field select {
+.astrael-compact-sheet .astrael-compact-skill-dock-select select {
   width: 100%;
-  height: 30px;
+  height: 27px;
   margin: 0;
-  padding: 3px 7px;
+  padding: 2px 7px;
   border: 1px solid #4e493e;
   border-radius: 0;
-  color: #d8cfbc;
+  color: var(--astrael-compact-bone);
   background: #0d0f0c;
-  font-size: 11px;
+  font-size: 10px;
 }
 
-.compact-skill-popup-field select option {
-  color: #d8cfbc;
+.astrael-compact-sheet .astrael-compact-skill-dock-select select option {
+  color: var(--astrael-compact-bone);
   background: #111411;
 }
 
-.compact-skill-popup-dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  min-height: 28px;
+.astrael-compact-sheet .astrael-compact-skill-dock-name strong {
+  overflow: hidden;
+  color: var(--astrael-compact-bone);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 12px;
+  line-height: 27px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.compact-skill-popup-dot {
-  width: 20px;
-  height: 20px;
-  min-width: 20px;
+.astrael-compact-sheet .astrael-compact-skill-dock-level > div {
+  display: grid;
+  grid-template-columns: repeat(5, 18px);
+  align-items: center;
+  justify-content: end;
+  gap: 8px;
+  min-height: 27px;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-dock-level button {
+  box-sizing: border-box !important;
+  width: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+  flex: 0 0 18px !important;
   margin: 0;
   padding: 0;
   border: 1px solid #5a5447;
   border-radius: 50%;
   background: radial-gradient(circle at 38% 32%, #252720, #090b09 72%);
   box-shadow:
-    inset 0 0 0 4px #0b0d0b,
-    0 1px 3px rgba(0, 0, 0, 0.56);
+    inset 0 0 0 3px #0b0d0b,
+    0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.compact-skill-popup-dot.is-filled {
+.astrael-compact-sheet .astrael-compact-skill-dock-level button.is-filled {
   border-color: #c6a36f;
   background: radial-gradient(circle at 38% 32%, #dfc18b, #8b673d 66%);
   box-shadow:
-    inset 0 0 0 4px #392c1e,
+    inset 0 0 0 3px #392c1e,
+    0 0 4px rgba(198, 163, 111, 0.22);
+}
+
+.astrael-compact-sheet .astrael-compact-skill-dock-level button.is-current {
+  outline: 0;
+  box-shadow:
+    inset 0 0 0 3px #392c1e,
+    0 0 0 2px rgba(216, 207, 188, 0.62),
     0 0 5px rgba(198, 163, 111, 0.24);
 }
 
-.compact-skill-popup-dot.is-current {
-  outline: 1px solid rgba(216, 207, 188, 0.72);
-  outline-offset: 2px;
-}
-
-.compact-skill-popup-dot:hover,
-.compact-skill-popup-dot:focus-visible {
+.astrael-compact-sheet .astrael-compact-skill-dock-level button:hover,
+.astrael-compact-sheet .astrael-compact-skill-dock-level button:focus-visible {
   border-color: #ead1a5;
   filter: brightness(1.16);
   transform: scale(1.06);
 }
 
-.compact-skill-popup-window .dialog-buttons button[data-button="remove"],
-.compact-skill-popup-window .dialog-buttons button.remove {
-  order: 3;
+.astrael-compact-sheet .astrael-compact-skill-dock-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  padding-top: 8px;
+  border-top: 1px solid #39372f;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-dock-actions button {
+  width: auto;
+  min-width: 70px;
+  min-height: 23px;
+  margin: 0;
+  padding: 4px 8px;
+  border: 1px solid #4b504a;
+  border-radius: 0;
+  color: #aaa99f;
+  background: #11130f;
+  box-shadow: none;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-dock-actions button.is-primary {
+  border-color: var(--astrael-nav-bronze);
+  color: #eadcc3;
+  background: rgba(155, 116, 69, 0.25);
+}
+
+.astrael-compact-sheet .astrael-compact-skill-dock-actions button.is-danger {
   border-color: #70423c;
   color: #c47b71;
   background: rgba(112, 66, 60, 0.14);
 }
 
-.compact-skill-popup-window .dialog-buttons button[data-button="save"],
-.compact-skill-popup-window .dialog-buttons button.save {
-  order: 1;
-  border-color: #9b7445;
-  color: #eadcc3;
-  background: linear-gradient(180deg, rgba(155, 116, 69, 0.38), rgba(95, 71, 45, 0.24));
+.astrael-compact-sheet .astrael-compact-skill-dock-actions button.is-remove {
+  margin-right: auto;
 }
 
-.compact-skill-popup-window .dialog-buttons button[data-button="save"]:hover,
-.compact-skill-popup-window .dialog-buttons button.save:hover {
-  border-color: #c6a36f;
-  background: linear-gradient(180deg, rgba(198, 163, 111, 0.46), rgba(155, 116, 69, 0.3));
+.astrael-compact-sheet .astrael-compact-skill-dock-actions button:hover,
+.astrael-compact-sheet .astrael-compact-skill-dock-actions button:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: var(--astrael-compact-bone);
+  background: #242219;
 }
 
-.compact-skill-popup-window .dialog-buttons button[data-button="cancel"],
-.compact-skill-popup-window .dialog-buttons button.cancel {
-  order: 2;
-  border-color: #4b504a;
-  color: #aaa99f;
-  background: linear-gradient(180deg, rgba(72, 77, 72, 0.3), rgba(25, 29, 26, 0.32));
+.astrael-compact-sheet .astrael-compact-skill-remove-confirmation {
+  display: grid;
+  gap: 4px;
+  text-align: center;
 }
 
-.compact-skill-popup-window .dialog-buttons button[data-button="cancel"]:hover,
-.compact-skill-popup-window .dialog-buttons button.cancel:hover {
-  border-color: #777d75;
-  color: #d4d2c8;
-  background: linear-gradient(180deg, rgba(91, 97, 91, 0.38), rgba(35, 40, 36, 0.36));
+.astrael-compact-sheet .astrael-compact-skill-remove-confirmation strong {
+  color: #c47b71;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 12px;
 }

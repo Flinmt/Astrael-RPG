@@ -207,7 +207,7 @@
 
             <div class="astrael-compact-skill-list">
               {{#each compactActiveSkills as |skill|}}
-              <article class="astrael-compact-skill-row">
+              <article class="astrael-compact-skill-row {{#if skill.selected}}is-selected{{/if}}">
                 <a class="rollable astrael-compact-skill-name" href="#" data-type="skill" data-key="{{skill.key}}" title="{{localize 'ASTRAEL.CompactSkills.Roll'}}: {{skill.label}}">
                   {{skill.label}}
                 </a>
@@ -216,15 +216,69 @@
                   <span class="{{#if level.filled}}is-filled{{/if}}"></span>
                   {{/each}}
                 </div>
+                {{#if skill.canEdit}}
                 <button type="button" class="astrael-compact-skill-edit" data-action="edit-compact-skill" data-key="{{skill.key}}" title="{{localize 'ASTRAEL.CompactSkills.Edit'}}" aria-label="{{localize 'ASTRAEL.CompactSkills.Edit'}}: {{skill.label}}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                {{else}}
+                <button type="button" class="astrael-compact-skill-edit" disabled aria-label="{{localize 'ASTRAEL.CompactSkills.Edit'}}: {{skill.label}}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                {{/if}}
               </article>
               {{/each}}
+              {{#unless compactActiveSkills.length}}
+              <div class="astrael-compact-skills-empty">
+                <span>{{localize "ASTRAEL.CompactSkills.Empty"}}</span>
+              </div>
+              {{/unless}}
             </div>
-            {{#unless compactActiveSkills.length}}
-            <div class="astrael-compact-skills-empty">
-              <span>{{localize "ASTRAEL.CompactSkills.Empty"}}</span>
-            </div>
-            {{/unless}}
+
+            {{#if compactSkillEditor}}
+            <section class="astrael-compact-skill-dock {{#if compactSkillEditor.confirmingRemoval}}is-confirming{{/if}}">
+              {{#if compactSkillEditor.confirmingRemoval}}
+              <div class="astrael-compact-skill-remove-confirmation">
+                <strong>{{localize "ASTRAEL.CompactSkills.RemoveConfirmTitle"}}</strong>
+                <span>{{localize "ASTRAEL.CompactSkills.RemoveConfirmHint"}}</span>
+              </div>
+              <div class="astrael-compact-skill-dock-actions">
+                <button type="button" data-action="back-remove-compact-skill">{{localize "ASTRAEL.CompactSkills.Back"}}</button>
+                <button type="button" class="is-danger" data-action="confirm-remove-compact-skill">{{localize "ASTRAEL.CompactSkills.Remove"}}</button>
+              </div>
+              {{else}}
+              <div class="astrael-compact-skill-dock-fields">
+                {{#if compactSkillEditor.adding}}
+                <label class="astrael-compact-skill-dock-select">
+                  <span>{{localize "ASTRAEL.CompactSkills.Skill"}}</span>
+                  <select data-action="select-compact-editor-skill">
+                    <option value="">{{localize "ASTRAEL.CompactSkills.Select"}}</option>
+                    {{#each compactSkillEditor.options as |option|}}
+                    <option value="{{option.key}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>
+                    {{/each}}
+                  </select>
+                </label>
+                {{else}}
+                <div class="astrael-compact-skill-dock-name">
+                  <span>{{localize "ASTRAEL.CompactSkills.Edit"}}</span>
+                  <strong>{{compactSkillEditor.label}}</strong>
+                </div>
+                {{/if}}
+
+                <div class="astrael-compact-skill-dock-level">
+                  <span>{{localize "ASTRAEL.CompactAttributes.Level"}} {{compactSkillEditor.level}}</span>
+                  <div>
+                    {{#each compactSkillEditor.levels as |level|}}
+                    <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-compact-editor-level" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Level'}} {{level.value}}"></button>
+                    {{/each}}
+                  </div>
+                </div>
+              </div>
+              <div class="astrael-compact-skill-dock-actions">
+                {{#if compactSkillEditor.editing}}
+                <button type="button" class="is-danger is-remove" data-action="request-remove-compact-skill">{{localize "ASTRAEL.CompactSkills.Remove"}}</button>
+                {{/if}}
+                <button type="button" data-action="cancel-compact-skill-editor">{{localize "ASTRAEL.CompactSkills.Cancel"}}</button>
+                <button type="button" class="is-primary" data-action="save-compact-skill-editor">{{localize "ASTRAEL.CompactSkills.Save"}}</button>
+              </div>
+              {{/if}}
+            </section>
+            {{/if}}
           </section>
         </div>
         <div class="tab-panel astrael-compact-panel" data-tab="advantages">

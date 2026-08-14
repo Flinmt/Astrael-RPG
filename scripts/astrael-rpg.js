@@ -3859,12 +3859,35 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
           key,
           value,
           label: game.i18n.localize(LOCALIZE_SKILL[key]),
+          selected: this._compactSkillEditor?.mode === "edit" && this._compactSkillEditor.key === key,
+          canEdit: !this._compactSkillEditor,
           levels: buildLevels(value)
         };
       })
       .filter((skill) => skill.value > 0)
       .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang));
-    context.compactCanAddSkill = context.compactActiveSkills.length < SKILL_KEYS.length;
+    const activeKeys = new Set(context.compactActiveSkills.map((skill) => skill.key));
+    const availableSkills = SKILL_KEYS
+      .filter((key) => !activeKeys.has(key))
+      .map((key) => ({
+        key,
+        label: game.i18n.localize(LOCALIZE_SKILL[key]),
+        selected: this._compactSkillEditor?.key === key
+      }))
+      .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang));
+    context.compactCanAddSkill = availableSkills.length > 0 && !this._compactSkillEditor;
+    context.compactSkillEditor = this._compactSkillEditor
+      ? {
+        ...this._compactSkillEditor,
+        adding: this._compactSkillEditor.mode === "add",
+        editing: this._compactSkillEditor.mode === "edit",
+        label: this._compactSkillEditor.mode === "edit"
+          ? game.i18n.localize(LOCALIZE_SKILL[this._compactSkillEditor.key])
+          : "",
+        levels: buildLevels(this._compactSkillEditor.level),
+        options: availableSkills
+      }
+      : null;
     return context;
   }
 
@@ -3882,6 +3905,34 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     this.element.querySelectorAll("[data-action='edit-compact-skill']").forEach((button) => {
       button.addEventListener("click", this.#onEditCompactSkill.bind(this));
     });
+    this.element.querySelectorAll("[data-action='set-compact-editor-level']").forEach((button) => {
+      button.addEventListener("click", this.#onSetCompactEditorLevel.bind(this));
+    });
+    this.element.querySelector("[data-action='select-compact-editor-skill']")?.addEventListener("change", (event) => {
+      if (this._compactSkillEditor?.mode === "add") this._compactSkillEditor.key = event.currentTarget.value;
+    });
+    this.element.querySelector("[data-action='save-compact-skill-editor']")?.addEventListener("click", this.#onSaveCompactSkillEditor.bind(this));
+    this.element.querySelector("[data-action='cancel-compact-skill-editor']")?.addEventListener("click", this.#onCancelCompactSkillEditor.bind(this));
+    this.element.querySelector("[data-action='request-remove-compact-skill']")?.addEventListener("click", this.#onRequestRemoveCompactSkill.bind(this));
+    this.element.querySelector("[data-action='back-remove-compact-skill']")?.addEventListener("click", this.#onBackRemoveCompactSkill.bind(this));
+    this.element.querySelector("[data-action='confirm-remove-compact-skill']")?.addEventListener("click", this.#onConfirmRemoveCompactSkill.bind(this));
+    this.element.addEventListener("keydown", this.#onCompactSkillEditorKeydown.bind(this));
+
+    if (this._compactSkillNeedsInitialFocus && this._compactSkillEditor) {
+      this._compactSkillNeedsInitialFocus = false;
+      const focusTarget = this._compactSkillEditor.confirmingRemoval
+        ? this.element.querySelector("[data-action='back-remove-compact-skill']")
+        : this._compactSkillEditor.mode === "add"
+          ? this.element.querySelector("[data-action='select-compact-editor-skill']")
+          : this.element.querySelector("[data-action='set-compact-editor-level'].is-current");
+      focusTarget?.focus();
+    } else if (!this._compactSkillEditor && this._compactSkillReturnFocus) {
+      const selector = this._compactSkillReturnFocus === "add"
+        ? "[data-action='add-compact-skill']"
+        : `[data-action='edit-compact-skill'][data-key='${this._compactSkillReturnFocus}']`;
+      this._compactSkillReturnFocus = null;
+      this.element.querySelector(selector)?.focus();
+    }
   }
 
   async #onToggleCompactHeader(event) {
@@ -3910,91 +3961,89 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
 
   #onAddCompactSkill(event) {
     event.preventDefault();
-    return this.#openCompactSkillPopup("add");
+    if (this._compactSkillEditor) return;
+    this._compactSkillReturnFocus = "add";
+    this._compactSkillNeedsInitialFocus = true;
+    this._compactSkillEditor = { mode: "add", key: "", level: 1, confirmingRemoval: false };
+    return this.render({ force: true });
   }
 
   #onEditCompactSkill(event) {
     event.preventDefault();
     const key = event.currentTarget.dataset.key;
-    if (!SKILL_KEYS.includes(key)) return;
-    return this.#openCompactSkillPopup("edit", key);
+    if (this._compactSkillEditor || !SKILL_KEYS.includes(key)) return;
+    this._compactSkillReturnFocus = key;
+    this._compactSkillNeedsInitialFocus = true;
+    this._compactSkillEditor = {
+      mode: "edit",
+      key,
+      level: clampNumber(this.actor.system.skills?.[key]?.value, 1, 5),
+      confirmingRemoval: false
+    };
+    return this.render({ force: true });
   }
 
-  #openCompactSkillPopup(mode, skillKey = "") {
-    const isEditing = mode === "edit" && SKILL_KEYS.includes(skillKey);
-    const currentLevel = isEditing
-      ? clampNumber(this.actor.system.skills?.[skillKey]?.value, 1, 5)
-      : 1;
-    const activeKeys = new Set(SKILL_KEYS.filter((key) => (
-      clampNumber(this.actor.system.skills?.[key]?.value, 0, 5) > 0
-    )));
-    const skillOptions = SKILL_KEYS
-      .filter((key) => !activeKeys.has(key))
-      .map((key) => ({ key, label: game.i18n.localize(LOCALIZE_SKILL[key]) }))
-      .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang))
-      .map((option) => `<option value="${option.key}">${escapeHtml(option.label)}</option>`)
-      .join("");
-    const skillLabel = isEditing ? game.i18n.localize(LOCALIZE_SKILL[skillKey]) : "";
-    const title = game.i18n.localize(isEditing ? "ASTRAEL.CompactSkills.Edit" : "ASTRAEL.CompactSkills.Add");
-    const levelButtons = Array.from({ length: 5 }, (_, index) => {
-      const level = index + 1;
-      return `<button type="button" class="compact-skill-popup-dot ${level <= currentLevel ? "is-filled" : ""} ${level === currentLevel ? "is-current" : ""}" data-level="${level}" aria-label="${game.i18n.localize("ASTRAEL.CompactAttributes.Level")} ${level}"></button>`;
-    }).join("");
-    const buttons = {};
+  #onSetCompactEditorLevel(event) {
+    event.preventDefault();
+    if (!this._compactSkillEditor) return;
+    this._compactSkillEditor.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
+    return this.render({ force: true });
+  }
 
-    if (isEditing) {
-      buttons.remove = {
-        label: game.i18n.localize("ASTRAEL.CompactSkills.Remove"),
-        callback: () => this.actor.update({ [`system.skills.${skillKey}.value`]: 0 })
-      };
+  #onCancelCompactSkillEditor(event) {
+    event?.preventDefault();
+    if (!this._compactSkillEditor) return;
+    if (this._compactSkillEditor.confirmingRemoval) {
+      this._compactSkillEditor.confirmingRemoval = false;
+      this._compactSkillNeedsInitialFocus = true;
+      return this.render({ force: true });
     }
-    buttons.cancel = { label: game.i18n.localize("ASTRAEL.CompactSkills.Cancel") };
-    buttons.save = {
-      label: game.i18n.localize("ASTRAEL.CompactSkills.Save"),
-      callback: async (html) => {
-        const key = isEditing ? skillKey : html.find("[name='skill']").val();
-        if (!SKILL_KEYS.includes(key)) {
-          ui.notifications.warn(game.i18n.localize("ASTRAEL.CompactSkills.SelectRequired"));
-          return false;
-        }
-        const level = clampNumber(html.find("[name='level']").val(), 1, 5);
-        return this.actor.update({ [`system.skills.${key}.value`]: level });
-      }
-    };
+    this._compactSkillEditor = null;
+    return this.render({ force: true });
+  }
 
-    return new Dialog({
-      title,
-      content: `
-        <form class="compact-skill-popup-form">
-          ${isEditing
-            ? `<strong class="compact-skill-popup-name">${escapeHtml(skillLabel)}</strong>`
-            : `<label class="compact-skill-popup-field"><span>${game.i18n.localize("ASTRAEL.CompactSkills.Skill")}</span><select name="skill"><option value="">${game.i18n.localize("ASTRAEL.CompactSkills.Select")}</option>${skillOptions}</select></label>`}
-          <div class="compact-skill-popup-level">
-            <span>${game.i18n.localize("ASTRAEL.CompactAttributes.Level")} <strong data-level-label>${currentLevel}</strong></span>
-            <div class="compact-skill-popup-dots">${levelButtons}</div>
-            <input type="hidden" name="level" value="${currentLevel}">
-          </div>
-        </form>
-      `,
-      buttons,
-      default: "save",
-      render: (html) => {
-        html.find(".compact-skill-popup-dot").on("click", function(event) {
-          event.preventDefault();
-          const level = clampNumber(this.dataset.level, 1, 5);
-          html.find("[name='level']").val(String(level));
-          html.find("[data-level-label]").text(String(level));
-          html.find(".compact-skill-popup-dot").each((_, dot) => {
-            const dotLevel = Number(dot.dataset.level);
-            dot.classList.toggle("is-filled", dotLevel <= level);
-            dot.classList.toggle("is-current", dotLevel === level);
-          });
-        });
-      }
-    }, {
-      classes: ["astrael-dialog", "compact-skill-popup-window"],
-      width: 350
-    }).render(true);
+  async #onSaveCompactSkillEditor(event) {
+    event.preventDefault();
+    const editor = this._compactSkillEditor;
+    if (!editor) return;
+    if (!SKILL_KEYS.includes(editor.key)) {
+      ui.notifications.warn(game.i18n.localize("ASTRAEL.CompactSkills.SelectRequired"));
+      return;
+    }
+    this._compactSkillEditor = null;
+    return this.actor.update({ [`system.skills.${editor.key}.value`]: clampNumber(editor.level, 1, 5) });
+  }
+
+  #onRequestRemoveCompactSkill(event) {
+    event.preventDefault();
+    if (this._compactSkillEditor?.mode !== "edit") return;
+    this._compactSkillEditor.confirmingRemoval = true;
+    this._compactSkillNeedsInitialFocus = true;
+    return this.render({ force: true });
+  }
+
+  #onBackRemoveCompactSkill(event) {
+    event.preventDefault();
+    if (!this._compactSkillEditor) return;
+    this._compactSkillEditor.confirmingRemoval = false;
+    this._compactSkillNeedsInitialFocus = true;
+    return this.render({ force: true });
+  }
+
+  async #onConfirmRemoveCompactSkill(event) {
+    event.preventDefault();
+    const key = this._compactSkillEditor?.mode === "edit" ? this._compactSkillEditor.key : "";
+    if (!SKILL_KEYS.includes(key)) return;
+    this._compactSkillReturnFocus = "add";
+    this._compactSkillEditor = null;
+    return this.actor.update({ [`system.skills.${key}.value`]: 0 });
+  }
+
+  #onCompactSkillEditorKeydown(event) {
+    if (event.key !== "Escape" || !this._compactSkillEditor) return;
+    event.preventDefault();
+    event.stopPropagation();
+    return this.#onCancelCompactSkillEditor();
   }
 }
 

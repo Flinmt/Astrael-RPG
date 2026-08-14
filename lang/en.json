@@ -119,6 +119,9 @@
   "ASTRAEL.CompactSkills.Skill": "Skill",
   "ASTRAEL.CompactSkills.Select": "Select a skill",
   "ASTRAEL.CompactSkills.SelectRequired": "Select a skill before saving.",
+  "ASTRAEL.CompactSkills.Back": "Back",
+  "ASTRAEL.CompactSkills.RemoveConfirmTitle": "Remove this skill?",
+  "ASTRAEL.CompactSkills.RemoveConfirmHint": "It will return to the list of available skills.",
   "ASTRAEL.CompactSkills.Empty": "No skills have points.",
   "ASTRAEL.CompactSkills.Roll": "Roll"
 }
