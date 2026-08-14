@@ -1,6 +1,84 @@
 <form class="{{cssClass}} astrael-compact-sheet" autocomplete="off">
   <main class="astrael-compact-shell">
-    <section class="astrael-compact-frame">
+    <section class="astrael-compact-frame {{#if compactHeaderCollapsed}}header-is-collapsed{{/if}}">
+      <header class="astrael-compact-character-header {{#if compactHeaderCollapsed}}is-collapsed{{/if}}">
+        {{#if compactHeaderCollapsed}}
+        <div class="astrael-compact-header-summary">
+          <section class="astrael-compact-resource health-card" data-resource="health">
+            <div class="astrael-compact-resource-title">
+              <span><i class="fas fa-heart-pulse" aria-hidden="true"></i>{{localize "ASTRAEL.Resource.Health"}}</span>
+              <strong>{{system.resources.health.active}}<small>/{{system.resources.health.max}}</small></strong>
+            </div>
+            <div class="astrael-compact-box-track" aria-label="{{localize 'ASTRAEL.Resource.Health'}}">
+              {{#each system.resources.health.boxes as |box|}}
+              <button class="resource-box astrael-compact-resource-box {{box.state}}" type="button" data-resource="health" data-index="{{box.index}}" data-state="{{box.state}}" title="{{localize 'ASTRAEL.CompactHeader.ResourceHint'}}"></button>
+              {{/each}}
+            </div>
+          </section>
+
+          <section class="astrael-compact-resource will-card" data-resource="willpower">
+            <div class="astrael-compact-resource-title">
+              <span><i class="fas fa-shield-halved" aria-hidden="true"></i>{{localize "ASTRAEL.Resource.Willpower"}}</span>
+              <strong>{{system.resources.willpower.active}}<small>/{{system.resources.willpower.max}}</small></strong>
+            </div>
+            <div class="astrael-compact-box-track" aria-label="{{localize 'ASTRAEL.Resource.Willpower'}}">
+              {{#each system.resources.willpower.boxes as |box|}}
+              <button class="resource-box astrael-compact-resource-box {{box.state}}" type="button" data-resource="willpower" data-index="{{box.index}}" data-state="{{box.state}}" title="{{localize 'ASTRAEL.CompactHeader.ResourceHint'}}"></button>
+              {{/each}}
+            </div>
+          </section>
+
+        </div>
+        {{else}}
+        <div class="astrael-compact-header-expanded">
+          <button class="astrael-compact-portrait" type="button" data-action="editImage" title="{{localize 'ASTRAEL.CompactHeader.ChangePortrait'}}" aria-label="{{localize 'ASTRAEL.CompactHeader.ChangePortrait'}}">
+            <img src="{{actor.img}}" alt="{{actor.name}}">
+          </button>
+
+          <div class="astrael-compact-header-details">
+            <label class="astrael-compact-name-field">
+              <span>{{localize "ASTRAEL.CompactHeader.Name"}}</span>
+              <input name="name" type="text" value="{{actor.name}}">
+            </label>
+
+            <section class="astrael-compact-resource health-card" data-resource="health">
+              <div class="astrael-compact-resource-title">
+                <span><i class="fas fa-heart-pulse" aria-hidden="true"></i>{{localize "ASTRAEL.Resource.Health"}}</span>
+                <strong>{{system.resources.health.active}}<small>/{{system.resources.health.max}}</small></strong>
+              </div>
+              <div class="astrael-compact-box-track" aria-label="{{localize 'ASTRAEL.Resource.Health'}}">
+                {{#each system.resources.health.boxes as |box|}}
+                <button class="resource-box astrael-compact-resource-box {{box.state}}" type="button" data-resource="health" data-index="{{box.index}}" data-state="{{box.state}}" title="{{localize 'ASTRAEL.CompactHeader.ResourceHint'}}"></button>
+                {{/each}}
+              </div>
+            </section>
+
+            <section class="astrael-compact-resource will-card" data-resource="willpower">
+              <div class="astrael-compact-resource-title">
+                <span><i class="fas fa-shield-halved" aria-hidden="true"></i>{{localize "ASTRAEL.Resource.Willpower"}}</span>
+                <strong>{{system.resources.willpower.active}}<small>/{{system.resources.willpower.max}}</small></strong>
+              </div>
+              <div class="astrael-compact-box-track" aria-label="{{localize 'ASTRAEL.Resource.Willpower'}}">
+                {{#each system.resources.willpower.boxes as |box|}}
+                <button class="resource-box astrael-compact-resource-box {{box.state}}" type="button" data-resource="willpower" data-index="{{box.index}}" data-state="{{box.state}}" title="{{localize 'ASTRAEL.CompactHeader.ResourceHint'}}"></button>
+                {{/each}}
+              </div>
+            </section>
+          </div>
+        </div>
+        {{/if}}
+      </header>
+
+      {{#if compactHeaderCollapsed}}
+      <button class="astrael-compact-header-toggle" type="button" data-action="toggle-compact-header" title="{{localize 'ASTRAEL.CompactHeader.Expand'}}" aria-label="{{localize 'ASTRAEL.CompactHeader.Expand'}}" aria-expanded="false">
+        <i class="fas fa-chevron-down" aria-hidden="true"></i>
+      </button>
+      {{else}}
+      <button class="astrael-compact-header-toggle" type="button" data-action="toggle-compact-header" title="{{localize 'ASTRAEL.CompactHeader.Collapse'}}" aria-label="{{localize 'ASTRAEL.CompactHeader.Collapse'}}" aria-expanded="true">
+        <i class="fas fa-chevron-up" aria-hidden="true"></i>
+      </button>
+      {{/if}}
+
       <nav class="sheet-tabs astrael-compact-tabs" aria-label="{{localize 'ASTRAEL.Sheet.CharacterCompact'}}">
         <div class="sheet-tab-list astrael-compact-tab-list">
           <button class="tab-button astrael-compact-tab active" data-tab="attributes" type="button" title="{{localize 'ASTRAEL.Tab.Attributes'}}" aria-label="{{localize 'ASTRAEL.Tab.Attributes'}}">

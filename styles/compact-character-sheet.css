@@ -55,6 +55,8 @@
 
 .astrael-compact-sheet .astrael-compact-frame {
   position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   width: calc(100% - var(--astrael-compact-nav-gutter));
   height: 100%;
   margin-left: var(--astrael-compact-nav-gutter);
@@ -87,10 +89,478 @@
   border-top: 2px solid var(--astrael-gold);
 }
 
+.astrael-compact-sheet .astrael-compact-character-header {
+  position: relative;
+  z-index: 2;
+  grid-row: 1;
+  min-width: 0;
+  border-bottom: 1px solid var(--astrael-nav-bronze);
+  background:
+    linear-gradient(110deg, rgba(104, 67, 41, 0.22), transparent 34%),
+    linear-gradient(180deg, #171f22, #101619);
+  box-shadow:
+    inset 0 1px 0 rgba(209, 161, 111, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.52);
+}
+
+.astrael-compact-sheet .astrael-compact-character-header::after {
+  content: "";
+  position: absolute;
+  right: 11px;
+  bottom: -1px;
+  width: 62px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--astrael-nav-bronze-light));
+  pointer-events: none;
+}
+
+.astrael-compact-sheet .astrael-compact-header-expanded {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 11px;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait {
+  position: relative;
+  display: block;
+  width: 72px;
+  height: 90px;
+  min-width: 72px;
+  margin: 0;
+  padding: 2px;
+  align-self: center;
+  border: 1px solid var(--astrael-nav-bronze-light);
+  border-radius: 2px;
+  color: inherit;
+  background: linear-gradient(145deg, #d1a16f, #8a5732 52%, #4d321f);
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 226, 190, 0.28),
+    inset -1px -1px 0 rgba(44, 24, 13, 0.56);
+  cursor: pointer;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #0a0e10;
+  object-fit: cover;
+  object-position: center;
+  background: #080b0d;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait:hover,
+.astrael-compact-sheet .astrael-compact-portrait:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  background: linear-gradient(145deg, #e0ba8b, #a86f3f 54%, #684329);
+  outline: 2px solid rgba(209, 161, 111, 0.38);
+  outline-offset: 2px;
+}
+
+.astrael-compact-sheet .astrael-compact-header-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 7px;
+  min-width: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-name-field {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-name-field span,
+.astrael-compact-sheet .astrael-compact-resource-title {
+  color: #bb8b5d;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-name-field input {
+  width: 100%;
+  min-width: 0;
+  height: 26px;
+  padding: 2px 7px;
+  border: 1px solid rgba(168, 111, 63, 0.58);
+  border-left: 2px solid var(--astrael-nav-bronze-light);
+  border-radius: 0;
+  color: var(--astrael-text);
+  background:
+    linear-gradient(90deg, rgba(168, 111, 63, 0.08), transparent 42%),
+    #141b1e;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  outline: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-name-field input:focus {
+  border-color: var(--astrael-nav-bronze-light);
+}
+
+.astrael-compact-sheet .astrael-compact-resource {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 5px 6px;
+  border: 1px solid rgba(104, 67, 41, 0.82);
+  border-top-color: rgba(209, 161, 111, 0.62);
+  background:
+    linear-gradient(135deg, rgba(168, 111, 63, 0.1), transparent 48%),
+    #12191c;
+  box-shadow:
+    inset 0 1px 0 rgba(209, 161, 111, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title strong {
+  color: #d7ad7e;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.astrael-compact-sheet .astrael-compact-box-track {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header .astrael-compact-resource-box {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+  min-height: 10px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 10px;
+  border: 1px solid #66503d !important;
+  border-radius: 1px;
+  background: #0a0e10 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(209, 161, 111, 0.03) !important;
+  cursor: pointer;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header .health-card .astrael-compact-resource-box.filled {
+  border-color: #a65049 !important;
+  background: #7f302d !important;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header .will-card .astrael-compact-resource-box.filled {
+  border-color: #4f7f91 !important;
+  background: #315d70 !important;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header .astrael-compact-resource-box.superficial::after,
+.astrael-compact-sheet .astrael-compact-character-header .astrael-compact-resource-box.aggravated::before,
+.astrael-compact-sheet .astrael-compact-character-header .astrael-compact-resource-box.aggravated::after {
+  width: 8px;
+  height: 1px;
+}
+
+.astrael-compact-sheet .astrael-compact-header-toggle {
+  position: absolute;
+  z-index: 21;
+  top: 10px;
+  left: -50px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 38px;
+  border: 1px solid #3c484d;
+  border-radius: 50%;
+  color: #7b888e;
+  background: #0b1114;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.astrael-compact-sheet .astrael-compact-header-toggle:hover,
+.astrael-compact-sheet .astrael-compact-header-toggle:focus-visible {
+  border-color: var(--astrael-nav-bronze);
+  color: var(--astrael-nav-bronze-light);
+  background: #151f23;
+  outline: 1px solid rgba(168, 111, 63, 0.3);
+  outline-offset: 2px;
+}
+
+.astrael-compact-sheet .astrael-compact-header-toggle i {
+  font-size: 11px;
+}
+
+.astrael-compact-sheet .astrael-compact-header-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 9px 7px 10px;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header.is-collapsed .astrael-compact-resource {
+  padding: 4px 6px;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header.is-collapsed .astrael-compact-resource-title {
+  font-size: 7px;
+}
+
+/* Compact character header: modern game HUD */
+.astrael-compact-sheet .astrael-compact-character-header {
+  border-bottom: 1px solid #2a353a;
+  background: #0b1114;
+  box-shadow: none;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header::after {
+  right: auto;
+  bottom: -1px;
+  left: 12px;
+  width: 52px;
+  height: 2px;
+  background: var(--astrael-nav-bronze);
+}
+
+.astrael-compact-sheet .astrael-compact-header-expanded {
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 12px;
+  padding: 11px 12px;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait {
+  width: 76px;
+  height: 96px;
+  min-width: 76px;
+  padding: 3px;
+  border: 1px solid #3c484e;
+  border-radius: 0;
+  background: #151d21;
+  box-shadow: none;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait::before,
+.astrael-compact-sheet .astrael-compact-portrait::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--astrael-nav-bronze-light);
+  border-left: 2px solid var(--astrael-nav-bronze-light);
+}
+
+.astrael-compact-sheet .astrael-compact-portrait::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 2px solid var(--astrael-nav-bronze-dark);
+  border-bottom: 2px solid var(--astrael-nav-bronze-dark);
+}
+
+.astrael-compact-sheet .astrael-compact-portrait img {
+  border: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-portrait:hover,
+.astrael-compact-sheet .astrael-compact-portrait:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  background: #151d21;
+  outline: 1px solid rgba(209, 161, 111, 0.42);
+  outline-offset: 2px;
+}
+
+.astrael-compact-sheet .astrael-compact-header-details {
+  grid-template-rows: 34px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.astrael-compact-sheet .astrael-compact-name-field {
+  position: relative;
+  display: block;
+  padding-top: 10px;
+  border-bottom: 1px solid #39454a;
+}
+
+.astrael-compact-sheet .astrael-compact-name-field::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  width: 34px;
+  height: 1px;
+  background: var(--astrael-nav-bronze);
+}
+
+.astrael-compact-sheet .astrael-compact-name-field span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: #77858c;
+  font-size: 7px;
+}
+
+.astrael-compact-sheet .astrael-compact-name-field input {
+  height: 23px;
+  padding: 0;
+  border: 0;
+  color: #f0ede7;
+  background: transparent;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: 0.015em;
+}
+
+.astrael-compact-sheet .astrael-compact-name-field input:focus {
+  border: 0;
+  color: #fff;
+}
+
+.astrael-compact-sheet .astrael-compact-resource {
+  gap: 6px;
+  padding: 7px 8px;
+  border: 0;
+  border-left: 3px solid #465158;
+  background: #121a1e;
+  box-shadow: none;
+}
+
+.astrael-compact-sheet .astrael-compact-resource.health-card {
+  border-left-color: #9b4542;
+}
+
+.astrael-compact-sheet .astrael-compact-resource.will-card {
+  border-left-color: #47778b;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title {
+  color: #8d9a9f;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title i {
+  width: 10px;
+  font-size: 9px;
+  text-align: center;
+}
+
+.astrael-compact-sheet .health-card .astrael-compact-resource-title i {
+  color: #c9635e;
+}
+
+.astrael-compact-sheet .will-card .astrael-compact-resource-title i {
+  color: #62a0b7;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title strong {
+  display: inline-flex;
+  align-items: baseline;
+  color: #e7e4dd;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title strong small {
+  color: #66747a;
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.astrael-compact-sheet .astrael-compact-box-track {
+  gap: 3px;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header .astrael-compact-resource-box {
+  width: 10px;
+  height: 10px;
+  flex-basis: 10px;
+  border: 1px solid #3c484d !important;
+  border-radius: 0;
+  background: #070b0d !important;
+  box-shadow: none !important;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header .health-card .astrael-compact-resource-box.filled {
+  border-color: #b95b56 !important;
+  background: #8d3936 !important;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header .will-card .astrael-compact-resource-box.filled {
+  border-color: #588da1 !important;
+  background: #356b80 !important;
+}
+
+.astrael-compact-sheet .astrael-compact-header-summary {
+  gap: 8px;
+  padding: 8px 10px;
+  background: #0b1114;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header.is-collapsed .astrael-compact-resource {
+  padding: 6px 8px;
+}
+
+.astrael-compact-sheet .astrael-compact-character-header.is-collapsed .astrael-compact-resource-title {
+  font-size: 7px;
+}
+
 .astrael-compact-sheet .astrael-compact-tabs {
   position: absolute;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
   z-index: 20;
-  top: 10px;
+  top: 126px;
   bottom: auto;
   left: -50px;
   width: 38px;
@@ -99,6 +569,10 @@
   box-shadow: none;
   overflow: visible;
   background: transparent;
+}
+
+.astrael-compact-sheet .astrael-compact-frame.header-is-collapsed .astrael-compact-tabs {
+  top: 64px;
 }
 
 .astrael-compact-sheet .astrael-compact-tabs::before,
@@ -137,12 +611,12 @@
   padding: 0;
   flex: 0 0 38px;
   overflow: visible;
-  border: 1px solid var(--astrael-nav-bronze-dark) !important;
-  border-left: 1px solid var(--astrael-nav-bronze-dark) !important;
+  border: 1px solid #3c484d !important;
+  border-left: 1px solid #3c484d !important;
   border-radius: 50%;
-  color: #a98564 !important;
-  background: var(--astrael-nav-gunmetal) !important;
-  box-shadow: inset 0 0 0 1px rgba(209, 161, 111, 0.06) !important;
+  color: #748188 !important;
+  background: #0b1114 !important;
+  box-shadow: none !important;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   outline: 0;
@@ -162,7 +636,7 @@
   right: -13px;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--astrael-nav-bronze-dark), var(--astrael-nav-bronze-light));
+  background: var(--astrael-nav-bronze);
   transform: translateY(-50%);
   transition: width 120ms ease;
   pointer-events: none;
@@ -171,10 +645,10 @@
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab:hover,
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab:focus-visible {
   width: 38px;
-  border-color: var(--astrael-nav-bronze-light) !important;
+  border-color: var(--astrael-nav-bronze) !important;
   color: var(--astrael-nav-bronze-light) !important;
-  background: #1b2427 !important;
-  box-shadow: inset 0 0 0 1px rgba(209, 161, 111, 0.16) !important;
+  background: #151f23 !important;
+  box-shadow: none !important;
   transform: none !important;
 }
 
@@ -182,13 +656,11 @@
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab.active:hover,
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab.active:focus-visible {
   width: 38px;
-  border-color: #ddb181 !important;
-  color: #171411 !important;
+  border-color: var(--astrael-nav-bronze-light) !important;
+  color: var(--astrael-nav-bronze-light) !important;
   transform: none !important;
-  background: linear-gradient(145deg, #d7aa78 0%, #b67943 38%, #87532f 72%, #bd8450 100%) !important;
-  box-shadow:
-    inset 1px 1px 0 rgba(255, 226, 190, 0.42),
-    inset -1px -1px 0 rgba(54, 30, 16, 0.58) !important;
+  background: #182226 !important;
+  box-shadow: inset 0 0 0 1px rgba(209, 161, 111, 0.12) !important;
 }
 
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab.active::after {
@@ -196,7 +668,7 @@
 }
 
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab:focus-visible {
-  outline: 2px solid rgba(209, 161, 111, 0.55);
+  outline: 1px solid rgba(168, 111, 63, 0.48);
   outline-offset: 2px;
 }
 
@@ -211,18 +683,19 @@
 
 .astrael-compact-sheet .astrael-compact-tab:hover i,
 .astrael-compact-sheet .astrael-compact-tab:focus-visible i {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
 .astrael-compact-sheet .astrael-compact-tab.active i {
-  transform: scale(1.12);
+  transform: scale(1.06);
 }
 
 .astrael-compact-sheet .astrael-compact-body {
   position: relative;
   z-index: 1;
+  grid-row: 2;
   width: 100%;
-  height: 100%;
+  height: auto;
   min-width: 0;
   min-height: 0;
   padding: 16px 14px;

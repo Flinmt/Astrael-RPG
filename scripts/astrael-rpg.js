@@ -3814,8 +3814,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
 class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   static LAYOUT_OPTIONS = {
-    width: 440,
-    minWidth: 440,
+    width: 480,
+    minWidth: 480,
     minHeight: 450,
     heightSetting: null
   };
@@ -3823,8 +3823,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   static DEFAULT_OPTIONS = {
     classes: ["astrael-rpg", "sheet", "actor", "compact-character-sheet"],
     position: {
-      width: 440,
-      height: 570
+      width: 480,
+      height: 680
     },
     form: {
       closeOnSubmit: false,
@@ -3842,6 +3842,33 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       template: COMPACT_CHARACTER_SHEET_TEMPLATE
     }
   };
+
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    const collapsedHeaders = game.settings.get(SYSTEM_ID, "compactHeaderCollapsed") || {};
+    context.compactHeaderCollapsed = collapsedHeaders[this.actor.uuid] === true;
+    return context;
+  }
+
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+    this.element.querySelector("[data-action='toggle-compact-header']")?.addEventListener(
+      "click",
+      this.#onToggleCompactHeader.bind(this)
+    );
+  }
+
+  async #onToggleCompactHeader(event) {
+    event.preventDefault();
+    const collapsedHeaders = game.settings.get(SYSTEM_ID, "compactHeaderCollapsed") || {};
+    const actorKey = this.actor.uuid;
+    const nextCollapsed = collapsedHeaders[actorKey] !== true;
+    await game.settings.set(SYSTEM_ID, "compactHeaderCollapsed", {
+      ...collapsedHeaders,
+      [actorKey]: nextCollapsed
+    });
+    return this.render({ force: true });
+  }
 }
 
 class AstraelNpcSheet extends AstraelCharacterSheet {
@@ -4067,6 +4094,13 @@ Hooks.once("init", () => {
     type: Number,
     default: 680,
     onChange: () => {}
+  });
+
+  game.settings.register(SYSTEM_ID, "compactHeaderCollapsed", {
+    scope: "client",
+    config: false,
+    type: Object,
+    default: {}
   });
 });
 
