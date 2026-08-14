@@ -1712,6 +1712,11 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       box.addEventListener("contextmenu", this.#onResourceBoxContext.bind(this));
     });
 
+    this.element.querySelectorAll(".astrael-compact-resource").forEach((resource) => {
+      resource.addEventListener("click", this.#onCompactResourceClick.bind(this));
+      resource.addEventListener("contextmenu", this.#onCompactResourceContext.bind(this));
+    });
+
     this.element.querySelectorAll(".fracture-box").forEach((box) => {
       box.addEventListener("click", this.#onFractureBoxClick.bind(this));
       box.addEventListener("contextmenu", this.#onFractureBoxContext.bind(this));
@@ -2196,6 +2201,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     event.preventDefault();
 
     const box = event.currentTarget;
+    if (box.classList.contains("astrael-compact-resource-box")) event.stopPropagation();
     const resourceId = box.dataset.resource;
     const state = box.dataset.state ?? "empty";
     const index = Number(box.dataset.index);
@@ -2217,12 +2223,46 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     event.preventDefault();
 
     const box = event.currentTarget;
+    if (box.classList.contains("astrael-compact-resource-box")) return;
     const resourceId = box.dataset.resource;
     const resource = this.#getResource(resourceId);
 
     if (!resource || resource.active <= 0 || resource.aggravated >= resource.active) return;
 
     this.#applySuperficialDamage(resource);
+    return this.#updateResource(resourceId, resource);
+  }
+
+  async #onCompactResourceContext(event) {
+    event.preventDefault();
+    if (event.target.closest("[data-action]")) return;
+
+    const resourceId = event.currentTarget.dataset.resource;
+    const resource = this.#getResource(resourceId);
+    if (!resource || resource.active <= 0 || resource.aggravated >= resource.active) return;
+
+    if (event.shiftKey) this.#applyAggravatedDamage(resource);
+    else this.#applySuperficialDamage(resource);
+    return this.#updateResource(resourceId, resource);
+  }
+
+  async #onCompactResourceClick(event) {
+    event.preventDefault();
+    if (event.target.closest("[data-action]")) return;
+
+    const resourceId = event.currentTarget.dataset.resource;
+    const resource = this.#getResource(resourceId);
+    if (!resource) return;
+
+    if (resource.superficial > 0) {
+      resource.superficial -= 1;
+    } else if (resource.aggravated > 0) {
+      resource.aggravated -= 1;
+      resource.superficial += 1;
+    } else {
+      return;
+    }
+
     return this.#updateResource(resourceId, resource);
   }
 
@@ -4041,6 +4081,9 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     const context = await super._prepareContext(options);
     context.compactPortrait = prepareCompactPortraitPresentation(getCompactPortraitFraming(this.actor));
     context.compactCanEditPortrait = this.actor.isOwner;
+    context.compactAttributesCollapsed = game.settings.get(SYSTEM_ID, "compactAttributesCollapsed");
+    context.compactResourceTooltipsDisabled = game.settings.get(SYSTEM_ID, "compactResourceTooltipsDisabled");
+    const specialties = Array.isArray(this.actor.system.specialties) ? this.actor.system.specialties : [];
     const buildLevels = (value) => Array.from({ length: 5 }, (_, index) => ({
       value: index + 1,
       filled: index < value,
@@ -4049,12 +4092,25 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     context.compactActiveSkills = SKILL_KEYS
       .map((key) => {
         const value = clampNumber(this.actor.system.skills?.[key]?.value, 0, 5);
+        const skillSpecialties = specialties
+          .map((specialty, index) => ({
+            index,
+            name: String(specialty.description || "").trim()
+          }))
+          .filter((specialty, index) => specialties[index]?.skill === key)
+          .sort((left, right) => left.name.localeCompare(right.name, game.i18n.lang));
         return {
           key,
           value,
           label: game.i18n.localize(LOCALIZE_SKILL[key]),
           selected: this._compactSkillEditor?.mode === "edit" && this._compactSkillEditor.key === key,
           canEdit: !this._compactSkillEditor,
+          canOpenSpecialties: !this._compactSkillEditor,
+          canManageSpecialties: this.actor.isOwner,
+          specialtiesOpen: this._compactSpecialtySkillKey === key,
+          addingSpecialty: this._compactSpecialtySkillKey === key && this._compactSpecialtyAdding,
+          specialtyCount: skillSpecialties.length,
+          specialties: skillSpecialties,
           levels: buildLevels(value)
         };
       })
@@ -4082,6 +4138,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
         options: availableSkills
       }
       : null;
+    context.compactResourceTooltipAvailable = !context.compactResourceTooltipsDisabled && !context.compactSkillEditor;
     return context;
   }
 
@@ -4091,11 +4148,56 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       button.addEventListener("click", this.#onAdjustCompactAttribute.bind(this, 1));
       button.addEventListener("contextmenu", this.#onAdjustCompactAttribute.bind(this, -1));
     });
+    this.element.querySelector("[data-action='toggle-compact-attributes']")?.addEventListener("click", this.#onToggleCompactAttributes.bind(this));
+    this.element.querySelectorAll("[data-action='set-compact-resource-tooltips']").forEach((button) => {
+      button.addEventListener("click", this.#onSetCompactResourceTooltips.bind(this));
+    });
+    const resourceTooltip = this.element.querySelector(".astrael-compact-resource-tooltip");
+    if (resourceTooltip) {
+      const showResourceTooltip = () => {
+        clearTimeout(this._compactResourceTooltipTimer);
+        resourceTooltip.classList.add("is-visible");
+      };
+      const hideResourceTooltip = () => {
+        clearTimeout(this._compactResourceTooltipTimer);
+        this._compactResourceTooltipTimer = setTimeout(() => {
+          resourceTooltip.classList.remove("is-visible");
+        }, 650);
+      };
+      this.element.querySelectorAll(".astrael-compact-resource").forEach((resource) => {
+        resource.addEventListener("pointerenter", showResourceTooltip);
+        resource.addEventListener("pointerleave", hideResourceTooltip);
+        resource.addEventListener("focusin", showResourceTooltip);
+        resource.addEventListener("focusout", hideResourceTooltip);
+      });
+      resourceTooltip.addEventListener("pointerenter", showResourceTooltip);
+      resourceTooltip.addEventListener("pointerleave", hideResourceTooltip);
+      resourceTooltip.addEventListener("focusin", showResourceTooltip);
+      resourceTooltip.addEventListener("focusout", hideResourceTooltip);
+    }
     this.element.querySelector("[data-action='edit-compact-portrait']")?.addEventListener("click", this.#onEditCompactPortrait.bind(this));
     this.element.querySelector("[data-action='view-compact-portrait']")?.addEventListener("click", this.#onViewCompactPortrait.bind(this));
     this.element.querySelector("[data-action='add-compact-skill']")?.addEventListener("click", this.#onAddCompactSkill.bind(this));
     this.element.querySelectorAll("[data-action='edit-compact-skill']").forEach((button) => {
       button.addEventListener("click", this.#onEditCompactSkill.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='toggle-compact-specialties']").forEach((button) => {
+      button.addEventListener("click", this.#onToggleCompactSpecialties.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='begin-compact-specialty']").forEach((button) => {
+      button.addEventListener("click", this.#onBeginCompactSpecialty.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='save-compact-specialty']").forEach((button) => {
+      button.addEventListener("click", this.#onSaveCompactSpecialty.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='cancel-compact-specialty']").forEach((button) => {
+      button.addEventListener("click", this.#onCancelCompactSpecialty.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='remove-compact-specialty']").forEach((button) => {
+      button.addEventListener("click", this.#onRemoveCompactSpecialty.bind(this));
+    });
+    this.element.querySelector("[data-action='compact-specialty-name']")?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") return this.#onSaveCompactSpecialty(event);
     });
     this.element.querySelectorAll("[data-action='set-compact-editor-level']").forEach((button) => {
       button.addEventListener("click", this.#onSetCompactEditorLevel.bind(this));
@@ -4124,6 +4226,14 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
         : `[data-action='edit-compact-skill'][data-key='${this._compactSkillReturnFocus}']`;
       this._compactSkillReturnFocus = null;
       this.element.querySelector(selector)?.focus();
+    } else if (this._compactSpecialtyFocus) {
+      const selector = this._compactSpecialtyFocus === "input"
+        ? "[data-action='compact-specialty-name']"
+        : this._compactSpecialtyFocus === "add"
+          ? `[data-action='begin-compact-specialty'][data-key='${this._compactSpecialtySkillKey}']`
+          : `[data-action='toggle-compact-specialties'][data-key='${this._compactSpecialtySkillKey}']`;
+      this._compactSpecialtyFocus = null;
+      this.element.querySelector(selector)?.focus();
     }
   }
 
@@ -4137,6 +4247,21 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     if (nextValue === currentValue) return;
 
     return this.actor.update({ [`system.attributes.${attributeKey}.value`]: nextValue });
+  }
+
+  async #onToggleCompactAttributes(event) {
+    event.preventDefault();
+    const collapsed = game.settings.get(SYSTEM_ID, "compactAttributesCollapsed");
+    await game.settings.set(SYSTEM_ID, "compactAttributesCollapsed", !collapsed);
+    return this.render({ force: true });
+  }
+
+  async #onSetCompactResourceTooltips(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const disabled = event.currentTarget.dataset.disabled === "true";
+    await game.settings.set(SYSTEM_ID, "compactResourceTooltipsDisabled", disabled);
+    return this.render({ force: true });
   }
 
   async #onEditCompactPortrait(event) {
@@ -4161,6 +4286,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   #onAddCompactSkill(event) {
     event.preventDefault();
     if (this._compactSkillEditor) return;
+    this._compactSpecialtySkillKey = null;
+    this._compactSpecialtyAdding = false;
     this._compactSkillReturnFocus = "add";
     this._compactSkillNeedsInitialFocus = true;
     this._compactSkillEditor = { mode: "add", key: "", level: 1, confirmingRemoval: false };
@@ -4171,6 +4298,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     event.preventDefault();
     const key = event.currentTarget.dataset.key;
     if (this._compactSkillEditor || !SKILL_KEYS.includes(key)) return;
+    this._compactSpecialtySkillKey = null;
+    this._compactSpecialtyAdding = false;
     this._compactSkillReturnFocus = key;
     this._compactSkillNeedsInitialFocus = true;
     this._compactSkillEditor = {
@@ -4233,19 +4362,95 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     event.preventDefault();
     const key = this._compactSkillEditor?.mode === "edit" ? this._compactSkillEditor.key : "";
     if (!SKILL_KEYS.includes(key)) return;
+    if (this._compactSpecialtySkillKey === key) this._compactSpecialtySkillKey = null;
     this._compactSkillReturnFocus = "add";
     this._compactSkillEditor = null;
     return this.actor.update({ [`system.skills.${key}.value`]: 0 });
   }
 
   #onCompactSkillEditorKeydown(event) {
-    if (event.key !== "Escape" || !this._compactSkillEditor) return;
+    if (event.key !== "Escape") return;
+    if (this._compactSpecialtyAdding) {
+      event.preventDefault();
+      event.stopPropagation();
+      return this.#onCancelCompactSpecialty();
+    }
+    if (this._compactSpecialtySkillKey) {
+      event.preventDefault();
+      event.stopPropagation();
+      this._compactSpecialtySkillKey = null;
+      this._compactSpecialtyFocus = null;
+      return this.render({ force: true });
+    }
+    if (!this._compactSkillEditor) return;
     event.preventDefault();
     event.stopPropagation();
     return this.#onCancelCompactSkillEditor();
   }
 
+  #onToggleCompactSpecialties(event) {
+    event.preventDefault();
+    const key = event.currentTarget.dataset.key;
+    if (this._compactSkillEditor || !SKILL_KEYS.includes(key)) return;
+    const closing = this._compactSpecialtySkillKey === key;
+    this._compactSpecialtySkillKey = closing ? null : key;
+    this._compactSpecialtyAdding = false;
+    this._compactSpecialtyFocus = closing ? null : "toggle";
+    return this.render({ force: true });
+  }
+
+  #onBeginCompactSpecialty(event) {
+    event.preventDefault();
+    const key = event.currentTarget.dataset.key;
+    if (!this.actor.isOwner || this._compactSpecialtySkillKey !== key) return;
+    this._compactSpecialtyAdding = true;
+    this._compactSpecialtyFocus = "input";
+    return this.render({ force: true });
+  }
+
+  #onCancelCompactSpecialty(event) {
+    event?.preventDefault();
+    if (!this._compactSpecialtySkillKey) return;
+    this._compactSpecialtyAdding = false;
+    this._compactSpecialtyFocus = "add";
+    return this.render({ force: true });
+  }
+
+  async #onSaveCompactSpecialty(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner || !this._compactSpecialtySkillKey || !this._compactSpecialtyAdding) return;
+    const input = this.element.querySelector("[data-action='compact-specialty-name']");
+    const name = input?.value.trim() || "";
+    if (!name) {
+      ui.notifications.warn(game.i18n.localize("ASTRAEL.CompactSpecialties.NameRequired"));
+      input?.focus();
+      return;
+    }
+
+    const specialties = Array.isArray(this.actor.system.specialties)
+      ? this.actor.system.specialties.map((specialty) => ({ ...specialty }))
+      : [];
+    specialties.push({ skill: this._compactSpecialtySkillKey, description: name });
+    this._compactSpecialtyAdding = false;
+    this._compactSpecialtyFocus = "add";
+    return this.actor.update({ "system.specialties": specialties });
+  }
+
+  async #onRemoveCompactSpecialty(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner || !this._compactSpecialtySkillKey) return;
+    const index = Number(event.currentTarget.dataset.index);
+    const specialties = Array.isArray(this.actor.system.specialties)
+      ? this.actor.system.specialties.map((specialty) => ({ ...specialty }))
+      : [];
+    if (!Number.isInteger(index) || specialties[index]?.skill !== this._compactSpecialtySkillKey) return;
+    specialties.splice(index, 1);
+    this._compactSpecialtyFocus = "toggle";
+    return this.actor.update({ "system.specialties": specialties });
+  }
+
   async close(options) {
+    clearTimeout(this._compactResourceTooltipTimer);
     await this._compactPortraitEditor?.close();
     this._compactPortraitEditor = null;
     return super.close(options);
@@ -4475,6 +4680,20 @@ Hooks.once("init", () => {
     type: Number,
     default: 680,
     onChange: () => {}
+  });
+
+  game.settings.register(SYSTEM_ID, "compactAttributesCollapsed", {
+    scope: "client",
+    config: false,
+    type: Boolean,
+    default: false
+  });
+
+  game.settings.register(SYSTEM_ID, "compactResourceTooltipsDisabled", {
+    scope: "client",
+    config: false,
+    type: Boolean,
+    default: false
   });
 
 });

@@ -213,6 +213,7 @@
 }
 
 .astrael-compact-sheet .astrael-compact-resource {
+  position: relative;
   display: grid;
   align-content: center;
   gap: 4px;
@@ -237,9 +238,128 @@
 }
 
 .astrael-compact-sheet .astrael-compact-resource-title span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-title .astrael-compact-resource-hint {
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #746b5d !important;
+  background: transparent;
+  box-shadow: none;
+  font-size: 7px;
+  line-height: 1;
+  opacity: 0.72;
+}
+
+.astrael-compact-sheet .astrael-compact-resource:hover .astrael-compact-resource-hint {
+  color: var(--astrael-nav-bronze-light) !important;
+  opacity: 1;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-tooltip {
+  position: absolute;
+  z-index: 40;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  gap: 4px;
+  width: auto;
+  padding: 10px 13px 11px;
+  border: 0;
+  border-top: 1px solid #5a4934;
+  color: #aaa18f;
+  background:
+    linear-gradient(105deg, rgba(155, 116, 69, 0.1), transparent 48%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
+    #111411;
+  box-shadow:
+    inset 0 1px rgba(198, 163, 111, 0.06),
+    0 -8px 18px rgba(0, 0, 0, 0.34);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(100%);
+  transition: opacity 140ms ease, transform 160ms ease;
+  visibility: hidden;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-tooltip.is-visible,
+.astrael-compact-sheet .astrael-compact-resource-tooltip:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-tooltip > strong {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #3b352b;
+  color: #c6a36f;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-tooltip > span {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+  line-height: 1.2;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-tooltip kbd {
+  padding: 3px 5px;
+  border: 1px solid #4a4438;
+  border-bottom-color: #6a5941;
+  border-radius: 0;
+  color: #d1c5b0;
+  background: #0b0d0b;
+  box-shadow: inset 0 -1px rgba(155, 116, 69, 0.1);
+  font: inherit;
+  text-align: center;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-tooltip > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 23px;
+  margin: 2px 0 0;
+  padding: 4px 7px;
+  border: 1px solid #4a4438;
+  border-radius: 0;
+  color: #8f8676;
+  background: #0d0f0c;
+  box-shadow: none;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-resource-tooltip > button:hover,
+.astrael-compact-sheet .astrael-compact-resource-tooltip > button:focus-visible {
+  border-color: var(--astrael-nav-bronze);
+  color: var(--astrael-compact-bone);
+  background: #211d16;
+  outline: 0;
 }
 
 .astrael-compact-sheet .astrael-compact-resource-title strong {
@@ -564,7 +684,7 @@
   align-items: center;
   justify-content: flex-start;
   z-index: 20;
-  top: 126px;
+  top: 8px;
   bottom: auto;
   left: -50px;
   width: 38px;
@@ -573,10 +693,6 @@
   box-shadow: none;
   overflow: visible;
   background: transparent;
-}
-
-.astrael-compact-sheet .astrael-compact-frame.header-is-collapsed .astrael-compact-tabs {
-  top: 64px;
 }
 
 .astrael-compact-sheet .astrael-compact-tabs::before,
@@ -634,16 +750,7 @@
 }
 
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: -13px;
-  width: 0;
-  height: 2px;
-  background: var(--astrael-nav-bronze);
-  transform: translateY(-50%);
-  transition: width 120ms ease;
-  pointer-events: none;
+  content: none;
 }
 
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab:hover,
@@ -665,10 +772,6 @@
   transform: none !important;
   background: #182226 !important;
   box-shadow: inset 0 0 0 1px rgba(209, 161, 111, 0.12) !important;
-}
-
-.astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab.active::after {
-  width: 13px;
 }
 
 .astrael-compact-sheet .astrael-compact-tabs .astrael-compact-tab:focus-visible {
@@ -962,6 +1065,44 @@
   letter-spacing: 0.13em;
   line-height: 1;
   text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-attributes-toggle {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 20px;
+  min-width: 24px;
+  min-height: 20px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  color: #958a76;
+  background: transparent;
+  box-shadow: none;
+  font-size: 8px;
+}
+
+.astrael-compact-sheet .astrael-compact-attributes-toggle:hover,
+.astrael-compact-sheet .astrael-compact-attributes-toggle:focus-visible {
+  color: var(--astrael-compact-bone);
+  background: transparent;
+  outline: 1px solid rgba(198, 163, 111, 0.48);
+  outline-offset: 1px;
+}
+
+.astrael-compact-sheet .astrael-compact-attributes.is-collapsed {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: 8px 13px;
+}
+
+.astrael-compact-sheet .astrael-compact-attributes.is-collapsed .astrael-compact-attribute-band {
+  display: none;
+}
+
+.astrael-compact-sheet .astrael-compact-attributes.is-collapsed .astrael-compact-attribute-region-title {
+  height: 20px;
 }
 
 .astrael-compact-sheet .astrael-compact-attribute-band {
@@ -1395,6 +1536,7 @@
 }
 
 .astrael-compact-sheet .astrael-compact-skills-configure:disabled,
+.astrael-compact-sheet .astrael-compact-skill-specialties:disabled,
 .astrael-compact-sheet .astrael-compact-skill-edit:disabled {
   border-color: #343229;
   color: #5e5a50;
@@ -1420,7 +1562,7 @@
 
 .astrael-compact-sheet .astrael-compact-skill-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 6px;
   min-width: 0;
@@ -1485,6 +1627,7 @@
     0 0 3px rgba(198, 163, 111, 0.18);
 }
 
+.astrael-compact-sheet .astrael-compact-skill-specialties,
 .astrael-compact-sheet .astrael-compact-skill-edit,
 .astrael-compact-sheet .astrael-compact-skill-editor-actions button {
   width: auto;
@@ -1504,6 +1647,7 @@
   text-transform: uppercase;
 }
 
+.astrael-compact-sheet .astrael-compact-skill-specialties,
 .astrael-compact-sheet .astrael-compact-skill-edit {
   display: grid;
   place-items: center;
@@ -1516,6 +1660,32 @@
   font-size: 9px;
 }
 
+.astrael-compact-sheet .astrael-compact-skill-specialties {
+  position: relative;
+  color: #8e887a;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-specialties > span {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  min-width: 13px;
+  height: 13px;
+  padding: 0 3px;
+  border: 1px solid #766044;
+  border-radius: 7px;
+  color: #d8cfbc;
+  background: #17140f;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 6px;
+  line-height: 1;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-specialties:hover,
+.astrael-compact-sheet .astrael-compact-skill-specialties:focus-visible,
+.astrael-compact-sheet .astrael-compact-skill-specialties.is-active,
 .astrael-compact-sheet .astrael-compact-skill-edit:hover,
 .astrael-compact-sheet .astrael-compact-skill-edit:focus-visible,
 .astrael-compact-sheet .astrael-compact-skill-editor-actions button:hover,
@@ -1523,6 +1693,166 @@
   border-color: var(--astrael-nav-bronze);
   color: var(--astrael-compact-bone);
   background: #242219;
+}
+
+.astrael-compact-sheet .astrael-compact-skill-specialties.is-active {
+  color: var(--astrael-nav-bronze-light);
+  box-shadow: inset 0 0 0 1px rgba(198, 163, 111, 0.12);
+}
+
+.astrael-compact-sheet .astrael-compact-specialties {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 7px;
+  margin: 1px -7px -6px -10px;
+  padding: 9px 9px 8px 11px;
+  border-top: 1px solid #41392e;
+  background:
+    linear-gradient(90deg, rgba(155, 116, 69, 0.07), transparent 52%),
+    #10120f;
+}
+
+.astrael-compact-sheet .astrael-compact-specialties > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialties > header span {
+  color: #8c826f;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-specialties > header strong {
+  overflow: hidden;
+  color: #b9ad98;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 8px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-list {
+  display: grid;
+  gap: 4px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21px;
+  align-items: center;
+  gap: 6px;
+  min-height: 25px;
+  padding: 3px 3px 3px 8px;
+  border-left: 2px solid #59462f;
+  color: #c6bdac;
+  background: #171914;
+  font-size: 9px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-item > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-item button,
+.astrael-compact-sheet .astrael-compact-specialty-entry button {
+  display: grid;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  min-width: 21px;
+  min-height: 21px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #493d32;
+  border-radius: 0;
+  color: #9b6b61;
+  background: #11130f;
+  box-shadow: none;
+  font-size: 8px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-item button:hover,
+.astrael-compact-sheet .astrael-compact-specialty-item button:focus-visible {
+  border-color: #70423c;
+  color: #d08b7f;
+  background: #211613;
+}
+
+.astrael-compact-sheet .astrael-compact-specialties-empty {
+  margin: 0;
+  padding: 7px 8px;
+  border: 1px dashed #39362e;
+  color: #716b5f;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-add {
+  justify-self: start;
+  width: auto;
+  min-height: 22px;
+  margin: 0;
+  padding: 3px 7px;
+  border: 1px solid #4a4438;
+  border-radius: 0;
+  color: #aaa08c;
+  background: #171914;
+  box-shadow: none;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-add:hover,
+.astrael-compact-sheet .astrael-compact-specialty-add:focus-visible {
+  border-color: var(--astrael-nav-bronze);
+  color: var(--astrael-compact-bone);
+  background: #242219;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21px 21px;
+  gap: 5px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-entry input {
+  width: 100%;
+  height: 23px;
+  margin: 0;
+  padding: 3px 7px;
+  border: 1px solid #584b39;
+  border-radius: 0;
+  color: var(--astrael-compact-bone);
+  background: #0b0d0b;
+  box-shadow: none;
+  font-size: 9px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-entry input:focus {
+  border-color: var(--astrael-nav-bronze);
+  outline: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-entry button {
+  color: #8f897d;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-entry button.is-primary {
+  border-color: #6f593d;
+  color: var(--astrael-nav-bronze-light);
+  background: #211c14;
 }
 
 .astrael-compact-sheet .astrael-compact-skill-editor {
