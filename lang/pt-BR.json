@@ -127,5 +127,12 @@
   "ASTRAEL.CompactSkills.RemoveConfirmTitle": "Remover esta perícia?",
   "ASTRAEL.CompactSkills.RemoveConfirmHint": "Ela voltará para a lista de perícias disponíveis.",
   "ASTRAEL.CompactSkills.Empty": "Nenhuma perícia com pontos.",
-  "ASTRAEL.CompactSkills.Roll": "Rolar"
+  "ASTRAEL.CompactSkills.Roll": "Rolar",
+  "ASTRAEL.CompactPortrait.Title": "Enquadrar retrato",
+  "ASTRAEL.CompactPortrait.Kicker": "Composição do dossiê",
+  "ASTRAEL.CompactPortrait.Hint": "Arraste a imagem para reposicionar o personagem dentro da moldura.",
+  "ASTRAEL.CompactPortrait.Zoom": "Zoom",
+  "ASTRAEL.CompactPortrait.ChangeImage": "Trocar imagem",
+  "ASTRAEL.CompactPortrait.Reset": "Restaurar",
+  "ASTRAEL.CompactPortrait.ViewFull": "Visualizar imagem completa"
 }

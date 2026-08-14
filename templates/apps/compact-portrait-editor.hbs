@@ -1,0 +1,28 @@
+<section class="compact-portrait-editor-shell">
+  <header class="compact-portrait-editor-head">
+    <span>{{localize "ASTRAEL.CompactPortrait.Kicker"}}</span>
+    <h2>{{localize "ASTRAEL.CompactPortrait.Title"}}</h2>
+    <p>{{localize "ASTRAEL.CompactPortrait.Hint"}}</p>
+  </header>
+
+  <div class="compact-portrait-editor-preview" data-portrait-preview>
+    <img src="{{framing.src}}" alt="{{actor.name}}" style="object-position: {{framing.x}}% {{framing.y}}%; transform: scale({{framing.zoom}}) translate({{framing.panX}}%, {{framing.panY}}%);">
+    <span aria-hidden="true"></span>
+  </div>
+
+  <div class="compact-portrait-editor-zoom">
+    <label for="compact-portrait-zoom">{{localize "ASTRAEL.CompactPortrait.Zoom"}}</label>
+    <input id="compact-portrait-zoom" type="range" min="1" max="3" step="0.05" value="{{framing.zoom}}" data-action="set-compact-portrait-zoom">
+    <strong data-portrait-zoom-label>{{framing.zoomLabel}}×</strong>
+  </div>
+
+  <div class="compact-portrait-editor-tools">
+    <button type="button" data-action="change-compact-portrait-image">{{localize "ASTRAEL.CompactPortrait.ChangeImage"}}</button>
+    <button type="button" data-action="reset-compact-portrait">{{localize "ASTRAEL.CompactPortrait.Reset"}}</button>
+  </div>
+
+  <footer class="compact-portrait-editor-actions">
+    <button type="button" data-action="cancel-compact-portrait">{{localize "ASTRAEL.CompactSkills.Cancel"}}</button>
+    <button type="button" class="is-primary" data-action="save-compact-portrait">{{localize "ASTRAEL.CompactSkills.Save"}}</button>
+  </footer>
+</section>

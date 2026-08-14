@@ -1,6 +1,7 @@
 const SYSTEM_ID = "astrael-rpg";
 const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character-sheet.hbs`;
 const COMPACT_CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/compact-character-sheet.hbs`;
+const COMPACT_PORTRAIT_EDITOR_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/compact-portrait-editor.hbs`;
 const NPC_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/npc-sheet.hbs`;
 const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
 const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
@@ -365,6 +366,56 @@ function removeDeprecatedActorTypes() {
 
 function clampNumber(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
+}
+
+function getCompactPortraitFraming(actor, source = actor.img) {
+  const saved = actor.getFlag(SYSTEM_ID, "compactPortrait") || {};
+  if (saved.src !== source) return { src: source, x: 50, y: 50, zoom: 1 };
+  return {
+    src: source,
+    x: clampNumber(saved.x, 0, 100),
+    y: clampNumber(saved.y, 0, 100),
+    zoom: clampNumber(saved.zoom, 1, 3)
+  };
+}
+
+function prepareCompactPortraitPresentation(framing) {
+  const zoom = clampNumber(framing.zoom, 1, 3);
+  const x = clampNumber(framing.x, 0, 100);
+  const y = clampNumber(framing.y, 0, 100);
+  return {
+    ...framing,
+    x,
+    y,
+    zoom,
+    panX: (50 - x) * ((zoom - 1) / zoom),
+    panY: (50 - y) * ((zoom - 1) / zoom)
+  };
+}
+
+function applyTokenPortraitsToActorDirectory(application, element) {
+  const ActorDirectory = CONFIG.ui?.actors;
+  if (!ActorDirectory || !(application instanceof ActorDirectory)) return;
+
+  const root = element instanceof HTMLElement ? element : element?.[0];
+  if (!root) return;
+
+  for (const entry of root.querySelectorAll("[data-entry-id]")) {
+    const actor = game.actors?.get(entry.dataset.entryId);
+    const image = entry.querySelector(":scope > img.thumbnail, :scope > img");
+    if (!actor || !image) continue;
+
+    const tokenSource = actor.prototypeToken?.texture?.src;
+    if (!tokenSource || tokenSource.includes("*")) continue;
+
+    const frame = document.createElement("span");
+    frame.classList.add("astrael-directory-portrait-frame");
+    image.before(frame);
+    frame.append(image);
+    image.src = tokenSource;
+    image.style.objectPosition = "50% 50%";
+    image.style.transform = "none";
+  }
 }
 
 function isNumeric(value) {
@@ -1164,6 +1215,149 @@ class AstraelSpecialtiesPanel extends HandlebarsApplicationMixin(ApplicationV2) 
     specialties[index] = { ...specialties[index], level };
     await this.actor.update({ "system.specialties": specialties });
     return this.render({ force: true });
+  }
+}
+
+class AstraelCompactPortraitEditor extends HandlebarsApplicationMixin(ApplicationV2) {
+  static DEFAULT_OPTIONS = {
+    classes: ["astrael-rpg", "compact-portrait-editor"],
+    position: {
+      width: 400,
+      height: 520
+    },
+    window: {
+      title: "Portrait Framing",
+      resizable: false
+    }
+  };
+
+  static PARTS = {
+    form: {
+      template: COMPACT_PORTRAIT_EDITOR_TEMPLATE
+    }
+  };
+
+  constructor(actor, ownerSheet, options = {}) {
+    super(options);
+    this.actor = actor;
+    this.ownerSheet = ownerSheet;
+    this.framing = getCompactPortraitFraming(actor);
+    this.dragState = null;
+  }
+
+  get title() {
+    return `${this.actor.name}: ${game.i18n.localize("ASTRAEL.CompactPortrait.Title")}`;
+  }
+
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
+    context.actor = this.actor;
+    context.framing = {
+      ...prepareCompactPortraitPresentation(this.framing),
+      zoomLabel: this.framing.zoom.toFixed(2)
+    };
+    return context;
+  }
+
+  async _onRender(context, options) {
+    await super._onRender(context, options);
+    const preview = this.element.querySelector("[data-portrait-preview]");
+    preview?.addEventListener("pointerdown", this.#onPointerDown.bind(this));
+    preview?.addEventListener("pointermove", this.#onPointerMove.bind(this));
+    preview?.addEventListener("pointerup", this.#onPointerEnd.bind(this));
+    preview?.addEventListener("pointercancel", this.#onPointerEnd.bind(this));
+    this.element.querySelector("[data-action='change-compact-portrait-image']")?.addEventListener("click", this.#onChangeImage.bind(this));
+    this.element.querySelector("[data-action='reset-compact-portrait']")?.addEventListener("click", this.#onReset.bind(this));
+    this.element.querySelector("[data-action='cancel-compact-portrait']")?.addEventListener("click", () => this.close());
+    this.element.querySelector("[data-action='save-compact-portrait']")?.addEventListener("click", this.#onSave.bind(this));
+    this.element.querySelector("[data-action='set-compact-portrait-zoom']")?.addEventListener("input", this.#onZoomInput.bind(this));
+  }
+
+  async close(options) {
+    if (this.ownerSheet?._compactPortraitEditor === this) this.ownerSheet._compactPortraitEditor = null;
+    const result = await super.close(options);
+    this.ownerSheet?.element?.querySelector("[data-action='edit-compact-portrait']")?.focus();
+    return result;
+  }
+
+  #refreshPreview() {
+    const image = this.element.querySelector("[data-portrait-preview] img");
+    if (image) {
+      const presentation = prepareCompactPortraitPresentation(this.framing);
+      image.style.objectPosition = `${this.framing.x}% ${this.framing.y}%`;
+      image.style.transform = `scale(${presentation.zoom}) translate(${presentation.panX}%, ${presentation.panY}%)`;
+    }
+    const zoomLabel = this.element.querySelector("[data-portrait-zoom-label]");
+    if (zoomLabel) zoomLabel.textContent = `${this.framing.zoom.toFixed(2)}×`;
+  }
+
+  #onPointerDown(event) {
+    if (event.button !== 0) return;
+    const preview = event.currentTarget;
+    preview.setPointerCapture(event.pointerId);
+    preview.classList.add("is-dragging");
+    this.dragState = {
+      pointerId: event.pointerId,
+      clientX: event.clientX,
+      clientY: event.clientY,
+      x: this.framing.x,
+      y: this.framing.y
+    };
+  }
+
+  #onPointerMove(event) {
+    if (!this.dragState || event.pointerId !== this.dragState.pointerId) return;
+    event.preventDefault();
+    const rect = event.currentTarget.getBoundingClientRect();
+    this.framing.x = clampNumber(this.dragState.x - ((event.clientX - this.dragState.clientX) / rect.width) * 100, 0, 100);
+    this.framing.y = clampNumber(this.dragState.y - ((event.clientY - this.dragState.clientY) / rect.height) * 100, 0, 100);
+    this.#refreshPreview();
+  }
+
+  #onPointerEnd(event) {
+    if (!this.dragState || event.pointerId !== this.dragState.pointerId) return;
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+    event.currentTarget.classList.remove("is-dragging");
+    this.dragState = null;
+  }
+
+  #onZoomInput(event) {
+    this.framing.zoom = clampNumber(event.currentTarget.value, 1, 3);
+    this.#refreshPreview();
+  }
+
+  #onChangeImage(event) {
+    event.preventDefault();
+    const picker = new FilePicker({
+      type: "image",
+      current: this.framing.src,
+      callback: (path) => {
+        this.framing = { src: path, x: 50, y: 50, zoom: 1 };
+        return this.render({ force: true });
+      }
+    });
+    return picker.browse();
+  }
+
+  #onReset(event) {
+    event.preventDefault();
+    this.framing = { ...this.framing, x: 50, y: 50, zoom: 1 };
+    return this.render({ force: true });
+  }
+
+  async #onSave(event) {
+    event.preventDefault();
+    const framing = {
+      src: this.framing.src,
+      x: this.framing.x,
+      y: this.framing.y,
+      zoom: this.framing.zoom
+    };
+    await this.actor.update({
+      img: framing.src,
+      [`flags.${SYSTEM_ID}.compactPortrait`]: framing
+    });
+    return this.close();
   }
 }
 
@@ -3845,8 +4039,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
-    const collapsedHeaders = game.settings.get(SYSTEM_ID, "compactHeaderCollapsed") || {};
-    context.compactHeaderCollapsed = collapsedHeaders[this.actor.uuid] === true;
+    context.compactPortrait = prepareCompactPortraitPresentation(getCompactPortraitFraming(this.actor));
+    context.compactCanEditPortrait = this.actor.isOwner;
     const buildLevels = (value) => Array.from({ length: 5 }, (_, index) => ({
       value: index + 1,
       filled: index < value,
@@ -3893,14 +4087,12 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
 
   async _onRender(context, options) {
     await super._onRender(context, options);
-    this.element.querySelector("[data-action='toggle-compact-header']")?.addEventListener(
-      "click",
-      this.#onToggleCompactHeader.bind(this)
-    );
     this.element.querySelectorAll("[data-action='adjust-compact-attribute']").forEach((button) => {
       button.addEventListener("click", this.#onAdjustCompactAttribute.bind(this, 1));
       button.addEventListener("contextmenu", this.#onAdjustCompactAttribute.bind(this, -1));
     });
+    this.element.querySelector("[data-action='edit-compact-portrait']")?.addEventListener("click", this.#onEditCompactPortrait.bind(this));
+    this.element.querySelector("[data-action='view-compact-portrait']")?.addEventListener("click", this.#onViewCompactPortrait.bind(this));
     this.element.querySelector("[data-action='add-compact-skill']")?.addEventListener("click", this.#onAddCompactSkill.bind(this));
     this.element.querySelectorAll("[data-action='edit-compact-skill']").forEach((button) => {
       button.addEventListener("click", this.#onEditCompactSkill.bind(this));
@@ -3935,18 +4127,6 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     }
   }
 
-  async #onToggleCompactHeader(event) {
-    event.preventDefault();
-    const collapsedHeaders = game.settings.get(SYSTEM_ID, "compactHeaderCollapsed") || {};
-    const actorKey = this.actor.uuid;
-    const nextCollapsed = collapsedHeaders[actorKey] !== true;
-    await game.settings.set(SYSTEM_ID, "compactHeaderCollapsed", {
-      ...collapsedHeaders,
-      [actorKey]: nextCollapsed
-    });
-    return this.render({ force: true });
-  }
-
   async #onAdjustCompactAttribute(delta, event) {
     event.preventDefault();
     const attributeKey = event.currentTarget.dataset.key;
@@ -3957,6 +4137,25 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     if (nextValue === currentValue) return;
 
     return this.actor.update({ [`system.attributes.${attributeKey}.value`]: nextValue });
+  }
+
+  async #onEditCompactPortrait(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner) return;
+    if (this._compactPortraitEditor) return this._compactPortraitEditor.bringToFront();
+    this._compactPortraitEditor = new AstraelCompactPortraitEditor(this.actor, this);
+    return this._compactPortraitEditor.render({ force: true });
+  }
+
+  #onViewCompactPortrait(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const popout = new foundry.applications.apps.ImagePopout({
+      src: this.actor.img,
+      uuid: this.actor.uuid,
+      window: { title: this.actor.name }
+    });
+    return popout.render({ force: true });
   }
 
   #onAddCompactSkill(event) {
@@ -4044,6 +4243,12 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     event.preventDefault();
     event.stopPropagation();
     return this.#onCancelCompactSkillEditor();
+  }
+
+  async close(options) {
+    await this._compactPortraitEditor?.close();
+    this._compactPortraitEditor = null;
+    return super.close(options);
   }
 }
 
@@ -4272,12 +4477,16 @@ Hooks.once("init", () => {
     onChange: () => {}
   });
 
-  game.settings.register(SYSTEM_ID, "compactHeaderCollapsed", {
-    scope: "client",
-    config: false,
-    type: Object,
-    default: {}
-  });
+});
+
+Hooks.on("renderApplicationV2", applyTokenPortraitsToActorDirectory);
+
+Hooks.on("updateActor", (actor, changes) => {
+  const tokenImageChanged = foundry.utils.hasProperty(changes, "prototypeToken.texture.src")
+    || foundry.utils.hasProperty(changes, "prototypeToken.randomImg");
+  if (!tokenImageChanged) return;
+
+  ui.actors?.render({ force: true });
 });
 
 Hooks.once("ready", () => {
