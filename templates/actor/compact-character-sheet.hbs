@@ -238,16 +238,6 @@
               {{/unless}}
             </div>
 
-            {{#if compactResourceTooltipAvailable}}
-            <aside class="astrael-compact-resource-tooltip" role="tooltip">
-              <strong>{{localize "ASTRAEL.CompactHeader.Controls"}}</strong>
-              <span><kbd>{{localize "ASTRAEL.CompactHeader.LeftClick"}}</kbd>{{localize "ASTRAEL.CompactHeader.RecoverDamage"}}</span>
-              <span><kbd>{{localize "ASTRAEL.CompactHeader.RightClick"}}</kbd>{{localize "ASTRAEL.CompactHeader.SuperficialDamage"}}</span>
-              <span><kbd>Shift + {{localize "ASTRAEL.CompactHeader.RightClick"}}</kbd>{{localize "ASTRAEL.CompactHeader.AggravatedDamage"}}</span>
-              <button type="button" data-action="set-compact-resource-tooltips" data-disabled="true"><i class="fas fa-eye-slash" aria-hidden="true"></i>{{localize "ASTRAEL.CompactHeader.DisableControlHints"}}</button>
-            </aside>
-            {{/if}}
-
             {{#if compactSkillEditor}}
             <section class="astrael-compact-skill-dock {{#if compactSkillEditor.confirmingRemoval}}is-confirming{{/if}}">
               {{#if compactSkillEditor.confirmingRemoval}}
@@ -300,7 +290,102 @@
           </section>
         </div>
         <div class="tab-panel astrael-compact-panel" data-tab="advantages">
-          <h2>{{localize "ASTRAEL.Tab.Advantages"}}</h2>
+          <section class="astrael-compact-characteristics {{#if compactCharacteristics.isFlaw}}is-flaws{{else}}is-advantages{{/if}}">
+            <header class="astrael-compact-characteristics-header">
+              <div>
+                <span aria-hidden="true"></span>
+                <h2>{{localize "ASTRAEL.Tab.Advantages"}}</h2>
+              </div>
+              {{#if compactCharacteristics.canAdd}}
+              <button type="button" class="astrael-compact-characteristic-add" data-action="add-compact-characteristic"><i class="fas fa-plus" aria-hidden="true"></i>{{#if compactCharacteristics.isFlaw}}{{localize "ASTRAEL.CompactCharacteristics.AddFlaw"}}{{else}}{{localize "ASTRAEL.CompactCharacteristics.AddAdvantage"}}{{/if}}</button>
+              {{else}}
+              <button type="button" class="astrael-compact-characteristic-add" disabled><i class="fas fa-plus" aria-hidden="true"></i>{{#if compactCharacteristics.isFlaw}}{{localize "ASTRAEL.CompactCharacteristics.AddFlaw"}}{{else}}{{localize "ASTRAEL.CompactCharacteristics.AddAdvantage"}}{{/if}}</button>
+              {{/if}}
+            </header>
+
+            <nav class="astrael-compact-characteristic-modes" aria-label="{{localize 'ASTRAEL.Tab.Advantages'}}">
+              <button type="button" class="is-advantage {{#if compactCharacteristics.advantagesActive}}is-active{{/if}}" data-action="set-compact-characteristic-mode" data-list="advantages" {{#if compactCharacteristics.locked}}disabled{{/if}}>
+                <span>{{localize "ASTRAEL.CompactCharacteristics.Advantages"}}</span><strong>{{compactCharacteristics.advantagesCount}}</strong>
+              </button>
+              <button type="button" class="is-flaw {{#if compactCharacteristics.flawsActive}}is-active{{/if}}" data-action="set-compact-characteristic-mode" data-list="flaws" {{#if compactCharacteristics.locked}}disabled{{/if}}>
+                <span>{{localize "ASTRAEL.CompactCharacteristics.Flaws"}}</span><strong>{{compactCharacteristics.flawsCount}}</strong>
+              </button>
+            </nav>
+
+            <div class="astrael-compact-characteristic-list">
+              {{#each compactCharacteristics.activeList as |entry|}}
+              <button type="button" class="astrael-compact-characteristic-card {{#if entry.selected}}is-selected{{/if}}" data-action="select-compact-characteristic" data-list="{{entry.listId}}" data-index="{{entry.index}}" {{#if ../compactCharacteristics.locked}}disabled{{/if}}>
+                <span class="astrael-compact-characteristic-name">{{entry.name}}</span>
+                <span class="astrael-compact-characteristic-level" aria-label="{{localize 'ASTRAEL.CompactAttributes.Level'}} {{entry.level}}">
+                  {{#each entry.levels as |level|}}<i class="{{#if level.filled}}is-filled{{/if}}"></i>{{/each}}
+                </span>
+                <i class="fas fa-chevron-right astrael-compact-characteristic-open" aria-hidden="true"></i>
+              </button>
+              {{/each}}
+              {{#if compactCharacteristics.empty}}
+              <div class="astrael-compact-characteristics-empty">
+                <span>{{#if compactCharacteristics.isFlaw}}{{localize "ASTRAEL.CompactCharacteristics.EmptyFlaws"}}{{else}}{{localize "ASTRAEL.CompactCharacteristics.EmptyAdvantages"}}{{/if}}</span>
+              </div>
+              {{/if}}
+            </div>
+
+            {{#if compactCharacteristicDock}}
+            <section class="astrael-compact-characteristic-dock {{#if compactCharacteristicDock.isFlaw}}is-flaw{{else}}is-advantage{{/if}}">
+              {{#if compactCharacteristicDock.isRemove}}
+              <div class="astrael-compact-characteristic-remove">
+                <strong>{{localize "ASTRAEL.CompactCharacteristics.RemoveTitle"}}</strong>
+                <span>{{compactCharacteristicDock.name}}</span>
+              </div>
+              <div class="astrael-compact-characteristic-actions">
+                <button type="button" data-action="back-remove-compact-characteristic">{{localize "ASTRAEL.CompactSkills.Back"}}</button>
+                <button type="button" class="is-danger" data-action="confirm-remove-compact-characteristic">{{localize "ASTRAEL.CompactSkills.Remove"}}</button>
+              </div>
+              {{else}}
+                {{#if compactCharacteristicDock.isEdit}}
+                <div class="astrael-compact-characteristic-form">
+                  <label>
+                    <span>{{localize "ASTRAEL.CompactCharacteristics.Name"}}</span>
+                    <input type="text" data-action="compact-characteristic-name" maxlength="120" value="{{compactCharacteristicDock.name}}" placeholder="{{localize 'ASTRAEL.CompactCharacteristics.NamePlaceholder'}}">
+                  </label>
+                  <label>
+                    <span>{{localize "ASTRAEL.CompactCharacteristics.Description"}}</span>
+                    <textarea data-action="compact-characteristic-description" maxlength="1000" placeholder="{{localize 'ASTRAEL.CompactCharacteristics.DescriptionPlaceholder'}}">{{compactCharacteristicDock.description}}</textarea>
+                  </label>
+                  <div class="astrael-compact-characteristic-level-editor">
+                    <span>{{localize "ASTRAEL.CompactAttributes.Level"}} {{compactCharacteristicDock.level}}</span>
+                    <div>
+                      {{#each compactCharacteristicDock.levels as |level|}}
+                      <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-compact-characteristic-level" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Level'}} {{level.value}}"></button>
+                      {{/each}}
+                    </div>
+                  </div>
+                </div>
+                <div class="astrael-compact-characteristic-actions">
+                  <button type="button" data-action="close-compact-characteristic">{{localize "ASTRAEL.CompactSkills.Cancel"}}</button>
+                  <button type="button" class="is-primary" data-action="save-compact-characteristic">{{localize "ASTRAEL.CompactSkills.Save"}}</button>
+                </div>
+                {{else}}
+                <header class="astrael-compact-characteristic-inspector-head">
+                  <span>{{compactCharacteristicDock.typeLabel}}</span>
+                  <strong>{{compactCharacteristicDock.name}}</strong>
+                  <em>{{localize "ASTRAEL.CompactAttributes.Level"}} {{compactCharacteristicDock.level}}</em>
+                </header>
+                <p class="astrael-compact-characteristic-description">{{#if compactCharacteristicDock.description}}{{compactCharacteristicDock.description}}{{else}}{{localize "ASTRAEL.CompactCharacteristics.NoDescription"}}{{/if}}</p>
+                <div class="astrael-compact-characteristic-actions">
+                  {{#if compactCharacteristicDock.canRoll}}
+                  <button type="button" class="rollable is-roll" data-type="advantage" data-key="{{compactCharacteristicDock.index}}"><i class="fas fa-dice" aria-hidden="true"></i>{{localize "ASTRAEL.CompactSkills.Roll"}}</button>
+                  {{/if}}
+                  <button type="button" data-action="close-compact-characteristic">{{localize "ASTRAEL.CompactCharacteristics.Close"}}</button>
+                  {{#if compactCharacteristicDock.canManage}}
+                  <button type="button" data-action="edit-compact-characteristic"><i class="fas fa-pen" aria-hidden="true"></i>{{localize "ASTRAEL.CompactSkills.Edit"}}</button>
+                  <button type="button" class="is-danger" data-action="request-remove-compact-characteristic">{{localize "ASTRAEL.CompactSkills.Remove"}}</button>
+                  {{/if}}
+                </div>
+                {{/if}}
+              {{/if}}
+            </section>
+            {{/if}}
+          </section>
         </div>
         <div class="tab-panel astrael-compact-panel" data-tab="convictions">
           <h2>{{localize "ASTRAEL.Tab.Convictions"}}</h2>
@@ -318,6 +403,15 @@
           <h2>{{localize "ASTRAEL.Tab.Settings"}}</h2>
         </div>
       </section>
+      {{#if compactResourceTooltipAvailable}}
+      <aside class="astrael-compact-resource-tooltip" role="tooltip">
+        <strong>{{localize "ASTRAEL.CompactHeader.Controls"}}</strong>
+        <span><kbd>{{localize "ASTRAEL.CompactHeader.LeftClick"}}</kbd>{{localize "ASTRAEL.CompactHeader.RecoverDamage"}}</span>
+        <span><kbd>{{localize "ASTRAEL.CompactHeader.RightClick"}}</kbd>{{localize "ASTRAEL.CompactHeader.SuperficialDamage"}}</span>
+        <span><kbd>Shift + {{localize "ASTRAEL.CompactHeader.RightClick"}}</kbd>{{localize "ASTRAEL.CompactHeader.AggravatedDamage"}}</span>
+        <button type="button" data-action="set-compact-resource-tooltips" data-disabled="true"><i class="fas fa-eye-slash" aria-hidden="true"></i>{{localize "ASTRAEL.CompactHeader.DisableControlHints"}}</button>
+      </aside>
+      {{/if}}
     </section>
   </main>
 </form>

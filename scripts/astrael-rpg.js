@@ -4048,8 +4048,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
 class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   static LAYOUT_OPTIONS = {
-    width: 480,
-    minWidth: 480,
+    width: 520,
+    minWidth: 520,
     minHeight: 450,
     heightSetting: null
   };
@@ -4057,8 +4057,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   static DEFAULT_OPTIONS = {
     classes: ["astrael-rpg", "sheet", "actor", "compact-character-sheet"],
     position: {
-      width: 480,
-      height: 680
+      width: 520,
+      height: 720
     },
     form: {
       closeOnSubmit: false,
@@ -4138,7 +4138,64 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
         options: availableSkills
       }
       : null;
-    context.compactResourceTooltipAvailable = !context.compactResourceTooltipsDisabled && !context.compactSkillEditor;
+    this._compactCharacteristicMode ??= "advantages";
+    const characteristicLists = {
+      advantages: this.#getCompactCharacteristicList("advantages"),
+      flaws: this.#getCompactCharacteristicList("flaws")
+    };
+    const activeCharacteristicList = characteristicLists[this._compactCharacteristicMode]
+      .map((entry, index) => ({
+        ...prepareAdvantageEntry(entry),
+        index,
+        listId: this._compactCharacteristicMode,
+        levels: buildLevels(normalizeAdvantageLevel(entry)),
+        selected: this._compactCharacteristicDock?.listId === this._compactCharacteristicMode
+          && this._compactCharacteristicDock.index === index
+      }))
+      .sort((left, right) => left.name.localeCompare(right.name, game.i18n.lang));
+    const characteristicLocked = Boolean(this._compactCharacteristicDock && this._compactCharacteristicDock.mode !== "view");
+    context.compactCharacteristics = {
+      activeList: activeCharacteristicList,
+      advantagesActive: this._compactCharacteristicMode === "advantages",
+      flawsActive: this._compactCharacteristicMode === "flaws",
+      advantagesCount: characteristicLists.advantages.length,
+      flawsCount: characteristicLists.flaws.length,
+      isFlaw: this._compactCharacteristicMode === "flaws",
+      locked: characteristicLocked,
+      canManage: this.actor.isOwner,
+      canAdd: this.actor.isOwner && !characteristicLocked,
+      empty: activeCharacteristicList.length === 0
+    };
+    if (this._compactCharacteristicDock) {
+      const dock = this._compactCharacteristicDock;
+      const source = dock.adding ? dock : characteristicLists[dock.listId]?.[dock.index];
+      if (source) {
+        const level = normalizeAdvantageLevel(dock.mode === "edit" ? dock : source);
+        context.compactCharacteristicDock = {
+          ...dock,
+          name: dock.mode === "edit" ? dock.name : String(source.name || ""),
+          description: dock.mode === "edit" ? dock.description : String(source.description || source.details || ""),
+          level,
+          levels: buildLevels(level),
+          isView: dock.mode === "view",
+          isEdit: dock.mode === "edit",
+          isRemove: dock.mode === "remove",
+          isFlaw: dock.listId === "flaws",
+          canManage: this.actor.isOwner,
+          canRoll: dock.listId === "advantages" && dock.mode === "view",
+          typeLabel: game.i18n.localize(dock.listId === "flaws"
+            ? "ASTRAEL.CompactCharacteristics.Flaw"
+            : "ASTRAEL.CompactCharacteristics.Advantage")
+        };
+      } else {
+        this._compactCharacteristicDock = null;
+      }
+    } else {
+      context.compactCharacteristicDock = null;
+    }
+    context.compactResourceTooltipAvailable = !context.compactResourceTooltipsDisabled
+      && !context.compactSkillEditor
+      && !context.compactCharacteristicDock;
     return context;
   }
 
@@ -4196,6 +4253,24 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     this.element.querySelectorAll("[data-action='remove-compact-specialty']").forEach((button) => {
       button.addEventListener("click", this.#onRemoveCompactSpecialty.bind(this));
     });
+    this.element.querySelectorAll("[data-action='set-compact-characteristic-mode']").forEach((button) => {
+      button.addEventListener("click", this.#onSetCompactCharacteristicMode.bind(this));
+    });
+    this.element.querySelector("[data-action='add-compact-characteristic']")?.addEventListener("click", this.#onAddCompactCharacteristic.bind(this));
+    this.element.querySelectorAll("[data-action='select-compact-characteristic']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectCompactCharacteristic.bind(this));
+    });
+    this.element.querySelector("[data-action='edit-compact-characteristic']")?.addEventListener("click", this.#onEditCompactCharacteristic.bind(this));
+    this.element.querySelectorAll("[data-action='set-compact-characteristic-level']").forEach((button) => {
+      button.addEventListener("click", this.#onSetCompactCharacteristicLevel.bind(this));
+    });
+    this.element.querySelector("[data-action='save-compact-characteristic']")?.addEventListener("click", this.#onSaveCompactCharacteristic.bind(this));
+    this.element.querySelectorAll("[data-action='close-compact-characteristic']").forEach((button) => {
+      button.addEventListener("click", this.#onCloseCompactCharacteristic.bind(this));
+    });
+    this.element.querySelector("[data-action='request-remove-compact-characteristic']")?.addEventListener("click", this.#onRequestRemoveCompactCharacteristic.bind(this));
+    this.element.querySelector("[data-action='back-remove-compact-characteristic']")?.addEventListener("click", this.#onBackRemoveCompactCharacteristic.bind(this));
+    this.element.querySelector("[data-action='confirm-remove-compact-characteristic']")?.addEventListener("click", this.#onConfirmRemoveCompactCharacteristic.bind(this));
     this.element.querySelector("[data-action='compact-specialty-name']")?.addEventListener("keydown", (event) => {
       if (event.key === "Enter") return this.#onSaveCompactSpecialty(event);
     });
@@ -4233,6 +4308,14 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
           ? `[data-action='begin-compact-specialty'][data-key='${this._compactSpecialtySkillKey}']`
           : `[data-action='toggle-compact-specialties'][data-key='${this._compactSpecialtySkillKey}']`;
       this._compactSpecialtyFocus = null;
+      this.element.querySelector(selector)?.focus();
+    } else if (this._compactCharacteristicFocus) {
+      const selector = this._compactCharacteristicFocus === "name"
+        ? "[data-action='compact-characteristic-name']"
+        : this._compactCharacteristicFocus === "add"
+          ? "[data-action='add-compact-characteristic']"
+          : `[data-action='select-compact-characteristic'][data-list='${this._compactCharacteristicMode}'][data-index='${this._compactCharacteristicFocus}']`;
+      this._compactCharacteristicFocus = null;
       this.element.querySelector(selector)?.focus();
     }
   }
@@ -4288,6 +4371,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     if (this._compactSkillEditor) return;
     this._compactSpecialtySkillKey = null;
     this._compactSpecialtyAdding = false;
+    this._compactCharacteristicDock = null;
+    this._compactCharacteristicFocus = null;
     this._compactSkillReturnFocus = "add";
     this._compactSkillNeedsInitialFocus = true;
     this._compactSkillEditor = { mode: "add", key: "", level: 1, confirmingRemoval: false };
@@ -4370,6 +4455,12 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
 
   #onCompactSkillEditorKeydown(event) {
     if (event.key !== "Escape") return;
+    if (this._compactCharacteristicDock) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (this._compactCharacteristicDock.mode === "remove") return this.#onBackRemoveCompactCharacteristic();
+      return this.#onCloseCompactCharacteristic();
+    }
     if (this._compactSpecialtyAdding) {
       event.preventDefault();
       event.stopPropagation();
@@ -4447,6 +4538,160 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     specialties.splice(index, 1);
     this._compactSpecialtyFocus = "toggle";
     return this.actor.update({ "system.specialties": specialties });
+  }
+
+  #getCompactCharacteristicList(listId) {
+    const path = listId === "flaws" ? "flaws" : "advantages";
+    const actorData = this.actor.toObject();
+    return Array.isArray(actorData.system?.[path]) ? actorData.system[path].map((entry) => ({ ...entry })) : [];
+  }
+
+  #onSetCompactCharacteristicMode(event) {
+    event.preventDefault();
+    if (this._compactCharacteristicDock?.mode !== "view" && this._compactCharacteristicDock) return;
+    this._compactCharacteristicMode = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
+    this._compactCharacteristicDock = null;
+    return this.render({ force: true });
+  }
+
+  #onAddCompactCharacteristic(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner || (this._compactCharacteristicDock && this._compactCharacteristicDock.mode !== "view")) return;
+    this._compactSkillEditor = null;
+    this._compactSkillReturnFocus = null;
+    this._compactSkillNeedsInitialFocus = false;
+    this._compactCharacteristicDock = {
+      mode: "edit",
+      adding: true,
+      listId: this._compactCharacteristicMode,
+      index: -1,
+      name: "",
+      description: "",
+      level: 1
+    };
+    this._compactCharacteristicFocus = "name";
+    return this.render({ force: true });
+  }
+
+  #onSelectCompactCharacteristic(event) {
+    event.preventDefault();
+    if (this._compactCharacteristicDock && this._compactCharacteristicDock.mode !== "view") return;
+    this._compactSkillEditor = null;
+    this._compactSkillReturnFocus = null;
+    this._compactSkillNeedsInitialFocus = false;
+    const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
+    const index = Number(event.currentTarget.dataset.index);
+    if (!Number.isInteger(index) || !this.#getCompactCharacteristicList(listId)[index]) return;
+    const closing = this._compactCharacteristicDock?.mode === "view"
+      && this._compactCharacteristicDock.listId === listId
+      && this._compactCharacteristicDock.index === index;
+    this._compactCharacteristicDock = closing ? null : { mode: "view", adding: false, listId, index };
+    this._compactCharacteristicFocus = closing ? null : String(index);
+    return this.render({ force: true });
+  }
+
+  #onEditCompactCharacteristic(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner || this._compactCharacteristicDock?.mode !== "view") return;
+    const { listId, index } = this._compactCharacteristicDock;
+    const entry = this.#getCompactCharacteristicList(listId)[index];
+    if (!entry) return;
+    this._compactCharacteristicDock = {
+      mode: "edit",
+      adding: false,
+      listId,
+      index,
+      name: String(entry.name || ""),
+      description: String(entry.description || entry.details || ""),
+      level: normalizeAdvantageLevel(entry)
+    };
+    this._compactCharacteristicFocus = "name";
+    return this.render({ force: true });
+  }
+
+  #syncCompactCharacteristicDraft() {
+    if (this._compactCharacteristicDock?.mode !== "edit") return;
+    const name = this.element.querySelector("[data-action='compact-characteristic-name']");
+    const description = this.element.querySelector("[data-action='compact-characteristic-description']");
+    if (name) this._compactCharacteristicDock.name = name.value;
+    if (description) this._compactCharacteristicDock.description = description.value;
+  }
+
+  #onSetCompactCharacteristicLevel(event) {
+    event.preventDefault();
+    if (this._compactCharacteristicDock?.mode !== "edit") return;
+    this.#syncCompactCharacteristicDraft();
+    this._compactCharacteristicDock.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
+    return this.render({ force: true });
+  }
+
+  async #onSaveCompactCharacteristic(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner || this._compactCharacteristicDock?.mode !== "edit") return;
+    this.#syncCompactCharacteristicDraft();
+    const dock = this._compactCharacteristicDock;
+    const name = dock.name.trim();
+    if (!name) {
+      ui.notifications.warn(game.i18n.localize("ASTRAEL.CompactCharacteristics.NameRequired"));
+      this.element.querySelector("[data-action='compact-characteristic-name']")?.focus();
+      return;
+    }
+
+    const list = this.#getCompactCharacteristicList(dock.listId);
+    const entry = {
+      ...(dock.adding ? {} : list[dock.index]),
+      name,
+      description: dock.description.trim(),
+      level: clampNumber(dock.level, 1, 5),
+      editing: false
+    };
+    let index = dock.index;
+    if (dock.adding) {
+      list.push(entry);
+      index = list.length - 1;
+    } else if (list[index]) {
+      list[index] = entry;
+    } else {
+      return;
+    }
+    this._compactCharacteristicDock = { mode: "view", adding: false, listId: dock.listId, index };
+    this._compactCharacteristicFocus = String(index);
+    return this.actor.update({ [`system.${dock.listId}`]: list });
+  }
+
+  #onCloseCompactCharacteristic(event) {
+    event?.preventDefault();
+    const dock = this._compactCharacteristicDock;
+    if (!dock) return;
+    this._compactCharacteristicDock = null;
+    this._compactCharacteristicFocus = dock.adding ? "add" : String(dock.index);
+    return this.render({ force: true });
+  }
+
+  #onRequestRemoveCompactCharacteristic(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner || this._compactCharacteristicDock?.mode !== "view") return;
+    this._compactCharacteristicDock.mode = "remove";
+    return this.render({ force: true });
+  }
+
+  #onBackRemoveCompactCharacteristic(event) {
+    event?.preventDefault();
+    if (this._compactCharacteristicDock?.mode !== "remove") return;
+    this._compactCharacteristicDock.mode = "view";
+    return this.render({ force: true });
+  }
+
+  async #onConfirmRemoveCompactCharacteristic(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner || this._compactCharacteristicDock?.mode !== "remove") return;
+    const { listId, index } = this._compactCharacteristicDock;
+    const list = this.#getCompactCharacteristicList(listId);
+    if (!list[index]) return;
+    list.splice(index, 1);
+    this._compactCharacteristicDock = null;
+    this._compactCharacteristicFocus = "add";
+    return this.actor.update({ [`system.${listId}`]: list });
   }
 
   async close(options) {
