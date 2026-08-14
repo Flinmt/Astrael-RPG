@@ -9,6 +9,9 @@
   "ASTRAEL.CompactHeader.Collapse": "Collapse header",
   "ASTRAEL.CompactHeader.Expand": "Expand header",
   "ASTRAEL.CompactHeader.ResourceHint": "Click to recover; right-click to apply damage",
+  "ASTRAEL.CompactAttributes.Level": "Level",
+  "ASTRAEL.CompactAttributes.AdjustHint": "Left-click increases; right-click decreases",
+  "ASTRAEL.CompactAttributes.Roll": "Roll attribute",
   "ASTRAEL.Sheet.NPC": "Astrael NPC Sheet",
   "ASTRAEL.Tab.Attributes": "Attributes",
   "ASTRAEL.Tab.Advantages": "Characteristics",
@@ -107,5 +110,15 @@
   "ASTRAEL.StrangerMark.Empty": "No mark selected",
   "ASTRAEL.StrangerMark.EmptyHint": "Create a mark to open the strange codex.",
   "ASTRAEL.StrangerMark.Burn": "Burn Cost",
-  "ASTRAEL.StrangerMark.SaveRequired": "Set a name for the Stranger Mark."
+  "ASTRAEL.StrangerMark.SaveRequired": "Set a name for the Stranger Mark.",
+  "ASTRAEL.CompactSkills.Add": "Add skill",
+  "ASTRAEL.CompactSkills.Edit": "Edit",
+  "ASTRAEL.CompactSkills.Save": "Save",
+  "ASTRAEL.CompactSkills.Remove": "Remove",
+  "ASTRAEL.CompactSkills.Cancel": "Cancel",
+  "ASTRAEL.CompactSkills.Skill": "Skill",
+  "ASTRAEL.CompactSkills.Select": "Select a skill",
+  "ASTRAEL.CompactSkills.SelectRequired": "Select a skill before saving.",
+  "ASTRAEL.CompactSkills.Empty": "No skills have points.",
+  "ASTRAEL.CompactSkills.Roll": "Roll"
 }

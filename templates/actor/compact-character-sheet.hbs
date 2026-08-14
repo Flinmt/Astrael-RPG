@@ -113,7 +113,119 @@
 
       <section class="sheet-body astrael-compact-body">
         <div class="tab-panel astrael-compact-panel active" data-tab="attributes">
-          <h2>{{localize "ASTRAEL.Tab.Attributes"}}</h2>
+          <section class="astrael-compact-attributes">
+            <header class="astrael-compact-attribute-region-title">
+              <span aria-hidden="true"></span>
+              <h3>{{localize "ASTRAEL.Tab.Attributes"}}</h3>
+            </header>
+
+            <section class="astrael-compact-attribute-band is-physical" aria-label="{{localize 'ASTRAEL.Attributes.Physical'}}">
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.strength.value}}" type="button" data-action="adjust-compact-attribute" data-key="strength" data-name="system.attributes.strength.value" data-value="{{system.attributes.strength.value}}" title="{{localize 'ASTRAEL.Attribute.Strength'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.strength.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Strength'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.strength.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-hand-fist" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="strength" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Strength'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Strength'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.dexterity.value}}" type="button" data-action="adjust-compact-attribute" data-key="dexterity" data-name="system.attributes.dexterity.value" data-value="{{system.attributes.dexterity.value}}" title="{{localize 'ASTRAEL.Attribute.Dexterity'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.dexterity.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Dexterity'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.dexterity.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-person-running" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="dexterity" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Dexterity'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Dexterity'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.stamina.value}}" type="button" data-action="adjust-compact-attribute" data-key="stamina" data-name="system.attributes.stamina.value" data-value="{{system.attributes.stamina.value}}" title="{{localize 'ASTRAEL.Attribute.Stamina'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.stamina.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Stamina'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.stamina.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-heart" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="stamina" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Stamina'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Stamina'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+            </section>
+
+            <section class="astrael-compact-attribute-band is-social" aria-label="{{localize 'ASTRAEL.Attributes.Social'}}">
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.charisma.value}}" type="button" data-action="adjust-compact-attribute" data-key="charisma" data-name="system.attributes.charisma.value" data-value="{{system.attributes.charisma.value}}" title="{{localize 'ASTRAEL.Attribute.Charisma'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.charisma.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Charisma'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.charisma.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-comments" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="charisma" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Charisma'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Charisma'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.manipulation.value}}" type="button" data-action="adjust-compact-attribute" data-key="manipulation" data-name="system.attributes.manipulation.value" data-value="{{system.attributes.manipulation.value}}" title="{{localize 'ASTRAEL.Attribute.Manipulation'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.manipulation.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Manipulation'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.manipulation.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-masks-theater" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="manipulation" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Manipulation'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Manipulation'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.composure.value}}" type="button" data-action="adjust-compact-attribute" data-key="composure" data-name="system.attributes.composure.value" data-value="{{system.attributes.composure.value}}" title="{{localize 'ASTRAEL.Attribute.Composure'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.composure.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Composure'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.composure.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-face-meh" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="composure" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Composure'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Composure'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+            </section>
+
+            <section class="astrael-compact-attribute-band is-mental" aria-label="{{localize 'ASTRAEL.Attributes.Mental'}}">
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.intelligence.value}}" type="button" data-action="adjust-compact-attribute" data-key="intelligence" data-name="system.attributes.intelligence.value" data-value="{{system.attributes.intelligence.value}}" title="{{localize 'ASTRAEL.Attribute.Intelligence'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.intelligence.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Intelligence'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.intelligence.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-brain" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="intelligence" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Intelligence'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Intelligence'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.wits.value}}" type="button" data-action="adjust-compact-attribute" data-key="wits" data-name="system.attributes.wits.value" data-value="{{system.attributes.wits.value}}" title="{{localize 'ASTRAEL.Attribute.Wits'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.wits.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Wits'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.wits.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-bolt" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="wits" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Wits'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Wits'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+              <article class="astrael-compact-attribute">
+                <button class="astrael-compact-attribute-dial level-{{system.attributes.resolve.value}}" type="button" data-action="adjust-compact-attribute" data-key="resolve" data-name="system.attributes.resolve.value" data-value="{{system.attributes.resolve.value}}" title="{{localize 'ASTRAEL.Attribute.Resolve'}} · {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.resolve.value}} · {{localize 'ASTRAEL.CompactAttributes.AdjustHint'}}" aria-label="{{localize 'ASTRAEL.Attribute.Resolve'}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{system.attributes.resolve.value}}">
+                  <span class="astrael-compact-dial-segment segment-1"></span><span class="astrael-compact-dial-segment segment-2"></span><span class="astrael-compact-dial-segment segment-3"></span><span class="astrael-compact-dial-segment segment-4"></span><span class="astrael-compact-dial-segment segment-5"></span>
+                  <i class="fas fa-anchor" aria-hidden="true"></i>
+                </button>
+                <a class="rollable astrael-compact-attribute-roll" href="#" data-type="attribute" data-key="resolve" title="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Resolve'}}" aria-label="{{localize 'ASTRAEL.CompactAttributes.Roll'}}: {{localize 'ASTRAEL.Attribute.Resolve'}}"><i class="fas fa-dice" aria-hidden="true"></i></a>
+              </article>
+            </section>
+          </section>
+
+          <section class="astrael-compact-skills">
+            <header class="astrael-compact-skills-header">
+              <div class="astrael-compact-skills-title">
+                <span aria-hidden="true"></span>
+                <h3>{{localize "ASTRAEL.Skills.Title"}}</h3>
+              </div>
+              {{#if compactCanAddSkill}}
+              <button type="button" class="astrael-compact-skills-configure" data-action="add-compact-skill">{{localize "ASTRAEL.CompactSkills.Add"}}</button>
+              {{else}}
+              <button type="button" class="astrael-compact-skills-configure" disabled>{{localize "ASTRAEL.CompactSkills.Add"}}</button>
+              {{/if}}
+            </header>
+
+            <div class="astrael-compact-skill-list">
+              {{#each compactActiveSkills as |skill|}}
+              <article class="astrael-compact-skill-row">
+                <a class="rollable astrael-compact-skill-name" href="#" data-type="skill" data-key="{{skill.key}}" title="{{localize 'ASTRAEL.CompactSkills.Roll'}}: {{skill.label}}">
+                  {{skill.label}}
+                </a>
+                <div class="astrael-compact-skill-level" aria-label="{{skill.label}}, {{localize 'ASTRAEL.CompactAttributes.Level'}} {{skill.value}}">
+                  {{#each skill.levels as |level|}}
+                  <span class="{{#if level.filled}}is-filled{{/if}}"></span>
+                  {{/each}}
+                </div>
+                <button type="button" class="astrael-compact-skill-edit" data-action="edit-compact-skill" data-key="{{skill.key}}" title="{{localize 'ASTRAEL.CompactSkills.Edit'}}" aria-label="{{localize 'ASTRAEL.CompactSkills.Edit'}}: {{skill.label}}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+              </article>
+              {{/each}}
+            </div>
+            {{#unless compactActiveSkills.length}}
+            <div class="astrael-compact-skills-empty">
+              <span>{{localize "ASTRAEL.CompactSkills.Empty"}}</span>
+            </div>
+            {{/unless}}
+          </section>
         </div>
         <div class="tab-panel astrael-compact-panel" data-tab="advantages">
           <h2>{{localize "ASTRAEL.Tab.Advantages"}}</h2>

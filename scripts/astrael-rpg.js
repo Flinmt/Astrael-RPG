@@ -3847,6 +3847,24 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     const context = await super._prepareContext(options);
     const collapsedHeaders = game.settings.get(SYSTEM_ID, "compactHeaderCollapsed") || {};
     context.compactHeaderCollapsed = collapsedHeaders[this.actor.uuid] === true;
+    const buildLevels = (value) => Array.from({ length: 5 }, (_, index) => ({
+      value: index + 1,
+      filled: index < value,
+      current: index + 1 === value
+    }));
+    context.compactActiveSkills = SKILL_KEYS
+      .map((key) => {
+        const value = clampNumber(this.actor.system.skills?.[key]?.value, 0, 5);
+        return {
+          key,
+          value,
+          label: game.i18n.localize(LOCALIZE_SKILL[key]),
+          levels: buildLevels(value)
+        };
+      })
+      .filter((skill) => skill.value > 0)
+      .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang));
+    context.compactCanAddSkill = context.compactActiveSkills.length < SKILL_KEYS.length;
     return context;
   }
 
@@ -3856,6 +3874,14 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       "click",
       this.#onToggleCompactHeader.bind(this)
     );
+    this.element.querySelectorAll("[data-action='adjust-compact-attribute']").forEach((button) => {
+      button.addEventListener("click", this.#onAdjustCompactAttribute.bind(this, 1));
+      button.addEventListener("contextmenu", this.#onAdjustCompactAttribute.bind(this, -1));
+    });
+    this.element.querySelector("[data-action='add-compact-skill']")?.addEventListener("click", this.#onAddCompactSkill.bind(this));
+    this.element.querySelectorAll("[data-action='edit-compact-skill']").forEach((button) => {
+      button.addEventListener("click", this.#onEditCompactSkill.bind(this));
+    });
   }
 
   async #onToggleCompactHeader(event) {
@@ -3868,6 +3894,107 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       [actorKey]: nextCollapsed
     });
     return this.render({ force: true });
+  }
+
+  async #onAdjustCompactAttribute(delta, event) {
+    event.preventDefault();
+    const attributeKey = event.currentTarget.dataset.key;
+    if (!ATTRIBUTE_KEYS.includes(attributeKey)) return;
+
+    const currentValue = Number(this.actor.system.attributes?.[attributeKey]?.value) || 1;
+    const nextValue = clampNumber(currentValue + delta, 1, 5);
+    if (nextValue === currentValue) return;
+
+    return this.actor.update({ [`system.attributes.${attributeKey}.value`]: nextValue });
+  }
+
+  #onAddCompactSkill(event) {
+    event.preventDefault();
+    return this.#openCompactSkillPopup("add");
+  }
+
+  #onEditCompactSkill(event) {
+    event.preventDefault();
+    const key = event.currentTarget.dataset.key;
+    if (!SKILL_KEYS.includes(key)) return;
+    return this.#openCompactSkillPopup("edit", key);
+  }
+
+  #openCompactSkillPopup(mode, skillKey = "") {
+    const isEditing = mode === "edit" && SKILL_KEYS.includes(skillKey);
+    const currentLevel = isEditing
+      ? clampNumber(this.actor.system.skills?.[skillKey]?.value, 1, 5)
+      : 1;
+    const activeKeys = new Set(SKILL_KEYS.filter((key) => (
+      clampNumber(this.actor.system.skills?.[key]?.value, 0, 5) > 0
+    )));
+    const skillOptions = SKILL_KEYS
+      .filter((key) => !activeKeys.has(key))
+      .map((key) => ({ key, label: game.i18n.localize(LOCALIZE_SKILL[key]) }))
+      .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang))
+      .map((option) => `<option value="${option.key}">${escapeHtml(option.label)}</option>`)
+      .join("");
+    const skillLabel = isEditing ? game.i18n.localize(LOCALIZE_SKILL[skillKey]) : "";
+    const title = game.i18n.localize(isEditing ? "ASTRAEL.CompactSkills.Edit" : "ASTRAEL.CompactSkills.Add");
+    const levelButtons = Array.from({ length: 5 }, (_, index) => {
+      const level = index + 1;
+      return `<button type="button" class="compact-skill-popup-dot ${level <= currentLevel ? "is-filled" : ""} ${level === currentLevel ? "is-current" : ""}" data-level="${level}" aria-label="${game.i18n.localize("ASTRAEL.CompactAttributes.Level")} ${level}"></button>`;
+    }).join("");
+    const buttons = {};
+
+    if (isEditing) {
+      buttons.remove = {
+        label: game.i18n.localize("ASTRAEL.CompactSkills.Remove"),
+        callback: () => this.actor.update({ [`system.skills.${skillKey}.value`]: 0 })
+      };
+    }
+    buttons.cancel = { label: game.i18n.localize("ASTRAEL.CompactSkills.Cancel") };
+    buttons.save = {
+      label: game.i18n.localize("ASTRAEL.CompactSkills.Save"),
+      callback: async (html) => {
+        const key = isEditing ? skillKey : html.find("[name='skill']").val();
+        if (!SKILL_KEYS.includes(key)) {
+          ui.notifications.warn(game.i18n.localize("ASTRAEL.CompactSkills.SelectRequired"));
+          return false;
+        }
+        const level = clampNumber(html.find("[name='level']").val(), 1, 5);
+        return this.actor.update({ [`system.skills.${key}.value`]: level });
+      }
+    };
+
+    return new Dialog({
+      title,
+      content: `
+        <form class="compact-skill-popup-form">
+          ${isEditing
+            ? `<strong class="compact-skill-popup-name">${escapeHtml(skillLabel)}</strong>`
+            : `<label class="compact-skill-popup-field"><span>${game.i18n.localize("ASTRAEL.CompactSkills.Skill")}</span><select name="skill"><option value="">${game.i18n.localize("ASTRAEL.CompactSkills.Select")}</option>${skillOptions}</select></label>`}
+          <div class="compact-skill-popup-level">
+            <span>${game.i18n.localize("ASTRAEL.CompactAttributes.Level")} <strong data-level-label>${currentLevel}</strong></span>
+            <div class="compact-skill-popup-dots">${levelButtons}</div>
+            <input type="hidden" name="level" value="${currentLevel}">
+          </div>
+        </form>
+      `,
+      buttons,
+      default: "save",
+      render: (html) => {
+        html.find(".compact-skill-popup-dot").on("click", function(event) {
+          event.preventDefault();
+          const level = clampNumber(this.dataset.level, 1, 5);
+          html.find("[name='level']").val(String(level));
+          html.find("[data-level-label]").text(String(level));
+          html.find(".compact-skill-popup-dot").each((_, dot) => {
+            const dotLevel = Number(dot.dataset.level);
+            dot.classList.toggle("is-filled", dotLevel <= level);
+            dot.classList.toggle("is-current", dotLevel === level);
+          });
+        });
+      }
+    }, {
+      classes: ["astrael-dialog", "compact-skill-popup-window"],
+      width: 350
+    }).render(true);
   }
 }
 
