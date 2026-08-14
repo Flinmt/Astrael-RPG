@@ -17,7 +17,8 @@
     "scripts/astrael-rpg.js"
   ],
   "styles": [
-    "styles/astrael-rpg.css"
+    "styles/astrael-rpg.css",
+    "styles/compact-character-sheet.css"
   ],
   "languages": [
     {

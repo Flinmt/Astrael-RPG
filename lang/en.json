@@ -3,6 +3,7 @@
   "ASTRAEL.Actor.NPC": "NPC",
   "ASTRAEL.Item.Trait": "Trait",
   "ASTRAEL.Sheet.Character": "Astrael Character Sheet",
+  "ASTRAEL.Sheet.CharacterCompact": "Astrael Compact Character Sheet",
   "ASTRAEL.Sheet.NPC": "Astrael NPC Sheet",
   "ASTRAEL.Tab.Attributes": "Attributes",
   "ASTRAEL.Tab.Advantages": "Characteristics",

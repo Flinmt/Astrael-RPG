@@ -1,0 +1,61 @@
+<form class="{{cssClass}} astrael-compact-sheet" autocomplete="off">
+  <main class="astrael-compact-shell">
+    <section class="astrael-compact-frame">
+      <nav class="sheet-tabs astrael-compact-tabs" aria-label="{{localize 'ASTRAEL.Sheet.CharacterCompact'}}">
+        <div class="sheet-tab-list astrael-compact-tab-list">
+          <button class="tab-button astrael-compact-tab active" data-tab="attributes" type="button" title="{{localize 'ASTRAEL.Tab.Attributes'}}" aria-label="{{localize 'ASTRAEL.Tab.Attributes'}}">
+            <i class="fas fa-chart-simple" aria-hidden="true"></i>
+          </button>
+          <button class="tab-button astrael-compact-tab" data-tab="advantages" type="button" title="{{localize 'ASTRAEL.Tab.Advantages'}}" aria-label="{{localize 'ASTRAEL.Tab.Advantages'}}">
+            <i class="fas fa-scale-balanced" aria-hidden="true"></i>
+          </button>
+          <button class="tab-button astrael-compact-tab" data-tab="convictions" type="button" title="{{localize 'ASTRAEL.Tab.Convictions'}}" aria-label="{{localize 'ASTRAEL.Tab.Convictions'}}">
+            <i class="fas fa-compass" aria-hidden="true"></i>
+          </button>
+          {{#if system.sheetSettings.visibleTabs.virtues}}
+          <button class="tab-button astrael-compact-tab" data-tab="virtues" type="button" title="{{localize 'ASTRAEL.Tab.Virtues'}}" aria-label="{{localize 'ASTRAEL.Tab.Virtues'}}">
+            <i class="fas fa-sun" aria-hidden="true"></i>
+          </button>
+          {{/if}}
+          {{#if system.sheetSettings.visibleTabs.hemomancy}}
+          <button class="tab-button astrael-compact-tab" data-tab="hemomancy" type="button" title="{{localize 'ASTRAEL.Tab.Hemomancy'}}" aria-label="{{localize 'ASTRAEL.Tab.Hemomancy'}}">
+            <i class="fas fa-droplet" aria-hidden="true"></i>
+          </button>
+          {{/if}}
+          {{#if system.sheetSettings.visibleTabs.strangerMark}}
+          <button class="tab-button astrael-compact-tab" data-tab="stranger-mark" type="button" title="{{localize 'ASTRAEL.Tab.StrangerMark'}}" aria-label="{{localize 'ASTRAEL.Tab.StrangerMark'}}">
+            <i class="fas fa-eye" aria-hidden="true"></i>
+          </button>
+          {{/if}}
+          <button class="tab-button astrael-compact-tab" data-tab="settings" type="button" title="{{localize 'ASTRAEL.Tab.Settings'}}" aria-label="{{localize 'ASTRAEL.Tab.Settings'}}">
+            <i class="fas fa-gear" aria-hidden="true"></i>
+          </button>
+        </div>
+      </nav>
+
+      <section class="sheet-body astrael-compact-body">
+        <div class="tab-panel astrael-compact-panel active" data-tab="attributes">
+          <h2>{{localize "ASTRAEL.Tab.Attributes"}}</h2>
+        </div>
+        <div class="tab-panel astrael-compact-panel" data-tab="advantages">
+          <h2>{{localize "ASTRAEL.Tab.Advantages"}}</h2>
+        </div>
+        <div class="tab-panel astrael-compact-panel" data-tab="convictions">
+          <h2>{{localize "ASTRAEL.Tab.Convictions"}}</h2>
+        </div>
+        <div class="tab-panel astrael-compact-panel" data-tab="virtues">
+          <h2>{{localize "ASTRAEL.Tab.Virtues"}}</h2>
+        </div>
+        <div class="tab-panel astrael-compact-panel" data-tab="hemomancy">
+          <h2>{{localize "ASTRAEL.Tab.Hemomancy"}}</h2>
+        </div>
+        <div class="tab-panel astrael-compact-panel" data-tab="stranger-mark">
+          <h2>{{localize "ASTRAEL.Tab.StrangerMark"}}</h2>
+        </div>
+        <div class="tab-panel astrael-compact-panel" data-tab="settings">
+          <h2>{{localize "ASTRAEL.Tab.Settings"}}</h2>
+        </div>
+      </section>
+    </section>
+  </main>
+</form>

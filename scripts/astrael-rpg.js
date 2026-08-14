@@ -1,5 +1,6 @@
 const SYSTEM_ID = "astrael-rpg";
 const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character-sheet.hbs`;
+const COMPACT_CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/compact-character-sheet.hbs`;
 const NPC_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/npc-sheet.hbs`;
 const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
 const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
@@ -1283,6 +1284,13 @@ class AstraelStrangerMarksPanel extends HandlebarsApplicationMixin(ApplicationV2
 }
 
 class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
+  static LAYOUT_OPTIONS = {
+    width: 900,
+    minWidth: 900,
+    minHeight: 450,
+    heightSetting: "sheetHeight"
+  };
+
   static DEFAULT_OPTIONS = {
     classes: ["astrael-rpg", "sheet", "actor"],
     position: {
@@ -2186,19 +2194,22 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   setPosition(position) {
+    const layout = this.constructor.LAYOUT_OPTIONS;
     if (position) {
-      position.width = 900;
-      const savedHeight = game.settings?.get("astrael-rpg", "sheetHeight") ?? 680;
+      position.width = layout.width;
+      const savedHeight = layout.heightSetting
+        ? game.settings?.get(SYSTEM_ID, layout.heightSetting) ?? this.constructor.DEFAULT_OPTIONS.position.height
+        : this.constructor.DEFAULT_OPTIONS.position.height;
       if (position.height === this.constructor.DEFAULT_OPTIONS.position.height) {
-        position.height = Math.max(savedHeight, 450);
+        position.height = Math.max(savedHeight, layout.minHeight);
       }
-      if (position.height < 450) position.height = 450;
+      if (position.height < layout.minHeight) position.height = layout.minHeight;
     }
     const result = super.setPosition(position);
-    if (position?.height !== undefined) {
-      const saved = game.settings?.get("astrael-rpg", "sheetHeight") ?? 680;
+    if (layout.heightSetting && position?.height !== undefined) {
+      const saved = game.settings?.get(SYSTEM_ID, layout.heightSetting) ?? this.constructor.DEFAULT_OPTIONS.position.height;
       if (position.height !== saved) {
-        game.settings?.set("astrael-rpg", "sheetHeight", position.height);
+        game.settings?.set(SYSTEM_ID, layout.heightSetting, position.height);
       }
     }
     this._specialtiesPanel?.anchorToSheet();
@@ -3801,6 +3812,38 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 }
 
+class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
+  static LAYOUT_OPTIONS = {
+    width: 440,
+    minWidth: 440,
+    minHeight: 450,
+    heightSetting: null
+  };
+
+  static DEFAULT_OPTIONS = {
+    classes: ["astrael-rpg", "sheet", "actor", "compact-character-sheet"],
+    position: {
+      width: 440,
+      height: 570
+    },
+    form: {
+      closeOnSubmit: false,
+      submitOnChange: false,
+      handler: updateActorSheet
+    },
+    window: {
+      title: "Astrael RPG Compact Character Sheet",
+      resizable: true
+    }
+  };
+
+  static PARTS = {
+    form: {
+      template: COMPACT_CHARACTER_SHEET_TEMPLATE
+    }
+  };
+}
+
 class AstraelNpcSheet extends AstraelCharacterSheet {
   static DEFAULT_OPTIONS = {
     classes: ["astrael-rpg", "sheet", "actor", "npc-sheet"],
@@ -3993,6 +4036,17 @@ Hooks.once("init", () => {
       types: ["character"],
       makeDefault: true,
       label: "Astrael RPG Character Sheet"
+    }
+  );
+
+  foundry.applications.apps.DocumentSheetConfig.registerSheet(
+    Actor,
+    SYSTEM_ID,
+    AstraelCompactCharacterSheet,
+    {
+      types: ["character"],
+      makeDefault: false,
+      label: game.i18n.localize("ASTRAEL.Sheet.CharacterCompact")
     }
   );
 
