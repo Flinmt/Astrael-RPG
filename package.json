@@ -5,7 +5,7 @@
   "scripts": {
     "pack:build": "node tools/foundry-pack.cjs pack",
     "pack:unpack": "node tools/foundry-pack.cjs unpack",
-    "validate": "node --check scripts/astrael-rpg.js && node -e \"JSON.parse(require('node:fs').readFileSync('system.json'))\""
+    "validate": "node --check scripts/astrael-rpg.js && node tools/validate-system.cjs"
   },
   "devDependencies": {
     "classic-level": "^3.0.0"

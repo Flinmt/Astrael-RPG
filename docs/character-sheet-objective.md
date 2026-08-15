@@ -1,20 +1,20 @@
-# Ficha Compacta — Objetivo e Estado Atual
+# Ficha de Personagem — Objetivo e Estado Atual
 
 ## Propósito deste documento
 
-Este documento é a fonte de contexto para futuras sessões de desenvolvimento da nova ficha de Personagem do Astrael RPG. Antes de alterar a ficha compacta, releia estas decisões para preservar sua arquitetura, linguagem visual e contratos de interação.
+Este documento é a fonte de contexto para futuras sessões de desenvolvimento da nova ficha de Personagem do Astrael RPG. Antes de alterar a ficha padrão, releia estas decisões para preservar sua arquitetura, linguagem visual e contratos de interação.
 
 ## Objetivo e arquitetura
 
-A nova ficha é uma apresentação compacta e densa, pensada como uma interface de videogame inspirada em **Dishonored**: metal envelhecido, bronze moderno, superfícies escuras, tipografia legível e composição de dossiê ocultista. Ela não deve assumir aparência de ficção científica espacial nem copiar visualmente a ficha legada.
+A nova ficha é uma apresentação densa, pensada como uma interface de videogame inspirada em **Dishonored**: metal envelhecido, bronze moderno, superfícies escuras, tipografia legível e composição de dossiê ocultista. Ela não deve assumir aparência de ficção científica espacial nem copiar visualmente a ficha legada.
 
-- A ficha compacta reutiliza o mesmo Actor, modelo de dados e regras da ficha antiga.
+- A ficha padrão reutiliza o mesmo Actor, modelo de dados e regras da ficha antiga.
 - Não duplicar atributos, recursos ou lógica de jogo.
 - Reutilizar cálculos, rolagens, macros, atualizações e localização existentes.
 - Preservar contratos como `name`, `data-action`, `data-tab` e chaves de dados sempre que possível.
-- Manter template e CSS próprios, com seletores sob `.astrael-compact-sheet` ou `.compact-character-sheet`.
-- Manter a ficha legada disponível até a compacta alcançar paridade funcional.
-- Não incorporar à ficha compacta alterações experimentais feitas na ficha legada.
+- Manter template e CSS próprios, com seletores sob `.astrael-character-sheet`.
+- Manter a ficha legada disponível até a ficha padrão alcançar paridade funcional.
+- Não incorporar à ficha padrão alterações experimentais feitas na ficha legada.
 
 ## Estrutura e direção visual consolidadas
 

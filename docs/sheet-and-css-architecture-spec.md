@@ -2,7 +2,7 @@
 
 **Status:** aprovada para implementação  
 **Escopo:** nomenclatura das fichas, relação entre apresentações e organização modular dos estilos  
-**Referência funcional:** `docs/compact-sheet-objective.md`
+**Referência funcional:** `docs/character-sheet-objective.md`
 
 ## 1. Propósito
 
@@ -72,6 +72,13 @@ styles/
     docks.css
     settings.css
 
+  shared-sheets/
+    base.css
+    characteristics-and-convictions.css
+    hemomancy.css
+    stranger-mark.css
+    virtues.css
+
   legacy-character-sheet/
     shell.css
     attributes.css
@@ -111,6 +118,7 @@ Arquivos para Convicções, Virtudes, Hemomancia e Marca do Estranho devem ser a
 ### 3.3 Responsabilidade dos diretórios
 
 - `foundations/` contém tokens, tipografia, controles básicos e regras transversais. Não deve conhecer a estrutura interna de uma ficha.
+- `shared-sheets/` contém somente componentes usados de fato pelas apresentações legada e de NPC; regras exclusivas continuam na pasta da apresentação responsável.
 - `character-sheet/` contém somente a ficha padrão de Personagem.
 - `legacy-character-sheet/` contém somente a apresentação em descontinuação.
 - `npc-sheet/` contém somente a ficha e o criador de NPC.

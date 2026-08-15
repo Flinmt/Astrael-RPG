@@ -1,0 +1,593 @@
+.application.astrael-rpg.character-sheet {
+  --astrael-character-nav-gutter: 50px;
+  --astrael-nav-bronze-dark: #5f472d;
+  --astrael-nav-bronze: #9b7445;
+  --astrael-nav-bronze-light: #c6a36f;
+  --astrael-nav-gunmetal: #111412;
+  --astrael-character-iron: #111412;
+  --astrael-character-iron-light: #1c201c;
+  --astrael-character-bone: #d8cfbc;
+  --astrael-character-oxidized: #52757b;
+  overflow: hidden;
+  border: 0;
+  background: transparent !important;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.application.astrael-rpg.character-sheet .window-header {
+  width: calc(100% - var(--astrael-character-nav-gutter));
+  margin-left: var(--astrael-character-nav-gutter);
+  border: 1px solid var(--astrael-line);
+  border-bottom: 0;
+  background: #0b0c0d;
+}
+
+.application.astrael-rpg.character-sheet .window-content {
+  width: 100%;
+  margin-left: 0;
+  padding: 0;
+  overflow: hidden;
+  background: transparent !important;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.application.astrael-rpg.character-sheet.is-portrait-viewer .window-header {
+  display: none;
+}
+
+.application.astrael-rpg.character-sheet.is-portrait-viewer .window-content {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.astrael-character-sheet {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.astrael-character-sheet .astrael-character-shell {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: visible;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.astrael-character-sheet.is-portrait-viewer .astrael-character-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.astrael-character-sheet .astrael-character-portrait-viewer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #3c352a;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(155, 116, 69, 0.08), transparent 58%),
+    #080a08;
+  box-shadow:
+    inset 0 0 42px rgba(0, 0, 0, 0.7),
+    0 16px 38px rgba(0, 0, 0, 0.58);
+}
+
+.astrael-character-sheet .astrael-character-portrait-viewer-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 43px;
+  padding: 7px 10px 7px 14px;
+  border-bottom: 1px solid #5b4933;
+  color: #d8cfbc;
+  background:
+    linear-gradient(90deg, rgba(155, 116, 69, 0.14), transparent 45%),
+    #0d100d;
+  box-shadow: inset 0 -1px rgba(0, 0, 0, 0.56);
+}
+
+.astrael-character-sheet .astrael-character-portrait-viewer-header > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-character-sheet .astrael-character-portrait-viewer-header > span i {
+  color: var(--astrael-nav-bronze-light);
+  font-size: 10px;
+}
+
+.astrael-character-sheet .astrael-character-portrait-viewer-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  margin: 14px;
+  overflow: hidden;
+  border: 1px solid #40392e;
+  background: #070907;
+  box-shadow:
+    0 0 0 1px #080908,
+    0 8px 22px rgba(0, 0, 0, 0.46);
+}
+
+.astrael-character-sheet .astrael-character-portrait-viewer-stage > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  border: 0;
+  object-fit: contain !important;
+  object-position: center;
+  transform: none !important;
+  user-select: none;
+}
+
+.astrael-character-sheet .astrael-character-portrait-viewer-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  width: auto;
+  min-height: 30px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid #80643e;
+  border-radius: 0;
+  color: #ded3bf;
+  background: rgba(12, 14, 12, 0.9);
+  box-shadow:
+    inset 2px 0 0 var(--astrael-nav-bronze-light),
+    0 4px 12px rgba(0, 0, 0, 0.52);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-portrait-viewer-back:hover,
+.astrael-character-sheet .astrael-character-portrait-viewer-back:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: #f2e8d5;
+  background: rgba(38, 34, 25, 0.96);
+  outline: 1px solid rgba(198, 163, 111, 0.42);
+  outline-offset: 2px;
+}
+
+.astrael-character-sheet .astrael-character-frame {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: calc(100% - var(--astrael-character-nav-gutter));
+  height: 100%;
+  margin-left: var(--astrael-character-nav-gutter);
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--astrael-line);
+  background:
+    linear-gradient(135deg, rgba(193, 117, 57, 0.05), transparent 32%),
+    var(--astrael-panel);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.48);
+}
+
+.astrael-character-sheet .astrael-character-frame::before,
+.astrael-character-sheet .astrael-character-frame::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.astrael-character-sheet .astrael-character-frame::before {
+  inset: 7px;
+  border: 1px solid rgba(193, 117, 57, 0.14);
+}
+
+.astrael-character-sheet .astrael-character-frame::after {
+  top: 0;
+  left: 14px;
+  width: 58px;
+  border-top: 2px solid var(--astrael-gold);
+}
+
+.astrael-character-sheet .astrael-character-header {
+  position: relative;
+  z-index: 2;
+  grid-row: 1;
+  min-width: 0;
+  border-bottom: 1px solid var(--astrael-nav-bronze);
+  background:
+    linear-gradient(110deg, rgba(104, 67, 41, 0.22), transparent 34%),
+    linear-gradient(180deg, #171f22, #101619);
+  box-shadow:
+    inset 0 1px 0 rgba(209, 161, 111, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.52);
+}
+
+.astrael-character-sheet .astrael-character-header::after {
+  content: "";
+  position: absolute;
+  right: 11px;
+  bottom: -1px;
+  width: 62px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--astrael-nav-bronze-light));
+  pointer-events: none;
+}
+
+.astrael-character-sheet .astrael-character-header-expanded {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 11px;
+}
+
+.astrael-character-sheet .astrael-character-portrait {
+  position: relative;
+  display: block;
+  width: 72px;
+  height: 90px;
+  min-width: 72px;
+  margin: 0;
+  padding: 2px;
+  align-self: center;
+  border: 1px solid var(--astrael-nav-bronze-light);
+  border-radius: 2px;
+  color: inherit;
+  background: linear-gradient(145deg, #d1a16f, #8a5732 52%, #4d321f);
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 226, 190, 0.28),
+    inset -1px -1px 0 rgba(44, 24, 13, 0.56);
+  cursor: pointer;
+}
+
+.astrael-character-sheet .astrael-character-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #0a0e10;
+  object-fit: cover;
+  object-position: center;
+  background: #080b0d;
+}
+
+.astrael-character-sheet .astrael-character-portrait:hover,
+.astrael-character-sheet .astrael-character-portrait:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  background: linear-gradient(145deg, #e0ba8b, #a86f3f 54%, #684329);
+  outline: 2px solid rgba(209, 161, 111, 0.38);
+  outline-offset: 2px;
+}
+
+.astrael-character-sheet .astrael-character-header-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 7px;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-character-name-field {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-character-name-field span,
+.astrael-character-sheet .astrael-character-resource-title {
+  color: #bb8b5d;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-name-field input {
+  width: 100%;
+  min-width: 0;
+  height: 26px;
+  padding: 2px 7px;
+  border: 1px solid rgba(168, 111, 63, 0.58);
+  border-left: 2px solid var(--astrael-nav-bronze-light);
+  border-radius: 0;
+  color: var(--astrael-text);
+  background:
+    linear-gradient(90deg, rgba(168, 111, 63, 0.08), transparent 42%),
+    #141b1e;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  outline: 0;
+}
+
+.astrael-character-sheet .astrael-character-name-field input:focus {
+  border-color: var(--astrael-nav-bronze-light);
+}
+
+.astrael-character-sheet .astrael-character-resource {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 5px 6px;
+  border: 1px solid rgba(104, 67, 41, 0.82);
+  border-top-color: rgba(209, 161, 111, 0.62);
+  background:
+    linear-gradient(135deg, rgba(168, 111, 63, 0.1), transparent 48%),
+    #12191c;
+  box-shadow:
+    inset 0 1px 0 rgba(209, 161, 111, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.astrael-character-sheet .astrael-character-resource-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-character-resource-title span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-character-sheet .astrael-character-resource-title .astrael-character-resource-hint {
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #746b5d !important;
+  background: transparent;
+  box-shadow: none;
+  font-size: 7px;
+  line-height: 1;
+  opacity: 0.72;
+}
+
+.astrael-character-sheet .astrael-character-resource:hover .astrael-character-resource-hint {
+  color: var(--astrael-nav-bronze-light) !important;
+  opacity: 1;
+}
+
+.astrael-character-sheet .astrael-character-resource-tooltip {
+  position: absolute;
+  z-index: 40;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  gap: 4px;
+  width: auto;
+  padding: 10px 13px 11px;
+  border: 0;
+  border-top: 1px solid #5a4934;
+  color: #aaa18f;
+  background:
+    linear-gradient(105deg, rgba(155, 116, 69, 0.1), transparent 48%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
+    #111411;
+  box-shadow:
+    inset 0 1px rgba(198, 163, 111, 0.06),
+    0 -8px 18px rgba(0, 0, 0, 0.34);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(100%);
+  transition: opacity 140ms ease, transform 160ms ease;
+  visibility: hidden;
+}
+
+.astrael-character-sheet .astrael-character-resource-tooltip.is-visible,
+.astrael-character-sheet .astrael-character-resource-tooltip:focus-within {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.astrael-character-sheet .astrael-character-resource-tooltip > strong {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #3b352b;
+  color: #c6a36f;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-resource-tooltip > span {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+  line-height: 1.2;
+}
+
+.astrael-character-sheet .astrael-character-resource-tooltip kbd {
+  padding: 3px 5px;
+  border: 1px solid #4a4438;
+  border-bottom-color: #6a5941;
+  border-radius: 0;
+  color: #d1c5b0;
+  background: #0b0d0b;
+  box-shadow: inset 0 -1px rgba(155, 116, 69, 0.1);
+  font: inherit;
+  text-align: center;
+}
+
+.astrael-character-sheet .astrael-character-resource-tooltip > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  min-height: 23px;
+  margin: 2px 0 0;
+  padding: 4px 7px;
+  border: 1px solid #4a4438;
+  border-radius: 0;
+  color: #8f8676;
+  background: #0d0f0c;
+  box-shadow: none;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-resource-tooltip > button:hover,
+.astrael-character-sheet .astrael-character-resource-tooltip > button:focus-visible {
+  border-color: var(--astrael-nav-bronze);
+  color: var(--astrael-character-bone);
+  background: #211d16;
+  outline: 0;
+}
+
+.astrael-character-sheet .astrael-character-resource-title strong {
+  color: #d7ad7e;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.astrael-character-sheet .astrael-character-box-track {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.astrael-character-sheet .astrael-character-header .astrael-character-resource-box {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  min-width: 10px;
+  min-height: 10px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 10px;
+  border: 1px solid #66503d !important;
+  border-radius: 1px;
+  background: #0a0e10 !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.48),
+    0 0 0 1px rgba(209, 161, 111, 0.03) !important;
+  cursor: pointer;
+}
+
+.astrael-character-sheet .astrael-character-header .health-card .astrael-character-resource-box.filled {
+  border-color: #a65049 !important;
+  background: #7f302d !important;
+}
+
+.astrael-character-sheet .astrael-character-header .will-card .astrael-character-resource-box.filled {
+  border-color: #4f7f91 !important;
+  background: #315d70 !important;
+}
+
+.astrael-character-sheet .astrael-character-header .astrael-character-resource-box.superficial::after,
+.astrael-character-sheet .astrael-character-header .astrael-character-resource-box.aggravated::before,
+.astrael-character-sheet .astrael-character-header .astrael-character-resource-box.aggravated::after {
+  width: 8px;
+  height: 1px;
+}
+
+.astrael-character-sheet .astrael-character-header-toggle {
+  position: absolute;
+  z-index: 21;
+  top: 10px;
+  left: -50px;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 38px;
+  border: 1px solid #3c484d;
+  border-radius: 50%;
+  color: #7b888e;
+  background: #0b1114;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.astrael-character-sheet .astrael-character-header-toggle:hover,
+.astrael-character-sheet .astrael-character-header-toggle:focus-visible {
+  border-color: var(--astrael-nav-bronze);
+  color: var(--astrael-nav-bronze-light);
+  background: #151f23;
+  outline: 1px solid rgba(168, 111, 63, 0.3);
+  outline-offset: 2px;
+}
+
+.astrael-character-sheet .astrael-character-header-toggle i {
+  font-size: 11px;
+}
+
+.astrael-character-sheet .astrael-character-header-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 9px 7px 10px;
+}
+
+.astrael-character-sheet .astrael-character-header.is-collapsed .astrael-character-resource {
+  padding: 4px 6px;
+}
+
+.astrael-character-sheet .astrael-character-header.is-collapsed .astrael-character-resource-title {
+  font-size: 7px;
+}
+

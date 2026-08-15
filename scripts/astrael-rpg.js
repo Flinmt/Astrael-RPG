@@ -1,7 +1,7 @@
 const SYSTEM_ID = "astrael-rpg";
 const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character-sheet.hbs`;
-const COMPACT_CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/compact-character-sheet.hbs`;
-const COMPACT_PORTRAIT_EDITOR_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/compact-portrait-editor.hbs`;
+const LEGACY_CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/legacy-character-sheet.hbs`;
+const CHARACTER_PORTRAIT_EDITOR_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/character-portrait-editor.hbs`;
 const NPC_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/npc-sheet.hbs`;
 const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
 const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
@@ -368,7 +368,7 @@ function clampNumber(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
 }
 
-function getCompactPortraitFraming(actor, source = actor.img) {
+function getCharacterPortraitFraming(actor, source = actor.img) {
   const saved = actor.getFlag(SYSTEM_ID, "compactPortrait") || {};
   if (saved.src !== source) return { src: source, x: 50, y: 50, zoom: 1 };
   return {
@@ -379,7 +379,7 @@ function getCompactPortraitFraming(actor, source = actor.img) {
   };
 }
 
-function prepareCompactPortraitPresentation(framing) {
+function prepareCharacterPortraitPresentation(framing) {
   const zoom = clampNumber(framing.zoom, 1, 3);
   const x = clampNumber(framing.x, 0, 100);
   const y = clampNumber(framing.y, 0, 100);
@@ -1218,9 +1218,9 @@ class AstraelSpecialtiesPanel extends HandlebarsApplicationMixin(ApplicationV2) 
   }
 }
 
-class AstraelCompactPortraitEditor extends HandlebarsApplicationMixin(ApplicationV2) {
+class AstraelCharacterPortraitEditor extends HandlebarsApplicationMixin(ApplicationV2) {
   static DEFAULT_OPTIONS = {
-    classes: ["astrael-rpg", "compact-portrait-editor"],
+    classes: ["astrael-rpg", "character-portrait-editor"],
     position: {
       width: 400,
       height: 520
@@ -1233,7 +1233,7 @@ class AstraelCompactPortraitEditor extends HandlebarsApplicationMixin(Applicatio
 
   static PARTS = {
     form: {
-      template: COMPACT_PORTRAIT_EDITOR_TEMPLATE
+      template: CHARACTER_PORTRAIT_EDITOR_TEMPLATE
     }
   };
 
@@ -1241,19 +1241,19 @@ class AstraelCompactPortraitEditor extends HandlebarsApplicationMixin(Applicatio
     super(options);
     this.actor = actor;
     this.ownerSheet = ownerSheet;
-    this.framing = getCompactPortraitFraming(actor);
+    this.framing = getCharacterPortraitFraming(actor);
     this.dragState = null;
   }
 
   get title() {
-    return `${this.actor.name}: ${game.i18n.localize("ASTRAEL.CompactPortrait.Title")}`;
+    return `${this.actor.name}: ${game.i18n.localize("ASTRAEL.CharacterPortrait.Title")}`;
   }
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     context.actor = this.actor;
     context.framing = {
-      ...prepareCompactPortraitPresentation(this.framing),
+      ...prepareCharacterPortraitPresentation(this.framing),
       zoomLabel: this.framing.zoom.toFixed(2)
     };
     return context;
@@ -1266,24 +1266,24 @@ class AstraelCompactPortraitEditor extends HandlebarsApplicationMixin(Applicatio
     preview?.addEventListener("pointermove", this.#onPointerMove.bind(this));
     preview?.addEventListener("pointerup", this.#onPointerEnd.bind(this));
     preview?.addEventListener("pointercancel", this.#onPointerEnd.bind(this));
-    this.element.querySelector("[data-action='change-compact-portrait-image']")?.addEventListener("click", this.#onChangeImage.bind(this));
-    this.element.querySelector("[data-action='reset-compact-portrait']")?.addEventListener("click", this.#onReset.bind(this));
-    this.element.querySelector("[data-action='cancel-compact-portrait']")?.addEventListener("click", () => this.close());
-    this.element.querySelector("[data-action='save-compact-portrait']")?.addEventListener("click", this.#onSave.bind(this));
-    this.element.querySelector("[data-action='set-compact-portrait-zoom']")?.addEventListener("input", this.#onZoomInput.bind(this));
+    this.element.querySelector("[data-action='change-character-portrait-image']")?.addEventListener("click", this.#onChangeImage.bind(this));
+    this.element.querySelector("[data-action='reset-character-portrait']")?.addEventListener("click", this.#onReset.bind(this));
+    this.element.querySelector("[data-action='cancel-character-portrait']")?.addEventListener("click", () => this.close());
+    this.element.querySelector("[data-action='save-character-portrait']")?.addEventListener("click", this.#onSave.bind(this));
+    this.element.querySelector("[data-action='set-character-portrait-zoom']")?.addEventListener("input", this.#onZoomInput.bind(this));
   }
 
   async close(options) {
-    if (this.ownerSheet?._compactPortraitEditor === this) this.ownerSheet._compactPortraitEditor = null;
+    if (this.ownerSheet?._characterPortraitEditor === this) this.ownerSheet._characterPortraitEditor = null;
     const result = await super.close(options);
-    this.ownerSheet?.element?.querySelector("[data-action='edit-compact-portrait']")?.focus();
+    this.ownerSheet?.element?.querySelector("[data-action='edit-character-portrait']")?.focus();
     return result;
   }
 
   #refreshPreview() {
     const image = this.element.querySelector("[data-portrait-preview] img");
     if (image) {
-      const presentation = prepareCompactPortraitPresentation(this.framing);
+      const presentation = prepareCharacterPortraitPresentation(this.framing);
       image.style.objectPosition = `${this.framing.x}% ${this.framing.y}%`;
       image.style.transform = `scale(${presentation.zoom}) translate(${presentation.panX}%, ${presentation.panY}%)`;
     }
@@ -1477,7 +1477,7 @@ class AstraelStrangerMarksPanel extends HandlebarsApplicationMixin(ApplicationV2
   }
 }
 
-class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
+class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static LAYOUT_OPTIONS = {
     width: 900,
     minWidth: 900,
@@ -1504,7 +1504,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   static PARTS = {
     form: {
-      template: CHARACTER_SHEET_TEMPLATE
+      template: LEGACY_CHARACTER_SHEET_TEMPLATE
     }
   };
 
@@ -1712,9 +1712,9 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       box.addEventListener("contextmenu", this.#onResourceBoxContext.bind(this));
     });
 
-    this.element.querySelectorAll(".astrael-compact-resource").forEach((resource) => {
-      resource.addEventListener("click", this.#onCompactResourceClick.bind(this));
-      resource.addEventListener("contextmenu", this.#onCompactResourceContext.bind(this));
+    this.element.querySelectorAll(".astrael-character-resource").forEach((resource) => {
+      resource.addEventListener("click", this.#onCharacterResourceClick.bind(this));
+      resource.addEventListener("contextmenu", this.#onCharacterResourceContext.bind(this));
     });
 
     this.element.querySelectorAll(".fracture-box").forEach((box) => {
@@ -2201,7 +2201,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     event.preventDefault();
 
     const box = event.currentTarget;
-    if (box.classList.contains("astrael-compact-resource-box")) event.stopPropagation();
+    if (box.classList.contains("astrael-character-resource-box")) event.stopPropagation();
     const resourceId = box.dataset.resource;
     const state = box.dataset.state ?? "empty";
     const index = Number(box.dataset.index);
@@ -2223,7 +2223,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     event.preventDefault();
 
     const box = event.currentTarget;
-    if (box.classList.contains("astrael-compact-resource-box")) return;
+    if (box.classList.contains("astrael-character-resource-box")) return;
     const resourceId = box.dataset.resource;
     const resource = this.#getResource(resourceId);
 
@@ -2233,7 +2233,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return this.#updateResource(resourceId, resource);
   }
 
-  async #onCompactResourceContext(event) {
+  async #onCharacterResourceContext(event) {
     event.preventDefault();
     if (event.target.closest("[data-action]")) return;
 
@@ -2246,7 +2246,7 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return this.#updateResource(resourceId, resource);
   }
 
-  async #onCompactResourceClick(event) {
+  async #onCharacterResourceClick(event) {
     event.preventDefault();
     if (event.target.closest("[data-action]")) return;
 
@@ -4046,7 +4046,43 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 }
 
-class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
+class AstraelLegacyCharacterSheet extends AstraelBaseActorSheet {
+  static LAYOUT_OPTIONS = {
+    width: 900,
+    minWidth: 900,
+    minHeight: 450,
+    heightSetting: "sheetHeight"
+  };
+
+  static DEFAULT_OPTIONS = {
+    classes: ["astrael-rpg", "sheet", "actor", "astrael-legacy-character-sheet"],
+    position: {
+      width: 900,
+      height: 680
+    },
+    form: {
+      closeOnSubmit: false,
+      submitOnChange: false,
+      handler: updateActorSheet
+    },
+    window: {
+      title: "Astrael RPG Legacy Character Sheet",
+      resizable: true
+    }
+  };
+
+  static PARTS = {
+    form: {
+      template: LEGACY_CHARACTER_SHEET_TEMPLATE
+    }
+  };
+
+  get title() {
+    return `${game.i18n.localize("ASTRAEL.Sheet.CharacterLegacy")}: ${this.actor.name}`;
+  }
+}
+
+class AstraelCharacterSheet extends AstraelBaseActorSheet {
   static LAYOUT_OPTIONS = {
     width: 560,
     minWidth: 560,
@@ -4055,7 +4091,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   };
 
   static DEFAULT_OPTIONS = {
-    classes: ["astrael-rpg", "sheet", "actor", "compact-character-sheet"],
+    classes: ["astrael-rpg", "sheet", "actor", "character-sheet"],
     position: {
       width: 560,
       height: 720
@@ -4066,27 +4102,27 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       handler: updateActorSheet
     },
     window: {
-      title: "Astrael RPG Compact Character Sheet",
+      title: "Astrael RPG Character Sheet",
       resizable: false
     }
   };
 
   static PARTS = {
     form: {
-      template: COMPACT_CHARACTER_SHEET_TEMPLATE
+      template: CHARACTER_SHEET_TEMPLATE
     }
   };
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
-    context.compactPortraitViewer = this._compactPortraitViewer === true;
-    context.compactPortrait = prepareCompactPortraitPresentation(getCompactPortraitFraming(this.actor));
-    context.compactCanEditPortrait = this.actor.isOwner;
-    context.compactAttributesCollapsed = game.settings.get(SYSTEM_ID, "compactAttributesCollapsed");
-    context.compactResourceTooltipsDisabled = game.settings.get(SYSTEM_ID, "compactResourceTooltipsDisabled");
+    context.characterPortraitViewer = this._characterPortraitViewer === true;
+    context.characterPortrait = prepareCharacterPortraitPresentation(getCharacterPortraitFraming(this.actor));
+    context.characterCanEditPortrait = this.actor.isOwner;
+    context.characterAttributesCollapsed = game.settings.get(SYSTEM_ID, "compactAttributesCollapsed");
+    context.characterResourceTooltipsDisabled = game.settings.get(SYSTEM_ID, "compactResourceTooltipsDisabled");
     const dexterity = Number(this.actor.system.attributes?.dexterity?.value) || 0;
     const wits = Number(this.actor.system.attributes?.wits?.value) || 0;
-    context.compactStatus = {
+    context.characterStatus = {
       initiative: dexterity + wits,
       armor: 0,
       movement: 6
@@ -4097,7 +4133,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       filled: index < value,
       current: index + 1 === value
     }));
-    context.compactActiveSkills = SKILL_KEYS
+    context.characterActiveSkills = SKILL_KEYS
       .map((key) => {
         const value = clampNumber(this.actor.system.skills?.[key]?.value, 0, 5);
         const skillSpecialties = specialties
@@ -4111,13 +4147,13 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
           key,
           value,
           label: game.i18n.localize(LOCALIZE_SKILL[key]),
-          selected: (this._compactSkillEditor?.mode === "edit" && this._compactSkillEditor.key === key)
-            || this._compactSpecialtySkillKey === key,
-          canEdit: !this._compactSkillEditor,
-          canOpenSpecialties: !this._compactSkillEditor,
+          selected: (this._characterSkillEditor?.mode === "edit" && this._characterSkillEditor.key === key)
+            || this._characterSpecialtySkillKey === key,
+          canEdit: !this._characterSkillEditor,
+          canOpenSpecialties: !this._characterSkillEditor,
           canManageSpecialties: this.actor.isOwner,
-          specialtiesOpen: this._compactSpecialtySkillKey === key,
-          addingSpecialty: this._compactSpecialtySkillKey === key && this._compactSpecialtyAdding,
+          specialtiesOpen: this._characterSpecialtySkillKey === key,
+          addingSpecialty: this._characterSpecialtySkillKey === key && this._characterSpecialtyAdding,
           specialtyCount: skillSpecialties.length,
           specialties: skillSpecialties,
           levels: buildLevels(value)
@@ -4125,9 +4161,9 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       })
       .filter((skill) => skill.value > 0)
       .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang));
-    const specialtySkill = context.compactActiveSkills.find((skill) => skill.key === this._compactSpecialtySkillKey);
+    const specialtySkill = context.characterActiveSkills.find((skill) => skill.key === this._characterSpecialtySkillKey);
     if (specialtySkill) {
-      context.compactSpecialtyDock = {
+      context.characterSpecialtyDock = {
         key: specialtySkill.key,
         label: specialtySkill.label,
         specialties: specialtySkill.specialties,
@@ -4135,66 +4171,66 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
         adding: specialtySkill.addingSpecialty
       };
     } else {
-      this._compactSpecialtySkillKey = null;
-      this._compactSpecialtyAdding = false;
-      context.compactSpecialtyDock = null;
+      this._characterSpecialtySkillKey = null;
+      this._characterSpecialtyAdding = false;
+      context.characterSpecialtyDock = null;
     }
-    const activeKeys = new Set(context.compactActiveSkills.map((skill) => skill.key));
+    const activeKeys = new Set(context.characterActiveSkills.map((skill) => skill.key));
     const availableSkills = SKILL_KEYS
       .filter((key) => !activeKeys.has(key))
       .map((key) => ({
         key,
         label: game.i18n.localize(LOCALIZE_SKILL[key]),
-        selected: this._compactSkillEditor?.key === key
+        selected: this._characterSkillEditor?.key === key
       }))
       .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang));
-    context.compactCanAddSkill = availableSkills.length > 0 && !this._compactSkillEditor;
-    context.compactSkillEditor = this._compactSkillEditor
+    context.characterCanAddSkill = availableSkills.length > 0 && !this._characterSkillEditor;
+    context.characterSkillEditor = this._characterSkillEditor
       ? {
-        ...this._compactSkillEditor,
-        adding: this._compactSkillEditor.mode === "add",
-        editing: this._compactSkillEditor.mode === "edit",
-        label: this._compactSkillEditor.mode === "edit"
-          ? game.i18n.localize(LOCALIZE_SKILL[this._compactSkillEditor.key])
+        ...this._characterSkillEditor,
+        adding: this._characterSkillEditor.mode === "add",
+        editing: this._characterSkillEditor.mode === "edit",
+        label: this._characterSkillEditor.mode === "edit"
+          ? game.i18n.localize(LOCALIZE_SKILL[this._characterSkillEditor.key])
           : "",
-        levels: buildLevels(this._compactSkillEditor.level),
+        levels: buildLevels(this._characterSkillEditor.level),
         options: availableSkills
       }
       : null;
-    this._compactCharacteristicMode ??= "advantages";
+    this._characterCharacteristicMode ??= "advantages";
     const characteristicLists = {
-      advantages: this.#getCompactCharacteristicList("advantages"),
-      flaws: this.#getCompactCharacteristicList("flaws")
+      advantages: this.#getCharacterCharacteristicList("advantages"),
+      flaws: this.#getCharacterCharacteristicList("flaws")
     };
-    const activeCharacteristicList = characteristicLists[this._compactCharacteristicMode]
+    const activeCharacteristicList = characteristicLists[this._characterCharacteristicMode]
       .map((entry, index) => ({
         ...prepareAdvantageEntry(entry),
         index,
-        listId: this._compactCharacteristicMode,
+        listId: this._characterCharacteristicMode,
         levels: buildLevels(normalizeAdvantageLevel(entry)),
-        selected: this._compactCharacteristicDock?.listId === this._compactCharacteristicMode
-          && this._compactCharacteristicDock.index === index
+        selected: this._characterCharacteristicDock?.listId === this._characterCharacteristicMode
+          && this._characterCharacteristicDock.index === index
       }))
       .sort((left, right) => left.name.localeCompare(right.name, game.i18n.lang));
-    const characteristicLocked = Boolean(this._compactCharacteristicDock && this._compactCharacteristicDock.mode !== "view");
-    context.compactCharacteristics = {
+    const characteristicLocked = Boolean(this._characterCharacteristicDock && this._characterCharacteristicDock.mode !== "view");
+    context.characterCharacteristics = {
       activeList: activeCharacteristicList,
-      advantagesActive: this._compactCharacteristicMode === "advantages",
-      flawsActive: this._compactCharacteristicMode === "flaws",
+      advantagesActive: this._characterCharacteristicMode === "advantages",
+      flawsActive: this._characterCharacteristicMode === "flaws",
       advantagesCount: characteristicLists.advantages.length,
       flawsCount: characteristicLists.flaws.length,
-      isFlaw: this._compactCharacteristicMode === "flaws",
+      isFlaw: this._characterCharacteristicMode === "flaws",
       locked: characteristicLocked,
       canManage: this.actor.isOwner,
       canAdd: this.actor.isOwner && !characteristicLocked,
       empty: activeCharacteristicList.length === 0
     };
-    if (this._compactCharacteristicDock) {
-      const dock = this._compactCharacteristicDock;
+    if (this._characterCharacteristicDock) {
+      const dock = this._characterCharacteristicDock;
       const source = dock.adding ? dock : characteristicLists[dock.listId]?.[dock.index];
       if (source) {
         const level = normalizeAdvantageLevel(dock.mode === "edit" ? dock : source);
-        context.compactCharacteristicDock = {
+        context.characterCharacteristicDock = {
           ...dock,
           name: dock.mode === "edit" ? dock.name : String(source.name || ""),
           description: dock.mode === "edit" ? dock.description : String(source.description || source.details || ""),
@@ -4207,53 +4243,53 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
           canManage: this.actor.isOwner,
           canRoll: dock.listId === "advantages" && dock.mode === "view",
           typeLabel: game.i18n.localize(dock.listId === "flaws"
-            ? "ASTRAEL.CompactCharacteristics.Flaw"
-            : "ASTRAEL.CompactCharacteristics.Advantage")
+            ? "ASTRAEL.CharacterCharacteristics.Flaw"
+            : "ASTRAEL.CharacterCharacteristics.Advantage")
         };
       } else {
-        this._compactCharacteristicDock = null;
+        this._characterCharacteristicDock = null;
       }
     } else {
-      context.compactCharacteristicDock = null;
+      context.characterCharacteristicDock = null;
     }
-    context.compactResourceTooltipAvailable = !context.compactPortraitViewer
-      && !context.compactResourceTooltipsDisabled
-      && !context.compactSkillEditor
-      && !context.compactSpecialtyDock
-      && !context.compactCharacteristicDock;
-    context.compactDockFocused = Boolean(
-      context.compactSkillEditor
-      || context.compactSpecialtyDock
-      || context.compactCharacteristicDock
+    context.characterResourceTooltipAvailable = !context.characterPortraitViewer
+      && !context.characterResourceTooltipsDisabled
+      && !context.characterSkillEditor
+      && !context.characterSpecialtyDock
+      && !context.characterCharacteristicDock;
+    context.characterDockFocused = Boolean(
+      context.characterSkillEditor
+      || context.characterSpecialtyDock
+      || context.characterCharacteristicDock
     );
     return context;
   }
 
   async _onRender(context, options) {
     await super._onRender(context, options);
-    this.element.classList.toggle("is-portrait-viewer", context.compactPortraitViewer);
-    this.element.classList.toggle("has-compact-dock", context.compactDockFocused);
-    this.element.querySelectorAll("[data-action='adjust-compact-attribute']").forEach((button) => {
-      button.addEventListener("click", this.#onAdjustCompactAttribute.bind(this, 1));
-      button.addEventListener("contextmenu", this.#onAdjustCompactAttribute.bind(this, -1));
+    this.element.classList.toggle("is-portrait-viewer", context.characterPortraitViewer);
+    this.element.classList.toggle("has-character-dock", context.characterDockFocused);
+    this.element.querySelectorAll("[data-action='adjust-character-attribute']").forEach((button) => {
+      button.addEventListener("click", this.#onAdjustCharacterAttribute.bind(this, 1));
+      button.addEventListener("contextmenu", this.#onAdjustCharacterAttribute.bind(this, -1));
     });
-    this.element.querySelector("[data-action='toggle-compact-attributes']")?.addEventListener("click", this.#onToggleCompactAttributes.bind(this));
-    this.element.querySelectorAll("[data-action='set-compact-resource-tooltips']").forEach((button) => {
-      button.addEventListener("click", this.#onSetCompactResourceTooltips.bind(this));
+    this.element.querySelector("[data-action='toggle-character-attributes']")?.addEventListener("click", this.#onToggleCharacterAttributes.bind(this));
+    this.element.querySelectorAll("[data-action='set-character-resource-tooltips']").forEach((button) => {
+      button.addEventListener("click", this.#onSetCharacterResourceTooltips.bind(this));
     });
-    const resourceTooltip = this.element.querySelector(".astrael-compact-resource-tooltip");
+    const resourceTooltip = this.element.querySelector(".astrael-character-resource-tooltip");
     if (resourceTooltip) {
       const showResourceTooltip = () => {
-        clearTimeout(this._compactResourceTooltipTimer);
+        clearTimeout(this._characterResourceTooltipTimer);
         resourceTooltip.classList.add("is-visible");
       };
       const hideResourceTooltip = () => {
-        clearTimeout(this._compactResourceTooltipTimer);
-        this._compactResourceTooltipTimer = setTimeout(() => {
+        clearTimeout(this._characterResourceTooltipTimer);
+        this._characterResourceTooltipTimer = setTimeout(() => {
           resourceTooltip.classList.remove("is-visible");
         }, 650);
       };
-      this.element.querySelectorAll(".astrael-compact-resource").forEach((resource) => {
+      this.element.querySelectorAll(".astrael-character-resource").forEach((resource) => {
         resource.addEventListener("pointerenter", showResourceTooltip);
         resource.addEventListener("pointerleave", hideResourceTooltip);
         resource.addEventListener("focusin", showResourceTooltip);
@@ -4264,72 +4300,72 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       resourceTooltip.addEventListener("focusin", showResourceTooltip);
       resourceTooltip.addEventListener("focusout", hideResourceTooltip);
     }
-    this.element.querySelector("[data-action='edit-compact-portrait']")?.addEventListener("click", this.#onEditCompactPortrait.bind(this));
-    this.element.querySelector("[data-action='view-compact-portrait']")?.addEventListener("click", this.#onViewCompactPortrait.bind(this));
-    this.element.querySelector("[data-action='close-compact-portrait-viewer']")?.addEventListener("click", this.#onCloseCompactPortraitViewer.bind(this));
-    this.element.querySelector("[data-action='add-compact-skill']")?.addEventListener("click", this.#onAddCompactSkill.bind(this));
-    this.element.querySelectorAll("[data-action='edit-compact-skill']").forEach((button) => {
-      button.addEventListener("click", this.#onEditCompactSkill.bind(this));
+    this.element.querySelector("[data-action='edit-character-portrait']")?.addEventListener("click", this.#onEditCharacterPortrait.bind(this));
+    this.element.querySelector("[data-action='view-character-portrait']")?.addEventListener("click", this.#onViewCharacterPortrait.bind(this));
+    this.element.querySelector("[data-action='close-character-portrait-viewer']")?.addEventListener("click", this.#onCloseCharacterPortraitViewer.bind(this));
+    this.element.querySelector("[data-action='add-character-skill']")?.addEventListener("click", this.#onAddCharacterSkill.bind(this));
+    this.element.querySelectorAll("[data-action='edit-character-skill']").forEach((button) => {
+      button.addEventListener("click", this.#onEditCharacterSkill.bind(this));
     });
-    this.element.querySelectorAll("[data-action='toggle-compact-specialties']").forEach((button) => {
-      button.addEventListener("click", this.#onToggleCompactSpecialties.bind(this));
+    this.element.querySelectorAll("[data-action='toggle-character-specialties']").forEach((button) => {
+      button.addEventListener("click", this.#onToggleCharacterSpecialties.bind(this));
     });
-    this.element.querySelector("[data-action='close-compact-specialties']")?.addEventListener("click", this.#onCloseCompactSpecialties.bind(this));
-    this.element.querySelectorAll("[data-action='begin-compact-specialty']").forEach((button) => {
-      button.addEventListener("click", this.#onBeginCompactSpecialty.bind(this));
+    this.element.querySelector("[data-action='close-character-specialties']")?.addEventListener("click", this.#onCloseCharacterSpecialties.bind(this));
+    this.element.querySelectorAll("[data-action='begin-character-specialty']").forEach((button) => {
+      button.addEventListener("click", this.#onBeginCharacterSpecialty.bind(this));
     });
-    this.element.querySelectorAll("[data-action='save-compact-specialty']").forEach((button) => {
-      button.addEventListener("click", this.#onSaveCompactSpecialty.bind(this));
+    this.element.querySelectorAll("[data-action='save-character-specialty']").forEach((button) => {
+      button.addEventListener("click", this.#onSaveCharacterSpecialty.bind(this));
     });
-    this.element.querySelectorAll("[data-action='cancel-compact-specialty']").forEach((button) => {
-      button.addEventListener("click", this.#onCancelCompactSpecialty.bind(this));
+    this.element.querySelectorAll("[data-action='cancel-character-specialty']").forEach((button) => {
+      button.addEventListener("click", this.#onCancelCharacterSpecialty.bind(this));
     });
-    this.element.querySelectorAll("[data-action='remove-compact-specialty']").forEach((button) => {
-      button.addEventListener("click", this.#onRemoveCompactSpecialty.bind(this));
+    this.element.querySelectorAll("[data-action='remove-character-specialty']").forEach((button) => {
+      button.addEventListener("click", this.#onRemoveCharacterSpecialty.bind(this));
     });
-    this.element.querySelectorAll("[data-action='set-compact-characteristic-mode']").forEach((button) => {
-      button.addEventListener("click", this.#onSetCompactCharacteristicMode.bind(this));
+    this.element.querySelectorAll("[data-action='set-characteristic-mode']").forEach((button) => {
+      button.addEventListener("click", this.#onSetCharacterCharacteristicMode.bind(this));
     });
-    this.element.querySelector("[data-action='add-compact-characteristic']")?.addEventListener("click", this.#onAddCompactCharacteristic.bind(this));
-    this.element.querySelectorAll("[data-action='select-compact-characteristic']").forEach((button) => {
-      button.addEventListener("click", this.#onSelectCompactCharacteristic.bind(this));
+    this.element.querySelector("[data-action='add-characteristic']")?.addEventListener("click", this.#onAddCharacterCharacteristic.bind(this));
+    this.element.querySelectorAll("[data-action='select-characteristic']").forEach((button) => {
+      button.addEventListener("click", this.#onSelectCharacterCharacteristic.bind(this));
     });
-    this.element.querySelector("[data-action='edit-compact-characteristic']")?.addEventListener("click", this.#onEditCompactCharacteristic.bind(this));
-    this.element.querySelectorAll("[data-action='set-compact-characteristic-level']").forEach((button) => {
-      button.addEventListener("click", this.#onSetCompactCharacteristicLevel.bind(this));
+    this.element.querySelector("[data-action='edit-characteristic']")?.addEventListener("click", this.#onEditCharacterCharacteristic.bind(this));
+    this.element.querySelectorAll("[data-action='set-characteristic-level']").forEach((button) => {
+      button.addEventListener("click", this.#onSetCharacterCharacteristicLevel.bind(this));
     });
-    this.element.querySelector("[data-action='save-compact-characteristic']")?.addEventListener("click", this.#onSaveCompactCharacteristic.bind(this));
-    this.element.querySelectorAll("[data-action='close-compact-characteristic']").forEach((button) => {
-      button.addEventListener("click", this.#onCloseCompactCharacteristic.bind(this));
+    this.element.querySelector("[data-action='save-characteristic']")?.addEventListener("click", this.#onSaveCharacterCharacteristic.bind(this));
+    this.element.querySelectorAll("[data-action='close-characteristic']").forEach((button) => {
+      button.addEventListener("click", this.#onCloseCharacterCharacteristic.bind(this));
     });
-    this.element.querySelector("[data-action='request-remove-compact-characteristic']")?.addEventListener("click", this.#onRequestRemoveCompactCharacteristic.bind(this));
-    this.element.querySelector("[data-action='back-remove-compact-characteristic']")?.addEventListener("click", this.#onBackRemoveCompactCharacteristic.bind(this));
-    this.element.querySelector("[data-action='confirm-remove-compact-characteristic']")?.addEventListener("click", this.#onConfirmRemoveCompactCharacteristic.bind(this));
-    this.element.querySelector("[data-action='compact-specialty-name']")?.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") return this.#onSaveCompactSpecialty(event);
+    this.element.querySelector("[data-action='request-remove-characteristic']")?.addEventListener("click", this.#onRequestRemoveCharacterCharacteristic.bind(this));
+    this.element.querySelector("[data-action='back-remove-characteristic']")?.addEventListener("click", this.#onBackRemoveCharacterCharacteristic.bind(this));
+    this.element.querySelector("[data-action='confirm-remove-characteristic']")?.addEventListener("click", this.#onConfirmRemoveCharacterCharacteristic.bind(this));
+    this.element.querySelector("[data-action='character-specialty-name']")?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") return this.#onSaveCharacterSpecialty(event);
     });
-    this.element.querySelectorAll("[data-action='set-compact-editor-level']").forEach((button) => {
-      button.addEventListener("click", this.#onSetCompactEditorLevel.bind(this));
+    this.element.querySelectorAll("[data-action='set-character-editor-level']").forEach((button) => {
+      button.addEventListener("click", this.#onSetCharacterEditorLevel.bind(this));
     });
-    this.element.querySelector("[data-action='select-compact-editor-skill']")?.addEventListener("change", (event) => {
-      if (this._compactSkillEditor?.mode === "add") this._compactSkillEditor.key = event.currentTarget.value;
+    this.element.querySelector("[data-action='select-character-editor-skill']")?.addEventListener("change", (event) => {
+      if (this._characterSkillEditor?.mode === "add") this._characterSkillEditor.key = event.currentTarget.value;
     });
-    this.element.querySelector("[data-action='save-compact-skill-editor']")?.addEventListener("click", this.#onSaveCompactSkillEditor.bind(this));
-    this.element.querySelector("[data-action='cancel-compact-skill-editor']")?.addEventListener("click", this.#onCancelCompactSkillEditor.bind(this));
-    this.element.querySelector("[data-action='request-remove-compact-skill']")?.addEventListener("click", this.#onRequestRemoveCompactSkill.bind(this));
-    this.element.querySelector("[data-action='back-remove-compact-skill']")?.addEventListener("click", this.#onBackRemoveCompactSkill.bind(this));
-    this.element.querySelector("[data-action='confirm-remove-compact-skill']")?.addEventListener("click", this.#onConfirmRemoveCompactSkill.bind(this));
-    this.element.addEventListener("keydown", this.#onCompactSkillEditorKeydown.bind(this));
+    this.element.querySelector("[data-action='save-character-skill-editor']")?.addEventListener("click", this.#onSaveCharacterSkillEditor.bind(this));
+    this.element.querySelector("[data-action='cancel-character-skill-editor']")?.addEventListener("click", this.#onCancelCharacterSkillEditor.bind(this));
+    this.element.querySelector("[data-action='request-remove-character-skill']")?.addEventListener("click", this.#onRequestRemoveCharacterSkill.bind(this));
+    this.element.querySelector("[data-action='back-remove-character-skill']")?.addEventListener("click", this.#onBackRemoveCharacterSkill.bind(this));
+    this.element.querySelector("[data-action='confirm-remove-character-skill']")?.addEventListener("click", this.#onConfirmRemoveCharacterSkill.bind(this));
+    this.element.addEventListener("keydown", this.#onCharacterSkillEditorKeydown.bind(this));
 
     const activeDock = this.element.querySelector(
-      ".astrael-compact-skill-dock, .astrael-compact-specialty-dock, .astrael-compact-characteristic-dock"
+      ".astrael-character-skill-dock, .astrael-character-specialty-dock, .astrael-characteristic-dock"
     );
-    const compactFrame = this.element.querySelector(".astrael-compact-frame");
-    if (activeDock && compactFrame) {
+    const characterFrame = this.element.querySelector(".astrael-character-frame");
+    if (activeDock && characterFrame) {
       const windowHeader = this.element.querySelector(".window-header");
       if (windowHeader) windowHeader.inert = true;
       let branch = activeDock;
-      while (branch.parentElement && branch !== compactFrame) {
+      while (branch.parentElement && branch !== characterFrame) {
         const parent = branch.parentElement;
         for (const sibling of parent.children) {
           if (sibling !== branch) sibling.inert = true;
@@ -4338,51 +4374,51 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       }
     }
 
-    if (context.compactPortraitViewer) {
-      this.element.querySelector("[data-action='close-compact-portrait-viewer']")?.focus();
-    } else if (this._compactPortraitViewerReturnFocus) {
-      this._compactPortraitViewerReturnFocus = false;
-      this.element.querySelector("[data-action='view-compact-portrait']")?.focus();
-    } else if (this._compactSkillNeedsInitialFocus && this._compactSkillEditor) {
-      this._compactSkillNeedsInitialFocus = false;
-      const focusTarget = this._compactSkillEditor.confirmingRemoval
-        ? this.element.querySelector("[data-action='back-remove-compact-skill']")
-        : this._compactSkillEditor.mode === "add"
-          ? this.element.querySelector("[data-action='select-compact-editor-skill']")
-          : this.element.querySelector("[data-action='set-compact-editor-level'].is-current");
+    if (context.characterPortraitViewer) {
+      this.element.querySelector("[data-action='close-character-portrait-viewer']")?.focus();
+    } else if (this._characterPortraitViewerReturnFocus) {
+      this._characterPortraitViewerReturnFocus = false;
+      this.element.querySelector("[data-action='view-character-portrait']")?.focus();
+    } else if (this._characterSkillNeedsInitialFocus && this._characterSkillEditor) {
+      this._characterSkillNeedsInitialFocus = false;
+      const focusTarget = this._characterSkillEditor.confirmingRemoval
+        ? this.element.querySelector("[data-action='back-remove-character-skill']")
+        : this._characterSkillEditor.mode === "add"
+          ? this.element.querySelector("[data-action='select-character-editor-skill']")
+          : this.element.querySelector("[data-action='set-character-editor-level'].is-current");
       focusTarget?.focus();
-    } else if (!this._compactSkillEditor && this._compactSkillReturnFocus) {
-      const selector = this._compactSkillReturnFocus === "add"
-        ? "[data-action='add-compact-skill']"
-        : `[data-action='edit-compact-skill'][data-key='${this._compactSkillReturnFocus}']`;
-      this._compactSkillReturnFocus = null;
+    } else if (!this._characterSkillEditor && this._characterSkillReturnFocus) {
+      const selector = this._characterSkillReturnFocus === "add"
+        ? "[data-action='add-character-skill']"
+        : `[data-action='edit-character-skill'][data-key='${this._characterSkillReturnFocus}']`;
+      this._characterSkillReturnFocus = null;
       this.element.querySelector(selector)?.focus();
-    } else if (this._compactSpecialtyReturnFocus) {
-      const key = this._compactSpecialtyReturnFocus;
-      this._compactSpecialtyReturnFocus = null;
-      this.element.querySelector(`[data-action='toggle-compact-specialties'][data-key='${key}']`)?.focus();
-    } else if (this._compactSpecialtyFocus) {
-      const selector = this._compactSpecialtyFocus === "input"
-        ? "[data-action='compact-specialty-name']"
-        : this._compactSpecialtyFocus === "add"
-          ? `[data-action='begin-compact-specialty'][data-key='${this._compactSpecialtySkillKey}']`
-          : this._compactSpecialtyFocus === "close"
-            ? "[data-action='close-compact-specialties']"
-            : `[data-action='toggle-compact-specialties'][data-key='${this._compactSpecialtySkillKey}']`;
-      this._compactSpecialtyFocus = null;
+    } else if (this._characterSpecialtyReturnFocus) {
+      const key = this._characterSpecialtyReturnFocus;
+      this._characterSpecialtyReturnFocus = null;
+      this.element.querySelector(`[data-action='toggle-character-specialties'][data-key='${key}']`)?.focus();
+    } else if (this._characterSpecialtyFocus) {
+      const selector = this._characterSpecialtyFocus === "input"
+        ? "[data-action='character-specialty-name']"
+        : this._characterSpecialtyFocus === "add"
+          ? `[data-action='begin-character-specialty'][data-key='${this._characterSpecialtySkillKey}']`
+          : this._characterSpecialtyFocus === "close"
+            ? "[data-action='close-character-specialties']"
+            : `[data-action='toggle-character-specialties'][data-key='${this._characterSpecialtySkillKey}']`;
+      this._characterSpecialtyFocus = null;
       this.element.querySelector(selector)?.focus();
-    } else if (this._compactCharacteristicFocus) {
-      const selector = this._compactCharacteristicFocus === "name"
-        ? "[data-action='compact-characteristic-name']"
-        : this._compactCharacteristicFocus === "add"
-          ? "[data-action='add-compact-characteristic']"
-          : `[data-action='select-compact-characteristic'][data-list='${this._compactCharacteristicMode}'][data-index='${this._compactCharacteristicFocus}']`;
-      this._compactCharacteristicFocus = null;
+    } else if (this._characterCharacteristicFocus) {
+      const selector = this._characterCharacteristicFocus === "name"
+        ? "[data-action='characteristic-name']"
+        : this._characterCharacteristicFocus === "add"
+          ? "[data-action='add-characteristic']"
+          : `[data-action='select-characteristic'][data-list='${this._characterCharacteristicMode}'][data-index='${this._characterCharacteristicFocus}']`;
+      this._characterCharacteristicFocus = null;
       this.element.querySelector(selector)?.focus();
     }
   }
 
-  async #onAdjustCompactAttribute(delta, event) {
+  async #onAdjustCharacterAttribute(delta, event) {
     event.preventDefault();
     const attributeKey = event.currentTarget.dataset.key;
     if (!ATTRIBUTE_KEYS.includes(attributeKey)) return;
@@ -4394,14 +4430,14 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     return this.actor.update({ [`system.attributes.${attributeKey}.value`]: nextValue });
   }
 
-  async #onToggleCompactAttributes(event) {
+  async #onToggleCharacterAttributes(event) {
     event.preventDefault();
     const collapsed = game.settings.get(SYSTEM_ID, "compactAttributesCollapsed");
     await game.settings.set(SYSTEM_ID, "compactAttributesCollapsed", !collapsed);
     return this.render({ force: true });
   }
 
-  async #onSetCompactResourceTooltips(event) {
+  async #onSetCharacterResourceTooltips(event) {
     event.preventDefault();
     event.stopPropagation();
     const disabled = event.currentTarget.dataset.disabled === "true";
@@ -4409,53 +4445,53 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     return this.render({ force: true });
   }
 
-  async #onEditCompactPortrait(event) {
+  async #onEditCharacterPortrait(event) {
     event.preventDefault();
     if (!this.actor.isOwner) return;
-    if (this._compactPortraitEditor) return this._compactPortraitEditor.bringToFront();
-    this._compactPortraitEditor = new AstraelCompactPortraitEditor(this.actor, this);
-    return this._compactPortraitEditor.render({ force: true });
+    if (this._characterPortraitEditor) return this._characterPortraitEditor.bringToFront();
+    this._characterPortraitEditor = new AstraelCharacterPortraitEditor(this.actor, this);
+    return this._characterPortraitEditor.render({ force: true });
   }
 
-  #onViewCompactPortrait(event) {
+  #onViewCharacterPortrait(event) {
     event.preventDefault();
     event.stopPropagation();
-    clearTimeout(this._compactResourceTooltipTimer);
-    this._compactPortraitViewer = true;
+    clearTimeout(this._characterResourceTooltipTimer);
+    this._characterPortraitViewer = true;
     return this.render({ force: true });
   }
 
-  #onCloseCompactPortraitViewer(event) {
+  #onCloseCharacterPortraitViewer(event) {
     event?.preventDefault();
     event?.stopPropagation();
-    if (!this._compactPortraitViewer) return;
-    this._compactPortraitViewer = false;
-    this._compactPortraitViewerReturnFocus = true;
+    if (!this._characterPortraitViewer) return;
+    this._characterPortraitViewer = false;
+    this._characterPortraitViewerReturnFocus = true;
     return this.render({ force: true });
   }
 
-  #onAddCompactSkill(event) {
+  #onAddCharacterSkill(event) {
     event.preventDefault();
-    if (this._compactSkillEditor) return;
-    this._compactSpecialtySkillKey = null;
-    this._compactSpecialtyAdding = false;
-    this._compactCharacteristicDock = null;
-    this._compactCharacteristicFocus = null;
-    this._compactSkillReturnFocus = "add";
-    this._compactSkillNeedsInitialFocus = true;
-    this._compactSkillEditor = { mode: "add", key: "", level: 1, confirmingRemoval: false };
+    if (this._characterSkillEditor) return;
+    this._characterSpecialtySkillKey = null;
+    this._characterSpecialtyAdding = false;
+    this._characterCharacteristicDock = null;
+    this._characterCharacteristicFocus = null;
+    this._characterSkillReturnFocus = "add";
+    this._characterSkillNeedsInitialFocus = true;
+    this._characterSkillEditor = { mode: "add", key: "", level: 1, confirmingRemoval: false };
     return this.render({ force: true });
   }
 
-  #onEditCompactSkill(event) {
+  #onEditCharacterSkill(event) {
     event.preventDefault();
     const key = event.currentTarget.dataset.key;
-    if (this._compactSkillEditor || !SKILL_KEYS.includes(key)) return;
-    this._compactSpecialtySkillKey = null;
-    this._compactSpecialtyAdding = false;
-    this._compactSkillReturnFocus = key;
-    this._compactSkillNeedsInitialFocus = true;
-    this._compactSkillEditor = {
+    if (this._characterSkillEditor || !SKILL_KEYS.includes(key)) return;
+    this._characterSpecialtySkillKey = null;
+    this._characterSpecialtyAdding = false;
+    this._characterSkillReturnFocus = key;
+    this._characterSkillNeedsInitialFocus = true;
+    this._characterSkillEditor = {
       mode: "edit",
       key,
       level: clampNumber(this.actor.system.skills?.[key]?.value, 1, 5),
@@ -4464,142 +4500,142 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     return this.render({ force: true });
   }
 
-  #onSetCompactEditorLevel(event) {
+  #onSetCharacterEditorLevel(event) {
     event.preventDefault();
-    if (!this._compactSkillEditor) return;
-    this._compactSkillEditor.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
+    if (!this._characterSkillEditor) return;
+    this._characterSkillEditor.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
     return this.render({ force: true });
   }
 
-  #onCancelCompactSkillEditor(event) {
+  #onCancelCharacterSkillEditor(event) {
     event?.preventDefault();
-    if (!this._compactSkillEditor) return;
-    if (this._compactSkillEditor.confirmingRemoval) {
-      this._compactSkillEditor.confirmingRemoval = false;
-      this._compactSkillNeedsInitialFocus = true;
+    if (!this._characterSkillEditor) return;
+    if (this._characterSkillEditor.confirmingRemoval) {
+      this._characterSkillEditor.confirmingRemoval = false;
+      this._characterSkillNeedsInitialFocus = true;
       return this.render({ force: true });
     }
-    this._compactSkillEditor = null;
+    this._characterSkillEditor = null;
     return this.render({ force: true });
   }
 
-  async #onSaveCompactSkillEditor(event) {
+  async #onSaveCharacterSkillEditor(event) {
     event.preventDefault();
-    const editor = this._compactSkillEditor;
+    const editor = this._characterSkillEditor;
     if (!editor) return;
     if (!SKILL_KEYS.includes(editor.key)) {
-      ui.notifications.warn(game.i18n.localize("ASTRAEL.CompactSkills.SelectRequired"));
+      ui.notifications.warn(game.i18n.localize("ASTRAEL.CharacterSkills.SelectRequired"));
       return;
     }
-    this._compactSkillEditor = null;
+    this._characterSkillEditor = null;
     return this.actor.update({ [`system.skills.${editor.key}.value`]: clampNumber(editor.level, 1, 5) });
   }
 
-  #onRequestRemoveCompactSkill(event) {
+  #onRequestRemoveCharacterSkill(event) {
     event.preventDefault();
-    if (this._compactSkillEditor?.mode !== "edit") return;
-    this._compactSkillEditor.confirmingRemoval = true;
-    this._compactSkillNeedsInitialFocus = true;
+    if (this._characterSkillEditor?.mode !== "edit") return;
+    this._characterSkillEditor.confirmingRemoval = true;
+    this._characterSkillNeedsInitialFocus = true;
     return this.render({ force: true });
   }
 
-  #onBackRemoveCompactSkill(event) {
+  #onBackRemoveCharacterSkill(event) {
     event.preventDefault();
-    if (!this._compactSkillEditor) return;
-    this._compactSkillEditor.confirmingRemoval = false;
-    this._compactSkillNeedsInitialFocus = true;
+    if (!this._characterSkillEditor) return;
+    this._characterSkillEditor.confirmingRemoval = false;
+    this._characterSkillNeedsInitialFocus = true;
     return this.render({ force: true });
   }
 
-  async #onConfirmRemoveCompactSkill(event) {
+  async #onConfirmRemoveCharacterSkill(event) {
     event.preventDefault();
-    const key = this._compactSkillEditor?.mode === "edit" ? this._compactSkillEditor.key : "";
+    const key = this._characterSkillEditor?.mode === "edit" ? this._characterSkillEditor.key : "";
     if (!SKILL_KEYS.includes(key)) return;
-    if (this._compactSpecialtySkillKey === key) this._compactSpecialtySkillKey = null;
-    this._compactSkillReturnFocus = "add";
-    this._compactSkillEditor = null;
+    if (this._characterSpecialtySkillKey === key) this._characterSpecialtySkillKey = null;
+    this._characterSkillReturnFocus = "add";
+    this._characterSkillEditor = null;
     return this.actor.update({ [`system.skills.${key}.value`]: 0 });
   }
 
-  #onCompactSkillEditorKeydown(event) {
+  #onCharacterSkillEditorKeydown(event) {
     if (event.key !== "Escape") return;
-    if (this._compactPortraitViewer) {
+    if (this._characterPortraitViewer) {
       event.preventDefault();
       event.stopPropagation();
-      return this.#onCloseCompactPortraitViewer();
+      return this.#onCloseCharacterPortraitViewer();
     }
-    if (this._compactCharacteristicDock) {
+    if (this._characterCharacteristicDock) {
       event.preventDefault();
       event.stopPropagation();
-      if (this._compactCharacteristicDock.mode === "remove") return this.#onBackRemoveCompactCharacteristic();
-      return this.#onCloseCompactCharacteristic();
+      if (this._characterCharacteristicDock.mode === "remove") return this.#onBackRemoveCharacterCharacteristic();
+      return this.#onCloseCharacterCharacteristic();
     }
-    if (this._compactSpecialtyAdding) {
+    if (this._characterSpecialtyAdding) {
       event.preventDefault();
       event.stopPropagation();
-      return this.#onCancelCompactSpecialty();
+      return this.#onCancelCharacterSpecialty();
     }
-    if (this._compactSpecialtySkillKey) {
+    if (this._characterSpecialtySkillKey) {
       event.preventDefault();
       event.stopPropagation();
-      return this.#onCloseCompactSpecialties();
+      return this.#onCloseCharacterSpecialties();
     }
-    if (!this._compactSkillEditor) return;
+    if (!this._characterSkillEditor) return;
     event.preventDefault();
     event.stopPropagation();
-    return this.#onCancelCompactSkillEditor();
+    return this.#onCancelCharacterSkillEditor();
   }
 
-  #onToggleCompactSpecialties(event) {
+  #onToggleCharacterSpecialties(event) {
     event.preventDefault();
     const key = event.currentTarget.dataset.key;
-    if (this._compactSkillEditor || !SKILL_KEYS.includes(key)) return;
-    const closing = this._compactSpecialtySkillKey === key;
-    this._compactSpecialtySkillKey = closing ? null : key;
-    this._compactSpecialtyAdding = false;
-    this._compactSpecialtyFocus = closing ? null : "close";
+    if (this._characterSkillEditor || !SKILL_KEYS.includes(key)) return;
+    const closing = this._characterSpecialtySkillKey === key;
+    this._characterSpecialtySkillKey = closing ? null : key;
+    this._characterSpecialtyAdding = false;
+    this._characterSpecialtyFocus = closing ? null : "close";
     if (!closing) {
-      this._compactCharacteristicDock = null;
-      this._compactCharacteristicFocus = null;
+      this._characterCharacteristicDock = null;
+      this._characterCharacteristicFocus = null;
     }
     return this.render({ force: true });
   }
 
-  #onCloseCompactSpecialties(event) {
+  #onCloseCharacterSpecialties(event) {
     event?.preventDefault();
-    if (!this._compactSpecialtySkillKey) return;
-    const key = this._compactSpecialtySkillKey;
-    this._compactSpecialtySkillKey = null;
-    this._compactSpecialtyAdding = false;
-    this._compactSpecialtyFocus = null;
-    this._compactSpecialtyReturnFocus = key;
+    if (!this._characterSpecialtySkillKey) return;
+    const key = this._characterSpecialtySkillKey;
+    this._characterSpecialtySkillKey = null;
+    this._characterSpecialtyAdding = false;
+    this._characterSpecialtyFocus = null;
+    this._characterSpecialtyReturnFocus = key;
     return this.render({ force: true });
   }
 
-  #onBeginCompactSpecialty(event) {
+  #onBeginCharacterSpecialty(event) {
     event.preventDefault();
     const key = event.currentTarget.dataset.key;
-    if (!this.actor.isOwner || this._compactSpecialtySkillKey !== key) return;
-    this._compactSpecialtyAdding = true;
-    this._compactSpecialtyFocus = "input";
+    if (!this.actor.isOwner || this._characterSpecialtySkillKey !== key) return;
+    this._characterSpecialtyAdding = true;
+    this._characterSpecialtyFocus = "input";
     return this.render({ force: true });
   }
 
-  #onCancelCompactSpecialty(event) {
+  #onCancelCharacterSpecialty(event) {
     event?.preventDefault();
-    if (!this._compactSpecialtySkillKey) return;
-    this._compactSpecialtyAdding = false;
-    this._compactSpecialtyFocus = "add";
+    if (!this._characterSpecialtySkillKey) return;
+    this._characterSpecialtyAdding = false;
+    this._characterSpecialtyFocus = "add";
     return this.render({ force: true });
   }
 
-  async #onSaveCompactSpecialty(event) {
+  async #onSaveCharacterSpecialty(event) {
     event.preventDefault();
-    if (!this.actor.isOwner || !this._compactSpecialtySkillKey || !this._compactSpecialtyAdding) return;
-    const input = this.element.querySelector("[data-action='compact-specialty-name']");
+    if (!this.actor.isOwner || !this._characterSpecialtySkillKey || !this._characterSpecialtyAdding) return;
+    const input = this.element.querySelector("[data-action='character-specialty-name']");
     const name = input?.value.trim() || "";
     if (!name) {
-      ui.notifications.warn(game.i18n.localize("ASTRAEL.CompactSpecialties.NameRequired"));
+      ui.notifications.warn(game.i18n.localize("ASTRAEL.CharacterSpecialties.NameRequired"));
       input?.focus();
       return;
     }
@@ -4607,86 +4643,86 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     const specialties = Array.isArray(this.actor.system.specialties)
       ? this.actor.system.specialties.map((specialty) => ({ ...specialty }))
       : [];
-    specialties.push({ skill: this._compactSpecialtySkillKey, description: name });
-    this._compactSpecialtyAdding = false;
-    this._compactSpecialtyFocus = "add";
+    specialties.push({ skill: this._characterSpecialtySkillKey, description: name });
+    this._characterSpecialtyAdding = false;
+    this._characterSpecialtyFocus = "add";
     return this.actor.update({ "system.specialties": specialties });
   }
 
-  async #onRemoveCompactSpecialty(event) {
+  async #onRemoveCharacterSpecialty(event) {
     event.preventDefault();
-    if (!this.actor.isOwner || !this._compactSpecialtySkillKey) return;
+    if (!this.actor.isOwner || !this._characterSpecialtySkillKey) return;
     const index = Number(event.currentTarget.dataset.index);
     const specialties = Array.isArray(this.actor.system.specialties)
       ? this.actor.system.specialties.map((specialty) => ({ ...specialty }))
       : [];
-    if (!Number.isInteger(index) || specialties[index]?.skill !== this._compactSpecialtySkillKey) return;
+    if (!Number.isInteger(index) || specialties[index]?.skill !== this._characterSpecialtySkillKey) return;
     specialties.splice(index, 1);
-    this._compactSpecialtyFocus = "close";
+    this._characterSpecialtyFocus = "close";
     return this.actor.update({ "system.specialties": specialties });
   }
 
-  #getCompactCharacteristicList(listId) {
+  #getCharacterCharacteristicList(listId) {
     const path = listId === "flaws" ? "flaws" : "advantages";
     const actorData = this.actor.toObject();
     return Array.isArray(actorData.system?.[path]) ? actorData.system[path].map((entry) => ({ ...entry })) : [];
   }
 
-  #onSetCompactCharacteristicMode(event) {
+  #onSetCharacterCharacteristicMode(event) {
     event.preventDefault();
-    if (this._compactCharacteristicDock?.mode !== "view" && this._compactCharacteristicDock) return;
-    this._compactCharacteristicMode = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
-    this._compactCharacteristicDock = null;
+    if (this._characterCharacteristicDock?.mode !== "view" && this._characterCharacteristicDock) return;
+    this._characterCharacteristicMode = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
+    this._characterCharacteristicDock = null;
     return this.render({ force: true });
   }
 
-  #onAddCompactCharacteristic(event) {
+  #onAddCharacterCharacteristic(event) {
     event.preventDefault();
-    if (!this.actor.isOwner || (this._compactCharacteristicDock && this._compactCharacteristicDock.mode !== "view")) return;
-    this._compactSkillEditor = null;
-    this._compactSpecialtySkillKey = null;
-    this._compactSpecialtyAdding = false;
-    this._compactSkillReturnFocus = null;
-    this._compactSkillNeedsInitialFocus = false;
-    this._compactCharacteristicDock = {
+    if (!this.actor.isOwner || (this._characterCharacteristicDock && this._characterCharacteristicDock.mode !== "view")) return;
+    this._characterSkillEditor = null;
+    this._characterSpecialtySkillKey = null;
+    this._characterSpecialtyAdding = false;
+    this._characterSkillReturnFocus = null;
+    this._characterSkillNeedsInitialFocus = false;
+    this._characterCharacteristicDock = {
       mode: "edit",
       adding: true,
-      listId: this._compactCharacteristicMode,
+      listId: this._characterCharacteristicMode,
       index: -1,
       name: "",
       description: "",
       level: 1
     };
-    this._compactCharacteristicFocus = "name";
+    this._characterCharacteristicFocus = "name";
     return this.render({ force: true });
   }
 
-  #onSelectCompactCharacteristic(event) {
+  #onSelectCharacterCharacteristic(event) {
     event.preventDefault();
-    if (this._compactCharacteristicDock && this._compactCharacteristicDock.mode !== "view") return;
-    this._compactSkillEditor = null;
-    this._compactSpecialtySkillKey = null;
-    this._compactSpecialtyAdding = false;
-    this._compactSkillReturnFocus = null;
-    this._compactSkillNeedsInitialFocus = false;
+    if (this._characterCharacteristicDock && this._characterCharacteristicDock.mode !== "view") return;
+    this._characterSkillEditor = null;
+    this._characterSpecialtySkillKey = null;
+    this._characterSpecialtyAdding = false;
+    this._characterSkillReturnFocus = null;
+    this._characterSkillNeedsInitialFocus = false;
     const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
     const index = Number(event.currentTarget.dataset.index);
-    if (!Number.isInteger(index) || !this.#getCompactCharacteristicList(listId)[index]) return;
-    const closing = this._compactCharacteristicDock?.mode === "view"
-      && this._compactCharacteristicDock.listId === listId
-      && this._compactCharacteristicDock.index === index;
-    this._compactCharacteristicDock = closing ? null : { mode: "view", adding: false, listId, index };
-    this._compactCharacteristicFocus = closing ? null : String(index);
+    if (!Number.isInteger(index) || !this.#getCharacterCharacteristicList(listId)[index]) return;
+    const closing = this._characterCharacteristicDock?.mode === "view"
+      && this._characterCharacteristicDock.listId === listId
+      && this._characterCharacteristicDock.index === index;
+    this._characterCharacteristicDock = closing ? null : { mode: "view", adding: false, listId, index };
+    this._characterCharacteristicFocus = closing ? null : String(index);
     return this.render({ force: true });
   }
 
-  #onEditCompactCharacteristic(event) {
+  #onEditCharacterCharacteristic(event) {
     event.preventDefault();
-    if (!this.actor.isOwner || this._compactCharacteristicDock?.mode !== "view") return;
-    const { listId, index } = this._compactCharacteristicDock;
-    const entry = this.#getCompactCharacteristicList(listId)[index];
+    if (!this.actor.isOwner || this._characterCharacteristicDock?.mode !== "view") return;
+    const { listId, index } = this._characterCharacteristicDock;
+    const entry = this.#getCharacterCharacteristicList(listId)[index];
     if (!entry) return;
-    this._compactCharacteristicDock = {
+    this._characterCharacteristicDock = {
       mode: "edit",
       adding: false,
       listId,
@@ -4695,39 +4731,39 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       description: String(entry.description || entry.details || ""),
       level: normalizeAdvantageLevel(entry)
     };
-    this._compactCharacteristicFocus = "name";
+    this._characterCharacteristicFocus = "name";
     return this.render({ force: true });
   }
 
-  #syncCompactCharacteristicDraft() {
-    if (this._compactCharacteristicDock?.mode !== "edit") return;
-    const name = this.element.querySelector("[data-action='compact-characteristic-name']");
-    const description = this.element.querySelector("[data-action='compact-characteristic-description']");
-    if (name) this._compactCharacteristicDock.name = name.value;
-    if (description) this._compactCharacteristicDock.description = description.value;
+  #syncCharacterCharacteristicDraft() {
+    if (this._characterCharacteristicDock?.mode !== "edit") return;
+    const name = this.element.querySelector("[data-action='characteristic-name']");
+    const description = this.element.querySelector("[data-action='characteristic-description']");
+    if (name) this._characterCharacteristicDock.name = name.value;
+    if (description) this._characterCharacteristicDock.description = description.value;
   }
 
-  #onSetCompactCharacteristicLevel(event) {
+  #onSetCharacterCharacteristicLevel(event) {
     event.preventDefault();
-    if (this._compactCharacteristicDock?.mode !== "edit") return;
-    this.#syncCompactCharacteristicDraft();
-    this._compactCharacteristicDock.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
+    if (this._characterCharacteristicDock?.mode !== "edit") return;
+    this.#syncCharacterCharacteristicDraft();
+    this._characterCharacteristicDock.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
     return this.render({ force: true });
   }
 
-  async #onSaveCompactCharacteristic(event) {
+  async #onSaveCharacterCharacteristic(event) {
     event.preventDefault();
-    if (!this.actor.isOwner || this._compactCharacteristicDock?.mode !== "edit") return;
-    this.#syncCompactCharacteristicDraft();
-    const dock = this._compactCharacteristicDock;
+    if (!this.actor.isOwner || this._characterCharacteristicDock?.mode !== "edit") return;
+    this.#syncCharacterCharacteristicDraft();
+    const dock = this._characterCharacteristicDock;
     const name = dock.name.trim();
     if (!name) {
-      ui.notifications.warn(game.i18n.localize("ASTRAEL.CompactCharacteristics.NameRequired"));
-      this.element.querySelector("[data-action='compact-characteristic-name']")?.focus();
+      ui.notifications.warn(game.i18n.localize("ASTRAEL.CharacterCharacteristics.NameRequired"));
+      this.element.querySelector("[data-action='characteristic-name']")?.focus();
       return;
     }
 
-    const list = this.#getCompactCharacteristicList(dock.listId);
+    const list = this.#getCharacterCharacteristicList(dock.listId);
     const entry = {
       ...(dock.adding ? {} : list[dock.index]),
       name,
@@ -4744,57 +4780,57 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     } else {
       return;
     }
-    this._compactCharacteristicDock = { mode: "view", adding: false, listId: dock.listId, index };
-    this._compactCharacteristicFocus = String(index);
+    this._characterCharacteristicDock = { mode: "view", adding: false, listId: dock.listId, index };
+    this._characterCharacteristicFocus = String(index);
     return this.actor.update({ [`system.${dock.listId}`]: list });
   }
 
-  #onCloseCompactCharacteristic(event) {
+  #onCloseCharacterCharacteristic(event) {
     event?.preventDefault();
-    const dock = this._compactCharacteristicDock;
+    const dock = this._characterCharacteristicDock;
     if (!dock) return;
-    this._compactCharacteristicDock = null;
-    this._compactCharacteristicFocus = dock.adding ? "add" : String(dock.index);
+    this._characterCharacteristicDock = null;
+    this._characterCharacteristicFocus = dock.adding ? "add" : String(dock.index);
     return this.render({ force: true });
   }
 
-  #onRequestRemoveCompactCharacteristic(event) {
+  #onRequestRemoveCharacterCharacteristic(event) {
     event.preventDefault();
-    if (!this.actor.isOwner || this._compactCharacteristicDock?.mode !== "view") return;
-    this._compactCharacteristicDock.mode = "remove";
+    if (!this.actor.isOwner || this._characterCharacteristicDock?.mode !== "view") return;
+    this._characterCharacteristicDock.mode = "remove";
     return this.render({ force: true });
   }
 
-  #onBackRemoveCompactCharacteristic(event) {
+  #onBackRemoveCharacterCharacteristic(event) {
     event?.preventDefault();
-    if (this._compactCharacteristicDock?.mode !== "remove") return;
-    this._compactCharacteristicDock.mode = "view";
+    if (this._characterCharacteristicDock?.mode !== "remove") return;
+    this._characterCharacteristicDock.mode = "view";
     return this.render({ force: true });
   }
 
-  async #onConfirmRemoveCompactCharacteristic(event) {
+  async #onConfirmRemoveCharacterCharacteristic(event) {
     event.preventDefault();
-    if (!this.actor.isOwner || this._compactCharacteristicDock?.mode !== "remove") return;
-    const { listId, index } = this._compactCharacteristicDock;
-    const list = this.#getCompactCharacteristicList(listId);
+    if (!this.actor.isOwner || this._characterCharacteristicDock?.mode !== "remove") return;
+    const { listId, index } = this._characterCharacteristicDock;
+    const list = this.#getCharacterCharacteristicList(listId);
     if (!list[index]) return;
     list.splice(index, 1);
-    this._compactCharacteristicDock = null;
-    this._compactCharacteristicFocus = "add";
+    this._characterCharacteristicDock = null;
+    this._characterCharacteristicFocus = "add";
     return this.actor.update({ [`system.${listId}`]: list });
   }
 
   async close(options) {
-    clearTimeout(this._compactResourceTooltipTimer);
-    await this._compactPortraitEditor?.close();
-    this._compactPortraitEditor = null;
+    clearTimeout(this._characterResourceTooltipTimer);
+    await this._characterPortraitEditor?.close();
+    this._characterPortraitEditor = null;
     return super.close(options);
   }
 }
 
-class AstraelNpcSheet extends AstraelCharacterSheet {
+class AstraelNpcSheet extends AstraelBaseActorSheet {
   static DEFAULT_OPTIONS = {
-    classes: ["astrael-rpg", "sheet", "actor", "npc-sheet"],
+    classes: ["astrael-rpg", "sheet", "actor", "astrael-npc-sheet"],
     position: {
       width: 900,
       height: 680
@@ -4983,18 +5019,18 @@ Hooks.once("init", () => {
     {
       types: ["character"],
       makeDefault: true,
-      label: "Astrael RPG Character Sheet"
+      label: game.i18n.localize("ASTRAEL.Sheet.Character")
     }
   );
 
   foundry.applications.apps.DocumentSheetConfig.registerSheet(
     Actor,
     SYSTEM_ID,
-    AstraelCompactCharacterSheet,
+    AstraelLegacyCharacterSheet,
     {
       types: ["character"],
       makeDefault: false,
-      label: game.i18n.localize("ASTRAEL.Sheet.CharacterCompact")
+      label: game.i18n.localize("ASTRAEL.Sheet.CharacterLegacy")
     }
   );
 

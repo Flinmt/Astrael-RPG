@@ -1,0 +1,503 @@
+.astrael-dialog {
+  --astrael-panel: #151c20;
+  --astrael-panel-2: #1d2529;
+  --astrael-line: #4a5960;
+  --astrael-text: #ece4d3;
+  --astrael-muted: #aeb2aa;
+  --astrael-dim: #778087;
+  --astrael-gold: #c17539;
+  --astrael-gold-bright: #d69a55;
+}
+
+.astrael-dialog .window-content {
+  padding: 0;
+  background: var(--astrael-panel);
+  color: var(--astrael-text);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.astrael-dialog .dialog-buttons {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(90, 80, 68, 0.62);
+  background: rgba(11, 12, 13, 0.32);
+}
+
+.astrael-dialog .dialog-buttons button {
+  flex: 1;
+  padding: 6px 12px;
+  border: 1px solid var(--astrael-gold);
+  color: var(--astrael-text);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, rgba(193, 117, 57, 0.28), rgba(193, 117, 57, 0.12));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.28);
+}
+
+.astrael-dialog .dialog-buttons button:hover {
+  border-color: var(--astrael-gold-bright);
+  background: linear-gradient(180deg, rgba(214, 154, 85, 0.46), rgba(193, 117, 57, 0.22));
+}
+
+.astrael-dialog .astrael-dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+}
+
+.astrael-dialog .pool-preview {
+  display: grid;
+  place-items: center;
+  padding: 22px 10px;
+  border: 1px solid rgba(90, 80, 68, 0.84);
+  background: rgba(11, 12, 13, 0.42);
+}
+
+.astrael-dialog .pool-total {
+  color: var(--astrael-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  text-shadow: 0 0 12px rgba(214, 154, 85, 0.2);
+}
+
+.astrael-dialog .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.astrael-dialog .bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.astrael-dialog .bottom-row .modifier-group.span-full {
+  grid-column: 1 / -1;
+}
+
+.astrael-dialog .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.astrael-dialog .form-group label {
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-dialog .form-group select,
+.astrael-dialog .form-group input,
+.astrael-dialog .form-group textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid rgba(90, 80, 68, 0.84);
+  color: var(--astrael-text);
+  font-size: 12px;
+  background: rgba(11, 12, 13, 0.68);
+  outline: 0;
+}
+
+.astrael-dialog .form-group textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.astrael-dialog .form-group select option {
+  color: var(--astrael-text);
+  background: #1d2529;
+}
+
+.astrael-dialog .form-group select option:hover,
+.astrael-dialog .form-group select option:checked {
+  background: rgba(193, 117, 57, 0.34);
+}
+
+.astrael-dialog .form-group select::-webkit-scrollbar {
+  width: 7px;
+}
+
+.astrael-dialog .form-group select::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.astrael-dialog .form-group select::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: var(--astrael-dim);
+}
+
+.astrael-dialog .form-group select::-webkit-scrollbar-thumb:hover {
+  background: var(--astrael-gold);
+}
+
+.astrael-dialog .form-group select:hover,
+.astrael-dialog .form-group input:hover {
+  border-color: rgba(193, 117, 57, 0.46);
+}
+
+.astrael-dialog .dialog-buttons button.delete {
+  border-color: var(--astrael-red);
+  background: linear-gradient(180deg, rgba(162, 68, 62, 0.28), rgba(136, 53, 49, 0.12));
+}
+
+.astrael-dialog .dialog-buttons button.delete:hover {
+  border-color: var(--astrael-red-bright);
+  background: linear-gradient(180deg, rgba(162, 68, 62, 0.46), rgba(136, 53, 49, 0.22));
+}
+
+.astrael-dialog .form-group input::placeholder {
+  color: var(--astrael-dim);
+  font-style: italic;
+}
+
+.astrael-dialog .modifier-group input {
+  text-align: center;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-weight: 700;
+}
+
+.astrael-dialog .mode-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.astrael-dialog .mode-arrow {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.34);
+  color: var(--astrael-gold-bright);
+  font-size: 10px;
+  line-height: 1;
+  background: rgba(11, 12, 13, 0.68);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.astrael-dialog .mode-arrow:hover {
+  border-color: var(--astrael-gold);
+  background: rgba(193, 117, 57, 0.22);
+}
+
+.astrael-dialog .mode-label {
+  min-width: 80px;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-dialog .specialty-group select {
+  color: var(--astrael-dim);
+  font-style: italic;
+}
+
+.astrael-dialog .specialty-edit-dialog {
+  gap: 14px;
+}
+
+.astrael-dialog .specialty-edit-hero {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(193, 117, 57, 0.42);
+  background:
+    radial-gradient(circle at 12% 50%, rgba(193, 117, 57, 0.18), transparent 38%),
+    linear-gradient(90deg, rgba(193, 117, 57, 0.12), transparent 60%),
+    rgba(5, 7, 8, 0.44);
+}
+
+.astrael-dialog .specialty-edit-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(193, 117, 57, 0.62);
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.26), transparent 64%),
+    #080a0b;
+}
+
+.astrael-dialog .specialty-edit-icon::before {
+  content: "";
+  width: 23px;
+  height: 23px;
+  background: currentColor;
+  mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+}
+
+.astrael-dialog .specialty-edit-hero span,
+.astrael-dialog .specialty-edit-field > span {
+  color: var(--astrael-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.astrael-dialog .specialty-edit-hero h3 {
+  margin: 3px 0 0;
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-dialog .specialty-edit-grid {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: end;
+  gap: 12px;
+}
+
+.astrael-dialog .specialty-edit-field {
+  display: grid;
+  gap: 6px;
+}
+
+.astrael-dialog .specialty-level-field {
+  justify-items: start;
+}
+
+.astrael-dialog .specialty-definition-field input,
+.astrael-dialog .specialty-skill-field select {
+  min-height: 36px;
+}
+
+.astrael-dialog .specialty-definition-field input {
+  padding: 8px 10px;
+  border: 1px solid rgba(193, 117, 57, 0.42);
+  color: var(--astrael-text);
+  background: rgba(5, 7, 8, 0.72);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.astrael-dialog .specialty-definition-field input:focus {
+  border-color: var(--astrael-gold-bright);
+  box-shadow: 0 0 0 1px rgba(193, 117, 57, 0.22), inset 0 0 16px rgba(0, 0, 0, 0.34);
+  outline: none;
+}
+
+.astrael-dialog .specialty-definition-field input::placeholder {
+  color: rgba(174, 178, 170, 0.55);
+  font-weight: 500;
+}
+
+.astrael-dialog .specialty-dialog-rank {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.68);
+  border-radius: 50%;
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.26), transparent 63%),
+    #090b0c;
+  box-shadow: 0 0 0 1px rgba(193, 117, 57, 0.14);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.18s, filter 0.18s, transform 0.18s;
+}
+
+.astrael-dialog .specialty-dialog-rank:hover {
+  border-color: var(--astrael-gold-bright);
+  filter: brightness(1.16);
+  transform: scale(1.05);
+}
+
+.astrael-dialog .window-title {
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+}
+
+.astrael-dialog .window-header {
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.62);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.24), transparent 42%, rgba(0, 0, 0, 0.24)), linear-gradient(180deg, #26231f, #191918);
+}
+
+#context-menu {
+  --background-color: #1d2529;
+  --border-color: rgba(193, 117, 57, 0.58);
+  --text-color: #aeb2aa;
+  --hover-text-color: #ece4d3;
+  --hover-entry-border: rgba(193, 117, 57, 0.46);
+  --hover-entry-background: rgba(193, 117, 57, 0.14);
+  --group-separator: rgba(90, 80, 68, 0.62);
+  border-radius: 0;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.6);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+}
+
+#context-menu li.context-item {
+  padding: 7px 10px;
+  letter-spacing: 0.05em;
+}
+
+#context-menu li.context-item:hover {
+  color: var(--hover-text-color);
+  background: var(--hover-entry-background);
+  border-color: var(--hover-entry-border);
+}
+
+#context-menu li.context-item > i {
+  color: var(--astrael-gold);
+  width: 16px;
+  text-align: center;
+}
+
+.reroll-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+}
+
+.reroll-form p {
+  margin: 0;
+  color: var(--astrael-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  text-align: center;
+}
+
+.reroll-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.reroll-die {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid rgba(119, 128, 135, 0.26);
+  color: rgba(174, 178, 170, 0.52);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  background: rgba(11, 12, 13, 0.68);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+  user-select: none;
+}
+
+.reroll-die.success {
+  border-color: rgba(214, 154, 85, 0.48);
+  color: var(--astrael-text);
+  background: rgba(193, 117, 57, 0.3);
+}
+
+.reroll-die.critical {
+  border-color: var(--astrael-gold-bright);
+  color: #fff4d9;
+  background: rgba(193, 117, 57, 0.48);
+}
+
+.reroll-die:hover {
+  border-color: var(--astrael-gold);
+  transform: scale(1.1);
+}
+
+.reroll-die.selected {
+  border-color: var(--astrael-gold-bright);
+  background: rgba(193, 117, 57, 0.48);
+  color: #fff4d9;
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(214, 154, 85, 0.4);
+}
+
+.reroll-die.blood-die {
+  border-color: rgba(178, 32, 43, 0.4);
+  color: rgba(220, 164, 154, 0.5);
+  background: rgba(30, 4, 8, 0.7);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.reroll-die.void-die {
+  border-color: rgba(74, 124, 158, 0.4);
+  color: rgba(138, 172, 190, 0.5);
+  background: rgba(10, 17, 32, 0.7);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.reroll-hint {
+  color: var(--astrael-dim) !important;
+  font-size: 10px !important;
+}
+
+.astrael-rpg .specialty-open {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(193, 117, 57, 0.5);
+  color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(193, 117, 57, 0.18), transparent 62%),
+    rgba(11, 12, 13, 0.5);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.astrael-rpg .specialty-open:hover {
+  border-color: var(--astrael-gold-bright);
+  background:
+    radial-gradient(circle, rgba(214, 154, 85, 0.32), transparent 64%),
+    rgba(11, 12, 13, 0.52);
+  box-shadow: 0 0 16px rgba(193, 117, 57, 0.22);
+  transform: scale(1.06);
+}
+
+.astrael-rpg .specialty-open-icon {
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+  -webkit-mask: url("../assets/icons/especialidades.svg") center / contain no-repeat;
+}
+

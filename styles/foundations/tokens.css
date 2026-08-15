@@ -1,0 +1,18 @@
+.astrael-rpg {
+  --astrael-panel: #151c20;
+  --astrael-panel-2: #1d2529;
+  --astrael-line: #4a5960;
+  --astrael-text: #ece4d3;
+  --astrael-muted: #aeb2aa;
+  --astrael-dim: #778087;
+  --astrael-gold: #c17539;
+  --astrael-gold-bright: #d69a55;
+  --astrael-red: #883531;
+  --astrael-red-bright: #a2443e;
+  --astrael-blue: #3b6474;
+  --astrael-blue-bright: #4d7187;
+  --astrael-black: #0b0c0d;
+  --astrael-shadow: rgba(0, 0, 0, 0.58);
+  color: var(--astrael-text);
+  font-family: "Inter", system-ui, sans-serif;
+}

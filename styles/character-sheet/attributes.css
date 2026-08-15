@@ -1,0 +1,218 @@
+/* Dense three-column attribute HUD */
+.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="attributes"] {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.application.astrael-rpg.character-sheet[data-active-tab="attributes"] .astrael-character-body {
+  padding: 0;
+}
+
+.astrael-character-sheet .astrael-character-attributes {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
+  min-width: 0;
+  gap: 10px;
+  padding: 11px 13px 13px;
+  box-sizing: border-box;
+  border: 1px solid #263238;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  background: #090f12;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.018);
+}
+
+.astrael-character-sheet .astrael-character-attributes::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 9px;
+  width: 38px;
+  height: 2px;
+  background: var(--astrael-nav-bronze);
+  pointer-events: none;
+}
+
+.astrael-character-sheet .astrael-character-attribute-region-title {
+  display: flex;
+  grid-column: 1 / -1;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  height: 18px;
+  padding: 0 2px;
+}
+
+.astrael-character-sheet .astrael-character-attribute-region-title > span {
+  width: 4px;
+  height: 4px;
+  flex: 0 0 4px;
+  border-radius: 50%;
+  background: var(--astrael-nav-bronze-light);
+}
+
+.astrael-character-sheet .astrael-character-attribute-region-title h3 {
+  margin: 0;
+  color: #7f8c92;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-attributes-toggle {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 20px;
+  min-width: 24px;
+  min-height: 20px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  color: #958a76;
+  background: transparent;
+  box-shadow: none;
+  font-size: 8px;
+}
+
+.astrael-character-sheet .astrael-character-attributes-toggle:hover,
+.astrael-character-sheet .astrael-character-attributes-toggle:focus-visible {
+  color: var(--astrael-character-bone);
+  background: transparent;
+  outline: 1px solid rgba(198, 163, 111, 0.48);
+  outline-offset: 1px;
+}
+
+.astrael-character-sheet .astrael-character-attributes.is-collapsed {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: 8px 13px;
+}
+
+.astrael-character-sheet .astrael-character-attributes.is-collapsed .astrael-character-attribute-band {
+  display: none;
+}
+
+.astrael-character-sheet .astrael-character-attributes.is-collapsed .astrael-character-attribute-region-title {
+  height: 20px;
+}
+
+.astrael-character-sheet .astrael-character-attribute-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(3, 66px);
+  gap: 8px;
+  padding: 12px 8px 8px;
+  border: 1px solid #273237;
+  background: #0d1417;
+}
+
+.astrael-character-sheet .astrael-character-attribute-band::before {
+  top: 0;
+  right: 7px;
+  bottom: auto;
+  left: 7px;
+  width: auto;
+  height: 3px;
+}
+
+.astrael-character-sheet .astrael-character-attribute {
+  min-height: 66px;
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial {
+  --attribute-angle: 72deg;
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  min-height: 58px;
+  border-color: #303b40;
+  background: #090f12;
+  box-shadow: inset 0 0 0 6px #11191c;
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial.level-1 {
+  --attribute-angle: 72deg;
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial.level-2 {
+  --attribute-angle: 144deg;
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial.level-3 {
+  --attribute-angle: 216deg;
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial.level-4 {
+  --attribute-angle: 288deg;
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial.level-5 {
+  --attribute-angle: 360deg;
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 3px;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from -90deg, transparent 0 67deg, #090f12 67deg 72deg),
+    conic-gradient(from -90deg, var(--attribute-color) 0 var(--attribute-angle), #2d383d 0 360deg);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4px));
+  pointer-events: none;
+}
+
+.astrael-character-sheet .astrael-character-dial-segment {
+  display: none;
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial > i {
+  font-size: 17px;
+}
+
+.astrael-character-sheet .astrael-character-attribute-roll {
+  right: calc(50% - 36px);
+  bottom: 1px;
+  width: 21px;
+  height: 21px;
+}
+
+.astrael-character-sheet .astrael-character-attribute-roll i {
+  font-size: 9px;
+}
+
+.astrael-character-sheet .astrael-character-panel h2 {
+  margin: 0;
+  padding: 0 0 9px;
+  border-bottom: 1px solid rgba(193, 117, 57, 0.32);
+  color: var(--astrael-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.astrael-character-sheet .astrael-character-panel::-webkit-scrollbar-thumb {
+  background: var(--astrael-dim);
+}
+
+.astrael-character-sheet .astrael-character-panel::-webkit-scrollbar-thumb:hover {
+  background: var(--astrael-gold);
+}
+

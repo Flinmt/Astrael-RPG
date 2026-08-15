@@ -1,0 +1,72 @@
+/* Character portrait framing */
+.actors-sidebar .astrael-directory-portrait-frame,
+#actors .astrael-directory-portrait-frame {
+  align-self: stretch;
+  display: block;
+  flex: 0 0 var(--sidebar-item-height, 48px);
+  min-height: 32px;
+  overflow: hidden;
+  position: relative;
+}
+
+.actors-sidebar .astrael-directory-portrait-frame > img,
+#actors .astrael-directory-portrait-frame > img {
+  border: 0;
+  height: 100%;
+  inset: 0;
+  max-width: none;
+  object-fit: cover;
+  position: absolute;
+  transform-origin: center;
+  width: 100%;
+}
+
+.astrael-character-sheet .astrael-character-portrait-wrap {
+  position: relative;
+  width: 88px;
+  height: 112px;
+  min-width: 88px;
+  align-self: center;
+}
+
+.astrael-character-sheet .astrael-character-portrait-wrap .astrael-character-portrait {
+  overflow: hidden;
+}
+
+.astrael-character-sheet .astrael-character-portrait img {
+  transform-origin: center;
+  transition: transform 120ms ease;
+}
+
+.astrael-character-sheet .astrael-character-portrait:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.astrael-character-sheet .astrael-character-portrait-view {
+  position: absolute;
+  z-index: 5;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(198, 163, 111, 0.7);
+  border-radius: 50%;
+  color: #d8cfbc;
+  background: rgba(10, 12, 10, 0.84);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.52);
+  font-size: 8px;
+}
+
+.astrael-character-sheet .astrael-character-portrait-view:hover,
+.astrael-character-sheet .astrael-character-portrait-view:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: #f0e5cf;
+  background: #29251c;
+}
+

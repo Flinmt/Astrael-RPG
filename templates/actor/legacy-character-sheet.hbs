@@ -1,0 +1,960 @@
+<form class="{{cssClass}} astrael-rpg astrael-legacy-character-sheet sheet actor" autocomplete="off">
+  <main class="sheet-shell">
+    <section class="sheet-frame">
+      <header class="sheet-header">
+        <div class="identity-grid">
+          <label class="field-card field-name">
+            <span>Nome</span>
+            <input name="name" type="text" value="{{actor.name}}" placeholder="Nome do personagem">
+          </label>
+
+          <div class="portrait-cell" aria-label="Retrato do personagem">
+            <button class="portrait-ring" type="button" data-action="editImage" title="Alterar retrato">
+              <img class="profile-img" src="{{actor.img}}" alt="{{actor.name}}">
+            </button>
+            <div class="xp-summary-card">
+              <span class="xp-main-label">Experiência</span>
+              <div class="xp-grid">
+                <div class="xp-slot" title="XP Gasta">
+                  <span class="xp-label">Gasta</span>
+                  <input name="system.xp.spent" type="number" value="{{system.xp.spent}}" placeholder="0">
+                </div>
+                <div class="xp-divider"></div>
+                <div class="xp-slot" title="XP Atual">
+                  <span class="xp-label">Atual</span>
+                  <input name="system.xp.current" type="number" value="{{system.xp.current}}" placeholder="0" readonly>
+                </div>
+                <div class="xp-divider"></div>
+                <div class="xp-slot" title="XP Total">
+                  <span class="xp-label">Total</span>
+                  <input name="system.xp.total" type="number" value="{{system.xp.total}}" placeholder="0" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="resource-row health-row">
+            <section class="resource-card health-card" data-resource="health">
+              <div class="resource-title">
+                <span>{{localize "ASTRAEL.Resource.Health"}}</span>
+                <strong class="resource-active-roman">{{system.resources.health.activeRoman}}</strong>
+              </div>
+              <div class="box-track" aria-label="{{localize 'ASTRAEL.Resource.Health'}}">
+                {{#each system.resources.health.boxes as |box|}}
+                  <button class="resource-box {{box.state}}" type="button" data-resource="health" data-index="{{box.index}}" data-state="{{box.state}}" title="Clique para alterar"></button>
+                {{/each}}
+              </div>
+            </section>
+            <div class="damage-controls" aria-label="{{localize 'ASTRAEL.Resource.Health'}}">
+              <button class="damage-card superficial-damage" type="button" data-damage="superficial" data-resource="health" title="Dano superficial">/</button>
+              <button class="damage-card aggravated-damage" type="button" data-damage="aggravated" data-resource="health" title="Dano agravado">X</button>
+            </div>
+          </div>
+
+          <label class="field-card">
+            <span>Ambicao</span>
+            <input name="system.details.ambition" type="text" value="{{system.details.ambition}}" placeholder="Objetivo amplo do personagem">
+          </label>
+
+          <div class="resource-row will-row">
+            <section class="resource-card will-card" data-resource="willpower">
+              <div class="resource-title">
+                <span>{{localize "ASTRAEL.Resource.Willpower"}}</span>
+                <strong class="resource-active-roman">{{system.resources.willpower.activeRoman}}</strong>
+              </div>
+              <div class="box-track" aria-label="{{localize 'ASTRAEL.Resource.Willpower'}}">
+                {{#each system.resources.willpower.boxes as |box|}}
+                  <button class="resource-box {{box.state}}" type="button" data-resource="willpower" data-index="{{box.index}}" data-state="{{box.state}}" title="Clique para alterar"></button>
+                {{/each}}
+              </div>
+            </section>
+            <div class="damage-controls" aria-label="{{localize 'ASTRAEL.Resource.Willpower'}}">
+              <button class="damage-card superficial-damage" type="button" data-damage="superficial" data-resource="willpower" title="Dano superficial">/</button>
+              <button class="damage-card aggravated-damage" type="button" data-damage="aggravated" data-resource="willpower" title="Dano agravado">X</button>
+            </div>
+          </div>
+
+          <label class="field-card">
+            <span>Desejo</span>
+            <input name="system.details.desire" type="text" value="{{system.details.desire}}" placeholder="Objetivo imediato do personagem">
+          </label>
+
+          <div class="sangria-vazio-block">
+            <section class="marker-card marker-card--sangria">
+              <div class="marker-title">
+                <span>{{localize "ASTRAEL.Sangria"}}</span>
+                <div class="marker-controls">
+                  <button type="button" class="marker-btn" data-action="adjust-resource" data-resource="sangria" data-delta="-1">−</button>
+                  <button type="button" class="marker-btn" data-action="adjust-resource" data-resource="sangria" data-delta="1">+</button>
+                </div>
+              </div>
+              <div class="dot-track dot-track--sangria dots-{{system.sangria.value}}" data-name="system.sangria.value" data-value="{{system.sangria.value}}">
+                <span class="sv-track-label">{{system.sangria.value}}/5</span>
+              </div>
+            </section>
+            <section class="marker-card marker-card--vazio">
+              <div class="marker-title">
+                <span>{{localize "ASTRAEL.Vazio"}}</span>
+                <div class="marker-controls">
+                  <button type="button" class="marker-btn" data-action="adjust-resource" data-resource="vazio" data-delta="-1">−</button>
+                  <button type="button" class="marker-btn" data-action="adjust-resource" data-resource="vazio" data-delta="1">+</button>
+                </div>
+              </div>
+              <div class="dot-track dot-track--vazio dots-{{system.vazio.value}}" data-name="system.vazio.value" data-value="{{system.vazio.value}}">
+                <span class="sv-track-label">{{system.vazio.value}}/5</span>
+              </div>
+            </section>
+          </div>
+
+        </div>
+      </header>
+
+      <nav class="sheet-tabs" aria-label="Abas da ficha">
+        <button class="tab-button active" data-tab="attributes" type="button">{{localize "ASTRAEL.Tab.Attributes"}}</button>
+        <button class="tab-button" data-tab="advantages" type="button">{{localize "ASTRAEL.Tab.Advantages"}}</button>
+        <button class="tab-button" data-tab="convictions" type="button">{{localize "ASTRAEL.Tab.Convictions"}}</button>
+        {{#if system.sheetSettings.visibleTabs.virtues}}
+        <button class="tab-button" data-tab="virtues" type="button">{{localize "ASTRAEL.Tab.Virtues"}}</button>
+        {{/if}}
+        {{#if system.sheetSettings.visibleTabs.hemomancy}}
+        <button class="tab-button" data-tab="hemomancy" type="button">{{localize "ASTRAEL.Tab.Hemomancy"}}</button>
+        {{/if}}
+        {{#if system.sheetSettings.visibleTabs.strangerMark}}
+        <button class="tab-button" data-tab="stranger-mark" type="button">{{localize "ASTRAEL.Tab.StrangerMark"}}</button>
+        {{/if}}
+        <button class="settings-gear" data-tab="settings" type="button" title="{{localize 'ASTRAEL.Tab.Settings'}}">
+          <i class="fas fa-cog"></i>
+        </button>
+      </nav>
+
+      <section class="sheet-body">
+        <div class="tab-panel active" data-tab="attributes">
+          <section class="section-card">
+            <div class="section-title">
+              <h2>{{localize "ASTRAEL.Tab.Attributes"}}</h2>
+            </div>
+            <div class="three-columns">
+              <article class="trait-group physical">
+                <h3>{{localize "ASTRAEL.Attributes.Physical"}}</h3>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="strength">{{localize "ASTRAEL.Attribute.Strength"}}</span>
+                  <div class="dot-track dots-{{system.attributes.strength.value}}" 
+                       data-name="system.attributes.strength.value" 
+                       data-value="{{system.attributes.strength.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="dexterity">{{localize "ASTRAEL.Attribute.Dexterity"}}</span>
+                  <div class="dot-track dots-{{system.attributes.dexterity.value}}" 
+                       data-name="system.attributes.dexterity.value" 
+                       data-value="{{system.attributes.dexterity.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="stamina">{{localize "ASTRAEL.Attribute.Stamina"}}</span>
+                  <div class="dot-track dots-{{system.attributes.stamina.value}}" 
+                       data-name="system.attributes.stamina.value" 
+                       data-value="{{system.attributes.stamina.value}}"></div>
+                </div>
+              </article>
+
+              <article class="trait-group social">
+                <h3>{{localize "ASTRAEL.Attributes.Social"}}</h3>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="charisma">{{localize "ASTRAEL.Attribute.Charisma"}}</span>
+                  <div class="dot-track dots-{{system.attributes.charisma.value}}" 
+                       data-name="system.attributes.charisma.value" 
+                       data-value="{{system.attributes.charisma.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="manipulation">{{localize "ASTRAEL.Attribute.Manipulation"}}</span>
+                  <div class="dot-track dots-{{system.attributes.manipulation.value}}" 
+                       data-name="system.attributes.manipulation.value" 
+                       data-value="{{system.attributes.manipulation.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="composure">{{localize "ASTRAEL.Attribute.Composure"}}</span>
+                  <div class="dot-track dots-{{system.attributes.composure.value}}" 
+                       data-name="system.attributes.composure.value" 
+                       data-value="{{system.attributes.composure.value}}"></div>
+                </div>
+              </article>
+
+              <article class="trait-group mental">
+                <h3>{{localize "ASTRAEL.Attributes.Mental"}}</h3>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="intelligence">{{localize "ASTRAEL.Attribute.Intelligence"}}</span>
+                  <div class="dot-track dots-{{system.attributes.intelligence.value}}" 
+                       data-name="system.attributes.intelligence.value" 
+                       data-value="{{system.attributes.intelligence.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="wits">{{localize "ASTRAEL.Attribute.Wits"}}</span>
+                  <div class="dot-track dots-{{system.attributes.wits.value}}" 
+                       data-name="system.attributes.wits.value" 
+                       data-value="{{system.attributes.wits.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="attribute" data-key="resolve">{{localize "ASTRAEL.Attribute.Resolve"}}</span>
+                  <div class="dot-track dots-{{system.attributes.resolve.value}}" 
+                       data-name="system.attributes.resolve.value" 
+                       data-value="{{system.attributes.resolve.value}}"></div>
+                </div>
+              </article>
+            </div>
+          </section>
+          
+          <section class="section-card skills-card">
+            <div class="section-title">
+              <h2>{{localize "ASTRAEL.Skills.Title"}}</h2>
+              <button type="button" class="specialty-open" data-action="open-specialties" title="Especialidades" aria-label="Especialidades">
+                <span class="specialty-open-icon" aria-hidden="true"></span>
+              </button>
+            </div>
+            <div class="three-columns skill-columns">
+              <article class="trait-group physical">
+                <h3>{{localize "ASTRAEL.Skills.Physical"}}</h3>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="athletics">{{localize "ASTRAEL.Skill.Athletics"}}</span>
+                  <div class="dot-track dots-{{system.skills.athletics.value}}" 
+                       data-name="system.skills.athletics.value" 
+                       data-value="{{system.skills.athletics.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="brawl">{{localize "ASTRAEL.Skill.Brawl"}}</span>
+                  <div class="dot-track dots-{{system.skills.brawl.value}}" 
+                       data-name="system.skills.brawl.value" 
+                       data-value="{{system.skills.brawl.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="drive">{{localize "ASTRAEL.Skill.Drive"}}</span>
+                  <div class="dot-track dots-{{system.skills.drive.value}}" 
+                       data-name="system.skills.drive.value" 
+                       data-value="{{system.skills.drive.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="stealth">{{localize "ASTRAEL.Skill.Stealth"}}</span>
+                  <div class="dot-track dots-{{system.skills.stealth.value}}" 
+                       data-name="system.skills.stealth.value" 
+                       data-value="{{system.skills.stealth.value}}"></div>
+                </div>
+
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="larceny">{{localize "ASTRAEL.Skill.Larceny"}}</span>
+                  <div class="dot-track dots-{{system.skills.larceny.value}}" 
+                       data-name="system.skills.larceny.value" 
+                       data-value="{{system.skills.larceny.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="crafts">{{localize "ASTRAEL.Skill.Crafts"}}</span>
+                  <div class="dot-track dots-{{system.skills.crafts.value}}" 
+                       data-name="system.skills.crafts.value" 
+                       data-value="{{system.skills.crafts.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="firearms">{{localize "ASTRAEL.Skill.Firearms"}}</span>
+                  <div class="dot-track dots-{{system.skills.firearms.value}}" 
+                       data-name="system.skills.firearms.value" 
+                       data-value="{{system.skills.firearms.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="melee">{{localize "ASTRAEL.Skill.Melee"}}</span>
+                  <div class="dot-track dots-{{system.skills.melee.value}}" 
+                       data-name="system.skills.melee.value" 
+                       data-value="{{system.skills.melee.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="survival">{{localize "ASTRAEL.Skill.Survival"}}</span>
+                  <div class="dot-track dots-{{system.skills.survival.value}}" 
+                       data-name="system.skills.survival.value" 
+                       data-value="{{system.skills.survival.value}}"></div>
+                </div>
+              </article>
+
+              <article class="trait-group social">
+                <h3>{{localize "ASTRAEL.Skills.Social"}}</h3>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="animalKen">{{localize "ASTRAEL.Skill.AnimalKen"}}</span>
+                  <div class="dot-track dots-{{system.skills.animalKen.value}}" 
+                       data-name="system.skills.animalKen.value" 
+                       data-value="{{system.skills.animalKen.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="empathy">{{localize "ASTRAEL.Skill.Empathy"}}</span>
+                  <div class="dot-track dots-{{system.skills.empathy.value}}" 
+                       data-name="system.skills.empathy.value" 
+                       data-value="{{system.skills.empathy.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="etiquette">{{localize "ASTRAEL.Skill.Etiquette"}}</span>
+                  <div class="dot-track dots-{{system.skills.etiquette.value}}" 
+                       data-name="system.skills.etiquette.value" 
+                       data-value="{{system.skills.etiquette.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="expression">{{localize "ASTRAEL.Skill.Expression"}}</span>
+                  <div class="dot-track dots-{{system.skills.expression.value}}" 
+                       data-name="system.skills.expression.value" 
+                       data-value="{{system.skills.expression.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="intimidation">{{localize "ASTRAEL.Skill.Intimidation"}}</span>
+                  <div class="dot-track dots-{{system.skills.intimidation.value}}" 
+                       data-name="system.skills.intimidation.value" 
+                       data-value="{{system.skills.intimidation.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="leadership">{{localize "ASTRAEL.Skill.Leadership"}}</span>
+                  <div class="dot-track dots-{{system.skills.leadership.value}}" 
+                       data-name="system.skills.leadership.value" 
+                       data-value="{{system.skills.leadership.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="persuasion">{{localize "ASTRAEL.Skill.Persuasion"}}</span>
+                  <div class="dot-track dots-{{system.skills.persuasion.value}}" 
+                       data-name="system.skills.persuasion.value" 
+                       data-value="{{system.skills.persuasion.value}}"></div>
+                </div>
+
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="streetwise">{{localize "ASTRAEL.Skill.Streetwise"}}</span>
+                  <div class="dot-track dots-{{system.skills.streetwise.value}}" 
+                       data-name="system.skills.streetwise.value" 
+                       data-value="{{system.skills.streetwise.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="subterfuge">{{localize "ASTRAEL.Skill.Subterfuge"}}</span>
+                  <div class="dot-track dots-{{system.skills.subterfuge.value}}" 
+                       data-name="system.skills.subterfuge.value" 
+                       data-value="{{system.skills.subterfuge.value}}"></div>
+                </div>
+              </article>
+
+              <article class="trait-group mental">
+                <h3>{{localize "ASTRAEL.Skills.Mental"}}</h3>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="academics">{{localize "ASTRAEL.Skill.Academics"}}</span>
+                  <div class="dot-track dots-{{system.skills.academics.value}}" 
+                       data-name="system.skills.academics.value" 
+                       data-value="{{system.skills.academics.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="awareness">{{localize "ASTRAEL.Skill.Awareness"}}</span>
+                  <div class="dot-track dots-{{system.skills.awareness.value}}" 
+                       data-name="system.skills.awareness.value" 
+                       data-value="{{system.skills.awareness.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="finance">{{localize "ASTRAEL.Skill.Finance"}}</span>
+                  <div class="dot-track dots-{{system.skills.finance.value}}" 
+                       data-name="system.skills.finance.value" 
+                       data-value="{{system.skills.finance.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="investigation">{{localize "ASTRAEL.Skill.Investigation"}}</span>
+                  <div class="dot-track dots-{{system.skills.investigation.value}}" 
+                       data-name="system.skills.investigation.value" 
+                       data-value="{{system.skills.investigation.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="medicine">{{localize "ASTRAEL.Skill.Medicine"}}</span>
+                  <div class="dot-track dots-{{system.skills.medicine.value}}" 
+                       data-name="system.skills.medicine.value" 
+                       data-value="{{system.skills.medicine.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="occult">{{localize "ASTRAEL.Skill.Occult"}}</span>
+                  <div class="dot-track dots-{{system.skills.occult.value}}" 
+                       data-name="system.skills.occult.value" 
+                       data-value="{{system.skills.occult.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="politics">{{localize "ASTRAEL.Skill.Politics"}}</span>
+                  <div class="dot-track dots-{{system.skills.politics.value}}" 
+                       data-name="system.skills.politics.value" 
+                       data-value="{{system.skills.politics.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="science">{{localize "ASTRAEL.Skill.Science"}}</span>
+                  <div class="dot-track dots-{{system.skills.science.value}}" 
+                       data-name="system.skills.science.value" 
+                       data-value="{{system.skills.science.value}}"></div>
+                </div>
+                
+                <div class="trait-row">
+                  <span class="rollable" data-type="skill" data-key="technology">{{localize "ASTRAEL.Skill.Technology"}}</span>
+                  <div class="dot-track dots-{{system.skills.technology.value}}" 
+                       data-name="system.skills.technology.value" 
+                       data-value="{{system.skills.technology.value}}"></div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <details class="section-card custom-roll-card">
+            <summary class="section-title">
+              <h2>Rolagens Personalizadas</h2>
+              <span>Clique para Expandir ou Recolher</span>
+            </summary>
+            <div class="custom-roll-grid">
+              {{#each system.customRolls as |roll|}}
+              <div class="custom-roll-entry" data-index="{{@index}}">
+                <span class="custom-roll-name">{{roll.name}}</span>
+                <button type="button" class="custom-roll-gear" data-action="edit-custom-roll" data-index="{{@index}}"><i class="fas fa-cog"></i></button>
+              </div>
+              {{/each}}
+              <button type="button" class="custom-roll-add" data-action="add-custom-roll">+</button>
+            </div>
+          </details>
+        </div>
+        <div class="tab-panel" data-tab="advantages">
+          <div class="advantage-browser">
+            <aside class="advantage-sidebar" data-mode="{{#if system.advantageModeFlaws}}flaws{{else}}advantages{{/if}}">
+              <header class="advantage-browser-header">
+                <div class="advantage-browser-header-row">
+                  <div>
+                    <span>{{#if system.advantageModeFlaws}}Arquivos Comprometedores{{else}}Dossie Favoravel{{/if}}</span>
+                    <h2>Caracteristicas</h2>
+                  </div>
+                  <button type="button" class="advantage-add" data-action="add-advantage-entry" title="{{#if system.advantageModeFlaws}}Adicionar desvantagem{{else}}Adicionar vantagem{{/if}}">+</button>
+                </div>
+              </header>
+
+              <div class="advantage-mode-tabs">
+                <button type="button" class="advantage-mode-tab {{#unless system.advantageModeFlaws}}active{{/unless}}" data-action="set-advantage-mode" data-mode="advantages">Vantagens</button>
+                <button type="button" class="advantage-mode-tab {{#if system.advantageModeFlaws}}active{{/if}}" data-action="set-advantage-mode" data-mode="flaws">Desvantagens</button>
+              </div>
+
+              <div class="advantage-list-container">
+                <div class="advantage-list {{#if system.advantageModeFlaws}}is-hidden{{/if}}" data-list="advantages">
+                  {{#each system.advantages as |adv|}}
+                  <button type="button" class="advantage-row {{#if adv.selected}}is-selected{{/if}}" data-action="select-advantage-entry" data-list="advantages" data-index="{{@index}}">
+                    <span class="advantage-row-rank" aria-label="Nivel {{adv.level}}">{{adv.levelRoman}}</span>
+                    <span class="advantage-row-name">{{adv.name}}</span>
+                  </button>
+                  {{/each}}
+                </div>
+                <div class="advantage-list {{#unless system.advantageModeFlaws}}is-hidden{{/unless}}" data-list="flaws">
+                  {{#each system.flaws as |flaw|}}
+                  <button type="button" class="advantage-row flaw-row {{#if flaw.selected}}is-selected{{/if}}" data-action="select-advantage-entry" data-list="flaws" data-index="{{@index}}">
+                    <span class="advantage-row-rank flaw-rank" aria-label="Nivel {{flaw.level}}">{{flaw.levelRoman}}</span>
+                    <span class="advantage-row-name">{{flaw.name}}</span>
+                  </button>
+                  {{/each}}
+                </div>
+              </div>
+            </aside>
+
+            <section class="advantage-inspector {{#if system.advantageModeFlaws}}flaw-inspector{{/if}}">
+              {{#if system.selectedAdvantage}}
+              {{#if system.selectedAdvantage.editing}}
+              <div class="advantage-inspector-edit-header">
+                <span class="advantage-inspector-kicker">{{system.selectedAdvantage.typeLabel}}</span>
+                <button type="button" class="advantage-rank {{#if system.selectedAdvantage.isFlaw}}flaw-rank{{/if}}" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}" aria-label="Nivel {{system.selectedAdvantage.level}}">{{system.selectedAdvantage.levelRoman}}</button>
+              </div>
+              <div class="advantage-inspector-form">
+                <label>
+                  <span>Nome</span>
+                  <input class="advantage-name-input" type="text" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}" value="{{system.selectedAdvantage.name}}" placeholder="Nome da {{system.selectedAdvantage.actionLabel}}">
+                </label>
+                <label>
+                  <span>Descricao</span>
+                  <textarea class="advantage-description-input" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}" placeholder="Descreva o efeito, contexto ou detalhe narrativo.">{{system.selectedAdvantage.description}}</textarea>
+                </label>
+              </div>
+              {{else}}
+              <div class="advantage-inspector-kicker">{{system.selectedAdvantage.typeLabel}}</div>
+              <div class="advantage-inspector-title-row">
+                <h2>{{system.selectedAdvantage.name}}</h2>
+                <button type="button" class="advantage-rank {{#if system.selectedAdvantage.isFlaw}}flaw-rank{{/if}}" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}" aria-label="Nivel {{system.selectedAdvantage.level}}">{{system.selectedAdvantage.levelRoman}}</button>
+              </div>
+              <div class="advantage-inspector-copy">
+                <p>{{#if system.selectedAdvantage.description}}{{system.selectedAdvantage.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+              </div>
+              {{/if}}
+
+              <div class="advantage-inspector-actions">
+                {{#unless system.selectedAdvantage.editing}}
+                {{#unless system.selectedAdvantage.isFlaw}}
+                <button type="button" class="advantage-command advantage-roll" data-action="roll-advantage-entry" data-index="{{system.selectedAdvantage.index}}">Rolar</button>
+                {{/unless}}
+                {{/unless}}
+                {{#if system.selectedAdvantage.editing}}
+                <button type="button" class="advantage-command" data-action="save-advantage-entry" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}">Salvar</button>
+                {{else}}
+                <button type="button" class="advantage-command" data-action="edit-advantage-entry" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}">Editar</button>
+                {{/if}}
+                <button type="button" class="advantage-command danger" data-action="delete-advantage-entry" data-list="{{system.selectedAdvantage.listId}}" data-index="{{system.selectedAdvantage.index}}">Excluir</button>
+              </div>
+              {{else}}
+              <div class="advantage-empty-inspector">
+                <span>Nenhum registro selecionado</span>
+                <p>Crie uma vantagem ou desvantagem para abrir um dossie.</p>
+              </div>
+              {{/if}}
+            </section>
+          </div>
+        </div>
+        {{#if system.sheetSettings.visibleTabs.virtues}}
+        <div class="tab-panel" data-tab="virtues">
+          <div class="virtue-browser">
+            <aside class="virtue-sidebar">
+              <header class="virtue-browser-header">
+                <div class="virtue-browser-header-row">
+                  <div>
+                    <span>Codigo de Conduta</span>
+                    <h2>Virtudes</h2>
+                  </div>
+                </div>
+              </header>
+
+              <div class="virtue-list-container">
+                <div class="virtue-list">
+                  {{#each system.virtues as |virtue|}}
+                  <button type="button" class="virtue-row {{#if virtue.selected}}is-selected{{/if}}" data-action="select-virtue" data-index="{{@index}}">
+                    <span class="virtue-row-name">{{virtue.displayName}}</span>
+                  </button>
+                  {{/each}}
+                  <button type="button" class="virtue-add" data-action="add-virtue">+</button>
+                </div>
+              </div>
+            </aside>
+
+            <section class="virtue-inspector">
+              <div class="virtue-detail-content">
+
+              {{#if system.selectedVirtue}}
+              {{#if system.selectedVirtue.editing}}
+              <div class="virtue-inspector-form">
+                <label>
+                  <span>Nome</span>
+                  <input class="virtue-name-input" type="text" data-index="{{system.selectedVirtue.index}}" value="{{system.selectedVirtue.name}}" placeholder="Nome da virtude">
+                </label>
+                <label class="virtue-description-field">
+                  <span>Descricao</span>
+                  <textarea class="virtue-description-input" data-index="{{system.selectedVirtue.index}}" placeholder="Descreva o codigo de conduta da virtude.">{{system.selectedVirtue.description}}</textarea>
+                </label>
+                <hr class="virtue-perks-divider">
+                <div class="virtue-perks-header">
+                  <span>Perks</span>
+                  <button type="button" class="virtue-perk-add" data-action="add-virtue-perk" data-index="{{system.selectedVirtue.index}}">+</button>
+                </div>
+                <div class="virtue-perks-list">
+                  {{#each system.selectedVirtue.perks as |perk pidx|}}
+                  <div class="virtue-perk-editor">
+                    <div class="virtue-perk-editor-head">
+                      <label>
+                        <span>Perk</span>
+                        <input class="virtue-perk-name-input" type="text" data-virtue="{{../system.selectedVirtue.index}}" data-index="{{pidx}}" value="{{perk.name}}" placeholder="Nome do perk">
+                      </label>
+                      <button type="button" class="virtue-perk-remove" data-action="delete-virtue-perk" data-virtue="{{../system.selectedVirtue.index}}" data-index="{{pidx}}" title="Remover perk" aria-label="Remover perk">×</button>
+                    </div>
+                    <label class="virtue-perk-description-field">
+                      <span>Descricao</span>
+                      <textarea class="virtue-perk-description-input" data-virtue="{{../system.selectedVirtue.index}}" data-index="{{pidx}}" placeholder="Descreva o perk.">{{perk.description}}</textarea>
+                    </label>
+                  </div>
+                  {{/each}}
+                </div>
+              </div>
+              {{else}}
+              <div class="virtue-inspector-title-row">
+                <h2>{{system.selectedVirtue.name}}</h2>
+              </div>
+              <div class="virtue-inspector-copy">
+                <p>{{#if system.selectedVirtue.description}}{{system.selectedVirtue.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+              </div>
+              {{#if system.selectedVirtue.perks.length}}
+              <hr class="virtue-perks-divider">
+              <div class="virtue-perks-header">
+                <span>Perks</span>
+              </div>
+              <div class="virtue-perks-list">
+                {{#each system.selectedVirtue.perks as |perk pidx|}}
+                <div class="virtue-perk {{#if perk.expanded}}is-expanded{{/if}}">
+                  <button type="button" class="virtue-perk-summary" data-action="toggle-virtue-perk" data-virtue="{{../system.selectedVirtue.index}}" data-index="{{pidx}}" aria-expanded="{{#if perk.expanded}}true{{else}}false{{/if}}">
+                    <span>{{#if perk.name}}{{perk.name}}{{else}}Perk sem nome{{/if}}</span>
+                  </button>
+                  {{#if perk.expanded}}
+                  <div class="virtue-perk-body">
+                    <p class="virtue-perk-description">{{#if perk.description}}{{perk.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+                  </div>
+                  {{/if}}
+                </div>
+                {{/each}}
+              </div>
+              {{/if}}
+              {{/if}}
+
+              <div class="virtue-inspector-actions">
+                {{#unless system.selectedVirtue.editing}}
+                <button type="button" class="virtue-command" data-action="edit-virtue" data-index="{{system.selectedVirtue.index}}">Editar</button>
+                {{/unless}}
+                {{#if system.selectedVirtue.editing}}
+                <button type="button" class="virtue-command" data-action="save-virtue" data-index="{{system.selectedVirtue.index}}">Salvar</button>
+                <button type="button" class="virtue-command danger" data-action="delete-virtue" data-index="{{system.selectedVirtue.index}}">Excluir</button>
+                {{/if}}
+              </div>
+              {{else}}
+              <div class="virtue-empty-inspector">
+                <span>Nenhuma virtude selecionada</span>
+                <p>Crie uma virtude para registrar o codigo de conduta do personagem.</p>
+              </div>
+              {{/if}}
+              </div>
+            </section>
+          </div>
+        </div>
+        {{/if}}
+        {{#if system.sheetSettings.visibleTabs.hemomancy}}
+        <div class="tab-panel" data-tab="hemomancy">
+          <div class="hemomancy-browser">
+            <aside class="hemomancy-sidebar">
+              <header class="hemomancy-browser-header">
+                <div class="hemomancy-browser-header-row">
+                  <div>
+                    <span>Sangue Invocado</span>
+                    <h2>{{system.hemomancy.itemPluralTitle}}</h2>
+                  </div>
+                  <button type="button" class="hemomancy-mode-switch" data-action="set-hemomancy-list-mode" data-mode="{{system.hemomancy.switchMode}}" title="Abrir {{system.hemomancy.switchLabel}}" aria-label="Abrir {{system.hemomancy.switchLabel}}">
+                    <img src="{{system.hemomancy.switchIcon}}" alt="">
+                  </button>
+                </div>
+              </header>
+
+              <div class="hemomancy-mode-tabs">
+                {{#each system.hemomancy.modeTabs as |tab|}}
+                <button type="button" class="hemomancy-mode-tab {{#if tab.active}}active{{/if}}" data-action="set-hemomancy-mode" data-level="{{tab.level}}">{{tab.roman}}</button>
+                {{/each}}
+              </div>
+
+              <div class="hemomancy-list-container">
+                <div class="hemomancy-list">
+                  {{#each system.hemomancy.activeEntries as |power|}}
+                  {{#unless power.hidden}}
+                  <button type="button" class="hemomancy-row {{#if power.selected}}is-selected{{/if}}" data-action="select-hemomancy-power" data-index="{{@index}}">
+                    <span class="hemomancy-row-name">{{power.name}}</span>
+                  </button>
+                  {{/unless}}
+                  {{/each}}
+                  <button type="button" class="hemomancy-add" data-action="add-hemomancy-power" title="Adicionar {{system.hemomancy.itemSingular}}" {{#if (eq system.hemomancy.activeLevel 0)}}disabled{{/if}}>+</button>
+                </div>
+              </div>
+            </aside>
+
+            <section class="hemomancy-inspector">
+              <div class="hemomancy-level-card">
+                <div>
+                  <span>{{system.hemomancy.levelLabel}}</span>
+                </div>
+                <button type="button" class="hemomancy-level-control" title="Clique para aumentar, botao direito para reduzir">{{system.hemomancy.activeLevelRoman}}</button>
+              </div>
+              <div class="hemomancy-detail-content">
+
+              {{#if system.hemomancy.selectedPower}}
+              {{#if system.hemomancy.selectedPower.editing}}
+              <div class="hemomancy-inspector-edit-header">
+                <span class="hemomancy-inspector-kicker">Sangue Invocado</span>
+              </div>
+              <div class="hemomancy-inspector-form">
+                <label>
+                  <span>Nome</span>
+                  <input class="hemomancy-name-input" type="text" data-index="{{system.hemomancy.selectedPower.index}}" value="{{system.hemomancy.selectedPower.name}}" placeholder="Nome da {{system.hemomancy.itemSingular}}">
+                </label>
+                <label>
+                  <span>Custo</span>
+                  <input class="hemomancy-cost-input" type="number" min="1" max="5" data-index="{{system.hemomancy.selectedPower.index}}" value="{{system.hemomancy.selectedPower.cost}}">
+                </label>
+                <label class="hemomancy-description-field">
+                  <span>Descricao</span>
+                  <textarea class="hemomancy-description-input" data-index="{{system.hemomancy.selectedPower.index}}" placeholder="Descreva efeito, alcance e consequencias da {{system.hemomancy.itemSingular}}.">{{system.hemomancy.selectedPower.description}}</textarea>
+                </label>
+              </div>
+              {{else}}
+              <div class="hemomancy-inspector-kicker">Sangue Invocado</div>
+              <div class="hemomancy-inspector-title-row">
+                <h2>{{system.hemomancy.selectedPower.name}}</h2>
+              </div>
+              <div class="hemomancy-meta-row">
+                <div class="hemomancy-cost" title="Custo de Queima">
+                  {{#each system.hemomancy.selectedPower.costIcons as |icon|}}
+                  <img src="systems/astrael-rpg/assets/icons/d10.svg" alt="" class="hemomancy-cost-icon">
+                  {{/each}}
+                </div>
+                <span>{{system.hemomancy.selectedPower.rollFormula}}</span>
+              </div>
+              <div class="hemomancy-inspector-copy">
+                <p>{{#if system.hemomancy.selectedPower.description}}{{system.hemomancy.selectedPower.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+              </div>
+              {{/if}}
+
+              <div class="hemomancy-inspector-actions">
+                {{#unless system.hemomancy.selectedPower.editing}}
+                <button type="button" class="hemomancy-command hemomancy-roll" data-action="roll-hemomancy-power" data-index="{{system.hemomancy.selectedPower.index}}">Rolar</button>
+                {{/unless}}
+                {{#if system.hemomancy.selectedPower.editing}}
+                <button type="button" class="hemomancy-command" data-action="save-hemomancy-power" data-index="{{system.hemomancy.selectedPower.index}}">Salvar</button>
+                {{else}}
+                <button type="button" class="hemomancy-command" data-action="edit-hemomancy-power" data-index="{{system.hemomancy.selectedPower.index}}">Editar</button>
+                {{/if}}
+                <button type="button" class="hemomancy-command danger" data-action="delete-hemomancy-power" data-index="{{system.hemomancy.selectedPower.index}}">Excluir</button>
+              </div>
+              {{else}}
+              <div class="hemomancy-empty-inspector">
+                <span>{{system.hemomancy.itemEmptyTitle}}</span>
+                <p>{{system.hemomancy.itemEmptyText}}</p>
+              </div>
+              {{/if}}
+              </div>
+            </section>
+          </div>
+        </div>
+        {{/if}}
+        {{#if system.sheetSettings.visibleTabs.strangerMark}}
+        <div class="tab-panel" data-tab="stranger-mark">
+          {{#if system.strangerMark.selectedMark}}
+          <div class="stranger-mark-browser">
+            <aside class="stranger-mark-sidebar">
+              <header class="stranger-mark-browser-header">
+                <div class="stranger-mark-browser-header-row">
+                  <div class="stranger-mark-title-row">
+                    <button type="button" class="stranger-mark-panel-toggle" data-action="toggle-stranger-marks-panel" title="Abrir painel de marcas">☰</button>
+                    <div class="stranger-mark-title-text">
+                      <span>Marca ativa</span>
+                      <h2>{{system.strangerMark.selectedMark.label}}</h2>
+                    </div>
+                  </div>
+                </div>
+              </header>
+
+              <div class="stranger-mark-mode-tabs">
+                {{#each system.strangerMark.abilityLevelTabs as |tab|}}
+                <button type="button" class="stranger-mark-mode-tab {{#if tab.active}}active{{/if}}" data-action="set-stranger-mark-ability-level" data-level="{{tab.level}}">{{tab.roman}}</button>
+                {{/each}}
+              </div>
+
+              <div class="stranger-mark-list-container">
+                <div class="stranger-mark-list">
+                  {{#each system.strangerMark.visibleAbilities as |ability|}}
+                  <button type="button" class="stranger-mark-row {{#if ability.selected}}is-selected{{/if}}" data-action="select-stranger-mark-ability" data-index="{{ability.index}}">
+                    <span class="stranger-mark-row-name">{{ability.name}}</span>
+                  </button>
+                  {{/each}}
+                  <button type="button" class="stranger-mark-add" data-action="add-stranger-mark-ability" title="Adicionar habilidade" {{#if (eq system.strangerMark.selectedMark.level 0)}}disabled{{/if}}>+</button>
+                </div>
+              </div>
+            </aside>
+
+            <section class="stranger-mark-inspector">
+              <div class="stranger-mark-level-card">
+                <div>
+                  <span>Potencia da marca</span>
+                </div>
+                <button type="button" class="stranger-mark-level-control" data-option="{{system.strangerMark.selectedMark.option}}" title="Clique para aumentar, botao direito para reduzir">{{system.strangerMark.selectedMark.levelRoman}}</button>
+              </div>
+              <div class="stranger-mark-detail-content">
+
+              {{#if system.strangerMark.selectedAbility}}
+              {{#if system.strangerMark.selectedAbility.editing}}
+              <div class="stranger-mark-inspector-edit-header">
+                <span class="stranger-mark-inspector-kicker">Marca do Estranho</span>
+              </div>
+              <div class="stranger-mark-inspector-form">
+                <label>
+                  <span>Nome</span>
+                  <input class="stranger-mark-name-input" type="text" data-index="{{system.strangerMark.selectedAbility.index}}" value="{{system.strangerMark.selectedAbility.name}}" placeholder="Nome da habilidade">
+                </label>
+                <label>
+                  <span>Custo</span>
+                  <input class="stranger-mark-cost-input" type="number" min="1" max="5" data-index="{{system.strangerMark.selectedAbility.index}}" value="{{system.strangerMark.selectedAbility.cost}}">
+                </label>
+                <label class="stranger-mark-description-field">
+                  <span>Descricao</span>
+                  <textarea class="stranger-mark-description-input" data-index="{{system.strangerMark.selectedAbility.index}}" placeholder="Descreva o efeito da habilidade.">{{system.strangerMark.selectedAbility.description}}</textarea>
+                </label>
+              </div>
+              {{else}}
+              <div class="stranger-mark-inspector-kicker">Marca do Estranho</div>
+              <div class="stranger-mark-inspector-title-row">
+                <h2>{{system.strangerMark.selectedAbility.name}}</h2>
+              </div>
+              <div class="stranger-mark-meta-row">
+                <div class="stranger-mark-cost" title="Custo de Queima">
+                  {{#each system.strangerMark.selectedAbility.costIcons as |icon|}}
+                  <img src="systems/astrael-rpg/assets/icons/d10.svg" alt="" class="stranger-mark-cost-icon">
+                  {{/each}}
+                </div>
+                <span>{{system.strangerMark.selectedAbility.rollFormula}}</span>
+              </div>
+              <div class="stranger-mark-inspector-copy">
+                <p>{{#if system.strangerMark.selectedAbility.description}}{{system.strangerMark.selectedAbility.description}}{{else}}Sem descricao registrada.{{/if}}</p>
+              </div>
+              {{/if}}
+
+              <div class="stranger-mark-inspector-actions">
+                {{#unless system.strangerMark.selectedAbility.editing}}
+                <button type="button" class="stranger-mark-command stranger-mark-roll" data-action="roll-stranger-mark-ability" data-index="{{system.strangerMark.selectedAbility.index}}">Rolar</button>
+                {{/unless}}
+                {{#if system.strangerMark.selectedAbility.editing}}
+                <button type="button" class="stranger-mark-command" data-action="save-stranger-mark-ability" data-index="{{system.strangerMark.selectedAbility.index}}">Salvar</button>
+                {{else}}
+                <button type="button" class="stranger-mark-command" data-action="edit-stranger-mark-ability" data-index="{{system.strangerMark.selectedAbility.index}}">Editar</button>
+                {{/if}}
+                <button type="button" class="stranger-mark-command danger" data-action="delete-stranger-mark-ability" data-index="{{system.strangerMark.selectedAbility.index}}">Excluir</button>
+              </div>
+              {{else}}
+              <div class="stranger-mark-empty-inspector">
+                <span>Nenhuma habilidade selecionada</span>
+                <p>Crie uma habilidade no circulo {{system.strangerMark.selectedAbilityLevelRoman}} desta marca.</p>
+              </div>
+              {{/if}}
+              </div>
+            </section>
+          </div>
+          {{else}}
+          <div class="stranger-mark-no-mark">
+            <span>Nenhuma marca selecionada</span>
+            <button type="button" data-action="toggle-stranger-marks-panel">Abrir painel de marcas</button>
+          </div>
+          {{/if}}
+        </div>
+        {{/if}}
+        <div class="tab-panel" data-tab="convictions">
+          <section class="convictions-panel">
+            <div class="conviction-grid">
+              {{#each system.convictions as |conviction|}}
+              <div class="conviction-column">
+                <header class="convictions-fracture-header">
+                  <div class="fracture-title">
+                    <span>{{localize "ASTRAEL.Convictions.FracturesHint"}}</span>
+                    <h2>{{localize "ASTRAEL.Convictions.Fractures"}}</h2>
+                  </div>
+                  <div class="fracture-track" aria-label="{{localize 'ASTRAEL.Convictions.Fractures'}}">
+                    {{#each conviction.fractureBoxes as |box|}}
+                    <button class="fracture-box {{#if box.filled}}filled{{/if}}" type="button" data-conviction-index="{{conviction.index}}" data-index="{{box.index}}" title="{{localize 'ASTRAEL.Convictions.Fractures'}}"></button>
+                    {{/each}}
+                  </div>
+                </header>
+              <article class="conviction-card {{#if conviction.editing}}is-editing{{/if}}" data-index="{{conviction.index}}">
+                {{#if conviction.editing}}
+                <header class="conviction-card-title">
+                  <label class="conviction-edit-field">
+                    <span>{{localize "ASTRAEL.Convictions.Name"}}</span>
+                    <input class="conviction-name-input" type="text" data-index="{{conviction.index}}" value="{{conviction.name}}" placeholder="{{localize 'ASTRAEL.Convictions.NamePlaceholder'}}">
+                  </label>
+                </header>
+
+                <label class="conviction-edit-field">
+                  <span>{{localize "ASTRAEL.Convictions.Description"}}</span>
+                  <textarea class="conviction-description-input" data-index="{{conviction.index}}" placeholder="{{localize 'ASTRAEL.Convictions.DescriptionPlaceholder'}}">{{conviction.description}}</textarea>
+                </label>
+
+                <div class="conviction-pillar-head">
+                  <span>{{localize "ASTRAEL.Convictions.Pillar"}}</span>
+                </div>
+
+                <div class="conviction-pillar-list">
+                  <div class="conviction-pillar-row" data-conviction-index="{{conviction.index}}">
+                    <input class="pillar-name-input" type="text" data-conviction-index="{{conviction.index}}" value="{{conviction.pillar.name}}" placeholder="{{localize 'ASTRAEL.Convictions.PillarName'}}">
+                    {{#if conviction.isCenter}}
+                    <input class="pillar-type-input" type="hidden" data-conviction-index="{{conviction.index}}" value="Pessoa">
+                    <div class="pillar-type-locked">{{localize "ASTRAEL.Convictions.PillarTypePessoa"}}</div>
+                    {{else}}
+                    <select class="pillar-type-input" data-conviction-index="{{conviction.index}}">
+                      {{#each conviction.pillarTypeOptions as |option|}}
+                      <option value="{{option.value}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>
+                      {{/each}}
+                    </select>
+                    {{/if}}
+                  </div>
+                </div>
+
+                <footer class="conviction-card-actions">
+                  <button type="button" class="conviction-command" data-action="save-conviction" data-index="{{conviction.index}}">{{localize "ASTRAEL.Convictions.Save"}}</button>
+                </footer>
+                {{else}}
+                <header class="conviction-card-title">
+                  <h3>{{#if conviction.name}}{{conviction.name}}{{else}}{{localize "ASTRAEL.Convictions.EmptyName"}}{{/if}}</h3>
+                  <button type="button" class="conviction-icon-button" data-action="edit-conviction" data-index="{{conviction.index}}" title="{{localize 'ASTRAEL.Convictions.Edit'}}">
+                    <i class="fas fa-pen"></i>
+                  </button>
+                </header>
+
+                <div class="conviction-description">
+                  <p>{{#if conviction.description}}{{conviction.description}}{{else}}{{localize "ASTRAEL.Convictions.EmptyDescription"}}{{/if}}</p>
+                </div>
+
+                <div class="conviction-pillar-head">
+                  <span>{{localize "ASTRAEL.Convictions.Pillar"}}</span>
+                </div>
+
+                <div class="conviction-pillar-list">
+                  <div class="conviction-pillar-card">
+                    <strong>{{#if conviction.pillar.name}}{{conviction.pillar.name}}{{else}}{{localize "ASTRAEL.Convictions.EmptyPillarName"}}{{/if}}</strong>
+                    <span>{{conviction.pillar.type}}</span>
+                  </div>
+                </div>
+                {{/if}}
+              </article>
+              </div>
+              {{/each}}
+            </div>
+          </section>
+        </div>
+        <div class="tab-panel" data-tab="settings">
+          <section class="settings-panel">
+            <div class="settings-panel-header">
+              <span>{{localize "ASTRAEL.Tab.Settings"}}</span>
+              <h2>{{localize "ASTRAEL.Settings.VisibleTabs"}}</h2>
+            </div>
+            <div class="settings-toggle-list">
+              <button type="button" class="settings-toggle-row {{#if system.sheetSettings.visibleTabs.virtues}}is-enabled{{/if}}" data-action="toggle-character-tab" data-key="virtues" data-visible="{{#if system.sheetSettings.visibleTabs.virtues}}true{{else}}false{{/if}}">
+                <span class="settings-toggle-indicator"></span>
+                <span>{{localize "ASTRAEL.Settings.ShowVirtues"}}</span>
+              </button>
+              <button type="button" class="settings-toggle-row {{#if system.sheetSettings.visibleTabs.hemomancy}}is-enabled{{/if}}" data-action="toggle-character-tab" data-key="hemomancy" data-visible="{{#if system.sheetSettings.visibleTabs.hemomancy}}true{{else}}false{{/if}}">
+                <span class="settings-toggle-indicator"></span>
+                <span>{{localize "ASTRAEL.Settings.ShowHemomancy"}}</span>
+              </button>
+              <button type="button" class="settings-toggle-row {{#if system.sheetSettings.visibleTabs.strangerMark}}is-enabled{{/if}}" data-action="toggle-character-tab" data-key="strangerMark" data-visible="{{#if system.sheetSettings.visibleTabs.strangerMark}}true{{else}}false{{/if}}">
+                <span class="settings-toggle-indicator"></span>
+                <span>{{localize "ASTRAEL.Settings.ShowStrangerMark"}}</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </section>
+  </main>
+</form>

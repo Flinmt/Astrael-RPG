@@ -1,0 +1,28 @@
+<section class="character-portrait-editor-shell">
+  <header class="character-portrait-editor-head">
+    <span>{{localize "ASTRAEL.CharacterPortrait.Kicker"}}</span>
+    <h2>{{localize "ASTRAEL.CharacterPortrait.Title"}}</h2>
+    <p>{{localize "ASTRAEL.CharacterPortrait.Hint"}}</p>
+  </header>
+
+  <div class="character-portrait-editor-preview" data-portrait-preview>
+    <img src="{{framing.src}}" alt="{{actor.name}}" style="object-position: {{framing.x}}% {{framing.y}}%; transform: scale({{framing.zoom}}) translate({{framing.panX}}%, {{framing.panY}}%);">
+    <span aria-hidden="true"></span>
+  </div>
+
+  <div class="character-portrait-editor-zoom">
+    <label for="character-portrait-zoom">{{localize "ASTRAEL.CharacterPortrait.Zoom"}}</label>
+    <input id="character-portrait-zoom" type="range" min="1" max="3" step="0.05" value="{{framing.zoom}}" data-action="set-character-portrait-zoom">
+    <strong data-portrait-zoom-label>{{framing.zoomLabel}}×</strong>
+  </div>
+
+  <div class="character-portrait-editor-tools">
+    <button type="button" data-action="change-character-portrait-image">{{localize "ASTRAEL.CharacterPortrait.ChangeImage"}}</button>
+    <button type="button" data-action="reset-character-portrait">{{localize "ASTRAEL.CharacterPortrait.Reset"}}</button>
+  </div>
+
+  <footer class="character-portrait-editor-actions">
+    <button type="button" data-action="cancel-character-portrait">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
+    <button type="button" class="is-primary" data-action="save-character-portrait">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
+  </footer>
+</section>

@@ -17,8 +17,28 @@
     "scripts/astrael-rpg.js"
   ],
   "styles": [
-    "styles/astrael-rpg.css",
-    "styles/compact-character-sheet.css"
+    "styles/foundations/tokens.css",
+    "styles/foundations/controls.css",
+    "styles/shared-sheets/shell.css",
+    "styles/chat/dice-pool-card.css",
+    "styles/shared-sheets/navigation-and-content.css",
+    "styles/dialogs/dice-pool.css",
+    "styles/applications/panels.css",
+    "styles/shared-sheets/hemomancy.css",
+    "styles/shared-sheets/stranger-mark.css",
+    "styles/shared-sheets/characteristics-and-convictions.css",
+    "styles/npc-sheet/creator.css",
+    "styles/shared-sheets/virtues.css",
+    "styles/character-sheet/shell.css",
+    "styles/character-sheet/header.css",
+    "styles/character-sheet/attributes.css",
+    "styles/character-sheet/navigation.css",
+    "styles/character-sheet/skills.css",
+    "styles/character-sheet/docks.css",
+    "styles/character-sheet/characteristics.css",
+    "styles/character-sheet/portrait.css",
+    "styles/applications/portrait-editor.css",
+    "styles/character-sheet/stats.css"
   ],
   "languages": [
     {

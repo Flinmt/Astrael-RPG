@@ -1,0 +1,281 @@
+.astrael-chat-card {
+  --astrael-chat-panel: #151c20;
+  --astrael-chat-panel-dark: #0d0f10;
+  --astrael-chat-line: #4a5960;
+  --astrael-chat-text: #ece4d3;
+  --astrael-chat-muted: #aeb2aa;
+  --astrael-chat-dim: #778087;
+  --astrael-chat-gold: #c17539;
+  --astrael-chat-gold-bright: #d69a55;
+  --astrael-chat-red: #883531;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid rgba(193, 117, 57, 0.58);
+  color: var(--astrael-chat-text);
+  background:
+    linear-gradient(135deg, var(--astrael-chat-gold-bright) 0 10px, transparent 10px) top left / 26px 26px no-repeat,
+    linear-gradient(315deg, var(--astrael-chat-gold) 0 10px, transparent 10px) bottom right / 26px 26px no-repeat,
+    linear-gradient(90deg, rgba(193, 117, 57, 0.16), transparent 46%),
+    linear-gradient(180deg, #171513, var(--astrael-chat-panel-dark));
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 228, 211, 0.035),
+    inset 0 0 28px rgba(193, 117, 57, 0.08);
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.chat-message:has(.astrael-chat-card) {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.chat-message:has(.astrael-chat-card) .message-header {
+  display: none;
+}
+
+.chat-message:has(.astrael-chat-card) .message-content {
+  margin: 0;
+  width: 100%;
+}
+
+.astrael-chat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 42px;
+  height: 2px;
+  background: var(--astrael-chat-gold);
+}
+
+.astrael-chat-header {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(90, 80, 68, 0.62);
+}
+
+.astrael-chat-kicker {
+  display: block;
+  color: var(--astrael-chat-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.astrael-chat-header h2 {
+  margin: 2px 0 0;
+  color: var(--astrael-chat-text);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 18px;
+  letter-spacing: 0.07em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.astrael-chat-header p {
+  margin: 4px 0 0;
+  color: var(--astrael-chat-muted);
+  font-size: 12px;
+}
+
+.astrael-chat-result {
+  position: relative;
+  display: grid;
+  place-items: center;
+  gap: 4px;
+  margin: 10px 0;
+  padding: 14px 8px 16px;
+  border: 1px solid rgba(193, 117, 57, 0.7);
+  color: var(--astrael-chat-gold-bright);
+  background:
+    radial-gradient(circle at center, rgba(214, 154, 85, 0.14), transparent 70%),
+    linear-gradient(180deg, rgba(193, 117, 57, 0.12), rgba(11, 12, 13, 0.38));
+  box-shadow:
+    inset 0 0 0 1px rgba(236, 228, 211, 0.035),
+    0 0 18px rgba(193, 117, 57, 0.1);
+}
+
+.astrael-chat-result::before,
+.astrael-chat-result::after {
+  content: "";
+  position: absolute;
+  width: 32px;
+  height: 1px;
+  background: var(--astrael-chat-gold);
+}
+
+.astrael-chat-result::before {
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.astrael-chat-result::after {
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.astrael-chat-result span {
+  color: var(--astrael-chat-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.astrael-chat-result strong {
+  color: var(--astrael-chat-gold-bright);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 46px;
+  line-height: 0.95;
+  text-shadow: 0 0 14px rgba(214, 154, 85, 0.24);
+}
+
+.astrael-chat-dice-footer {
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(90, 80, 68, 0.62);
+}
+
+.astrael-chat-dice-label {
+  cursor: pointer;
+  list-style: none;
+  color: var(--astrael-chat-dim);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.astrael-chat-dice-label::-webkit-details-marker {
+  display: none;
+}
+
+.astrael-chat-dice-label::marker {
+  content: "";
+}
+
+.astrael-chat-dice-footer[open] .astrael-chat-dice-label {
+  color: var(--astrael-chat-gold-bright);
+}
+
+.astrael-chat-dice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.astrael-chat-die {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(229, 221, 204, 0.2);
+  color: rgba(174, 178, 170, 0.7);
+  background: rgba(11, 12, 13, 0.68);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.32);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.astrael-chat-die.success {
+  border-color: rgba(214, 154, 85, 0.48);
+  color: var(--astrael-chat-text);
+  background: rgba(193, 117, 57, 0.3);
+}
+
+.astrael-chat-die.critical {
+  border-color: var(--astrael-chat-gold-bright);
+  color: #fff4d9;
+  background: rgba(193, 117, 57, 0.48);
+}
+
+.astrael-chat-die.paired-critical {
+  border-color: #fff4d9;
+  color: #fff4d9;
+  background:
+    radial-gradient(circle at center, rgba(214, 154, 85, 0.48), transparent 72%),
+    linear-gradient(180deg, #d69a55, #6b2c24);
+  box-shadow: 0 0 10px rgba(214, 154, 85, 0.34), inset 0 0 0 1px rgba(0, 0, 0, 0.24);
+}
+
+.astrael-chat-die.failure {
+  border-color: rgba(119, 128, 135, 0.26);
+  color: rgba(174, 178, 170, 0.52);
+  background: rgba(11, 12, 13, 0.68);
+}
+
+.astrael-chat-die.blood-die {
+  border-color: rgba(178, 32, 43, 0.6);
+  color: #dca49a;
+  background: rgba(30, 4, 8, 0.85);
+  box-shadow: inset 0 0 0 1px rgba(178, 32, 43, 0.25);
+}
+
+.astrael-chat-die.void-die {
+  border-color: rgba(74, 124, 158, 0.6);
+  color: #8aacbe;
+  background: rgba(10, 17, 32, 0.85);
+  box-shadow: inset 0 0 0 1px rgba(74, 124, 158, 0.25);
+}
+
+.astrael-chat-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(90, 80, 68, 0.62);
+}
+
+.astrael-reroll-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid rgba(193, 117, 57, 0.4);
+  color: var(--astrael-chat-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(11, 12, 13, 0.5);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.astrael-reroll-btn:hover {
+  border-color: var(--astrael-chat-gold-bright);
+  background: rgba(193, 117, 57, 0.2);
+}
+
+.astrael-reroll-btn i {
+  font-size: 11px;
+}
+
+.astrael-reroll-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 6px;
+  border: 1px solid var(--astrael-chat-gold-bright);
+  color: var(--astrael-chat-gold-bright);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(11, 12, 13, 0.7);
+  pointer-events: none;
+}
+

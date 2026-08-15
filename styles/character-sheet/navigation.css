@@ -1,0 +1,243 @@
+/* Character character sheet: industrial occult game UI */
+.application.astrael-rpg.character-sheet .window-header {
+  border-color: #342f27;
+  color: var(--astrael-character-bone);
+  background:
+    linear-gradient(90deg, rgba(155, 116, 69, 0.09), transparent 28%),
+    #0c0e0d;
+}
+
+.astrael-character-sheet .astrael-character-frame {
+  border-color: #3c352a;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(155, 116, 69, 0.08), transparent 24%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 5px),
+    #111411;
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.58),
+    inset 0 0 28px rgba(0, 0, 0, 0.22);
+}
+
+.astrael-character-sheet .astrael-character-frame::before {
+  border-color: rgba(155, 116, 69, 0.13);
+}
+
+.astrael-character-sheet .astrael-character-frame::after {
+  border-color: var(--astrael-nav-bronze);
+}
+
+.astrael-character-sheet .astrael-character-header {
+  border-bottom-color: #554631;
+  background:
+    linear-gradient(105deg, rgba(155, 116, 69, 0.12), transparent 34%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.01) 0 1px, transparent 1px 8px),
+    linear-gradient(180deg, #1b1e1a, #10120f);
+  box-shadow:
+    inset 0 1px rgba(216, 207, 188, 0.05),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.18);
+}
+
+.astrael-character-sheet .astrael-character-header::after {
+  width: 66px;
+  background: linear-gradient(90deg, var(--astrael-nav-bronze-light), transparent);
+}
+
+.astrael-character-sheet .astrael-character-portrait {
+  border-color: #554a38;
+  background: #171914;
+  box-shadow:
+    inset 0 0 0 2px #090a09,
+    0 2px 8px rgba(0, 0, 0, 0.34);
+}
+
+.astrael-character-sheet .astrael-character-portrait::before {
+  border-color: var(--astrael-nav-bronze-light);
+}
+
+.astrael-character-sheet .astrael-character-portrait::after {
+  border-color: var(--astrael-nav-bronze-dark);
+}
+
+.astrael-character-sheet .astrael-character-name-field {
+  border-bottom-color: #4b4438;
+}
+
+.astrael-character-sheet .astrael-character-name-field span,
+.astrael-character-sheet .astrael-character-resource-title {
+  color: #958a76;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+}
+
+.astrael-character-sheet .astrael-character-name-field input {
+  color: var(--astrael-character-bone);
+  font-family: "Cinzel", Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.astrael-character-sheet .astrael-character-resource {
+  border: 1px solid #39372f;
+  border-left-width: 3px;
+  background:
+    linear-gradient(110deg, rgba(216, 207, 188, 0.025), transparent 55%),
+    #151713;
+}
+
+.astrael-character-sheet .astrael-character-resource.health-card {
+  border-left-color: #914743;
+}
+
+.astrael-character-sheet .astrael-character-resource.will-card {
+  border-left-color: var(--astrael-character-oxidized);
+}
+
+.astrael-character-sheet .health-card .astrael-character-resource-title i {
+  color: #b55f58;
+}
+
+.astrael-character-sheet .will-card .astrael-character-resource-title i {
+  color: #6d9195;
+}
+
+.astrael-character-sheet .astrael-character-resource-title strong {
+  color: var(--astrael-character-bone);
+  font-family: "Cinzel", Georgia, serif;
+}
+
+.astrael-character-sheet .astrael-character-resource-title strong small {
+  color: #756f63;
+}
+
+.astrael-character-sheet .astrael-character-header .astrael-character-resource-box {
+  border-color: #47443a !important;
+  background: #090b09 !important;
+}
+
+.astrael-character-sheet .astrael-character-header .health-card .astrael-character-resource-box.filled {
+  border-color: #b05a53 !important;
+  background: #793b37 !important;
+}
+
+.astrael-character-sheet .astrael-character-header .will-card .astrael-character-resource-box.filled {
+  border-color: #6d9195 !important;
+  background: #405f62 !important;
+}
+
+.astrael-character-sheet .astrael-character-header-summary {
+  background: #10120f;
+}
+
+.astrael-character-sheet .astrael-character-header-toggle,
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab,
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab:hover,
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab:focus,
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab:active {
+  border-color: #4a4438 !important;
+  color: #898273 !important;
+  background:
+    radial-gradient(circle at 38% 30%, #20231d, #0c0e0c 68%) !important;
+  box-shadow:
+    inset 0 0 0 2px #090a09,
+    inset 0 0 0 3px rgba(155, 116, 69, 0.08) !important;
+}
+
+.astrael-character-sheet .astrael-character-header-toggle:hover,
+.astrael-character-sheet .astrael-character-header-toggle:focus-visible,
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab:hover,
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab:focus-visible {
+  border-color: var(--astrael-nav-bronze) !important;
+  color: var(--astrael-character-bone) !important;
+  background: radial-gradient(circle at 38% 30%, #29271f, #11130f 70%) !important;
+}
+
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab.active,
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab.active:hover,
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab.active:focus-visible {
+  border-color: var(--astrael-nav-bronze-light) !important;
+  color: var(--astrael-nav-bronze-light) !important;
+  background:
+    radial-gradient(circle at 38% 30%, #332c20, #12130f 70%) !important;
+  box-shadow:
+    inset 0 0 0 2px #090a09,
+    inset 0 0 0 3px rgba(198, 163, 111, 0.17) !important;
+}
+
+.astrael-character-sheet .astrael-character-attributes {
+  border-bottom-color: #39352d;
+  background:
+    radial-gradient(circle at 50% 0, rgba(155, 116, 69, 0.075), transparent 38%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
+    #0e110e;
+  box-shadow: inset 0 -12px 24px rgba(0, 0, 0, 0.14);
+}
+
+.astrael-character-sheet .astrael-character-attribute-region-title > span {
+  border-radius: 0;
+  background: var(--astrael-nav-bronze-light);
+  transform: rotate(45deg);
+}
+
+.astrael-character-sheet .astrael-character-attribute-region-title h3 {
+  color: #9b927f;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+
+.astrael-character-sheet .astrael-character-attribute-band {
+  border-color: #39372f;
+  background:
+    linear-gradient(180deg, rgba(216, 207, 188, 0.018), transparent 42%),
+    #141713;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.42),
+    0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial {
+  border-color: #514b3f;
+  color: var(--astrael-character-bone);
+  background:
+    radial-gradient(circle, #1c1f19 0 42%, #0b0d0b 44% 100%);
+  box-shadow:
+    inset 0 0 0 5px #11130f,
+    inset 0 0 0 6px rgba(155, 116, 69, 0.13),
+    0 2px 5px rgba(0, 0, 0, 0.35);
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial::before {
+  background:
+    repeating-conic-gradient(from -90deg, transparent 0 67deg, #0e110e 67deg 72deg),
+    conic-gradient(from -90deg, var(--attribute-color) 0 var(--attribute-angle), #34352f 0 360deg);
+}
+
+.astrael-character-sheet .astrael-character-attribute-dial:hover,
+.astrael-character-sheet .astrael-character-attribute-dial:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: #f0e5cf;
+  background: radial-gradient(circle, #29281f 0 42%, #10120f 44% 100%);
+}
+
+.astrael-character-sheet .astrael-character-attribute-roll {
+  border-color: #4d473b;
+  color: #918976;
+  background: #11130f;
+}
+
+.astrael-character-sheet .astrael-character-attribute-roll:hover,
+.astrael-character-sheet .astrael-character-attribute-roll:focus-visible {
+  border-color: var(--astrael-nav-bronze);
+  color: var(--astrael-character-bone);
+  background: #242219;
+}
+
+.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel:not([data-tab="attributes"]) {
+  border-color: #403b32;
+  background: rgba(15, 18, 15, 0.86);
+}
+
+.astrael-character-sheet .astrael-character-panel h2 {
+  border-bottom-color: rgba(155, 116, 69, 0.38);
+  color: var(--astrael-character-bone);
+}
+

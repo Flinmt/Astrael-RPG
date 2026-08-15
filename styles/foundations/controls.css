@@ -1,0 +1,43 @@
+
+.application.astrael-rpg {
+  border-radius: 0;
+}
+
+.application.astrael-rpg .window-content {
+  padding: 0;
+  overflow: auto;
+  border-radius: 0;
+  background: var(--astrael-panel);
+  scrollbar-width: thin;
+  scrollbar-color: var(--astrael-dim) transparent;
+}
+
+.application.astrael-rpg.sheet.actor .window-content {
+  overflow: hidden;
+}
+
+.application.astrael-rpg .window-content::-webkit-scrollbar {
+  width: 7px;
+}
+
+.application.astrael-rpg .window-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.application.astrael-rpg .window-content::-webkit-scrollbar-thumb {
+  border-radius: 0;
+  background: var(--astrael-dim);
+}
+
+.application.astrael-rpg .window-content::-webkit-scrollbar-thumb:hover {
+  background: var(--astrael-gold);
+}
+
+.astrael-rpg.sheet.actor {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
