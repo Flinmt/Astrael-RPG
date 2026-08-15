@@ -1831,26 +1831,48 @@
   box-shadow: inset 0 0 0 1px rgba(198, 163, 111, 0.12);
 }
 
-.astrael-compact-sheet .astrael-compact-specialties {
+.astrael-compact-sheet .astrael-compact-specialty-dock {
+  position: absolute;
+  z-index: 20;
+  right: -13px;
+  bottom: 0;
+  left: -13px;
   display: grid;
-  grid-column: 1 / -1;
-  gap: 7px;
-  margin: 1px -7px -6px -10px;
-  padding: 9px 9px 8px 11px;
-  border-top: 1px solid #41392e;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  box-sizing: border-box;
+  height: 300px;
+  margin: 0;
+  padding: 14px 16px 13px;
+  border: 1px solid #745a37;
+  border-bottom: 0;
   background:
-    linear-gradient(90deg, rgba(155, 116, 69, 0.07), transparent 52%),
-    #10120f;
+    radial-gradient(circle at 14% 0, rgba(155, 116, 69, 0.15), transparent 34%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
+    #121510;
+  box-shadow:
+    0 -8px 18px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(198, 163, 111, 0.06);
+  animation: astrael-compact-skill-dock-in 150ms ease-out;
 }
 
-.astrael-compact-sheet .astrael-compact-specialties > header {
+.astrael-compact-sheet .astrael-compact-specialty-dock-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
+  min-height: 48px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #4a4135;
 }
 
-.astrael-compact-sheet .astrael-compact-specialties > header span {
+.astrael-compact-sheet .astrael-compact-specialty-dock-heading {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-dock-heading > span {
   color: #8c826f;
   font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 8px;
@@ -1859,48 +1881,116 @@
   text-transform: uppercase;
 }
 
-.astrael-compact-sheet .astrael-compact-specialties > header strong {
+.astrael-compact-sheet .astrael-compact-specialty-dock-heading > strong {
   overflow: hidden;
-  color: #b9ad98;
+  color: var(--astrael-compact-bone);
   font-family: "Cinzel", Georgia, serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-dock-tools {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-count {
+  display: grid;
+  place-items: center;
+  min-width: 25px;
+  height: 25px;
+  padding: 0 6px;
+  border: 1px solid #594b38;
+  color: var(--astrael-nav-bronze-light);
+  background: #0d0f0c;
+  font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 9px;
+  font-weight: 700;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-dock-tools > button {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
+  min-height: 25px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #4b504a;
+  border-radius: 0;
+  color: #aaa99f;
+  background: #11130f;
+  box-shadow: none;
+  font-size: 9px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-dock-tools > button:hover,
+.astrael-compact-sheet .astrael-compact-specialty-dock-tools > button:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: var(--astrael-compact-bone);
+  background: #242219;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-list {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 2px 3px 2px 0;
+  scrollbar-width: none;
+}
+
+.astrael-compact-sheet .astrael-compact-skills.has-specialty-dock {
+  overflow: visible;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-list::-webkit-scrollbar {
+  display: none;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-item {
+  display: grid;
+  grid-template-columns: 5px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 5px 6px 5px 10px;
+  border: 1px solid #35372f;
+  border-left: 2px solid #6f5637;
+  color: #c6bdac;
+  background:
+    linear-gradient(90deg, rgba(155, 116, 69, 0.06), transparent 42%),
+    #171914;
+  font-size: 11px;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-marker {
+  width: 5px;
+  height: 5px;
+  background: var(--astrael-nav-bronze-light);
+  transform: rotate(45deg);
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-name {
+  overflow: hidden;
+  font-family: "Cinzel", Georgia, serif;
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.astrael-compact-sheet .astrael-compact-specialty-list {
-  display: grid;
-  gap: 4px;
-}
-
-.astrael-compact-sheet .astrael-compact-specialty-item {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 21px;
-  align-items: center;
-  gap: 6px;
-  min-height: 25px;
-  padding: 3px 3px 3px 8px;
-  border-left: 2px solid #59462f;
-  color: #c6bdac;
-  background: #171914;
-  font-size: 10px;
-}
-
-.astrael-compact-sheet .astrael-compact-specialty-item > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.astrael-compact-sheet .astrael-compact-specialty-item button,
-.astrael-compact-sheet .astrael-compact-specialty-entry button {
+.astrael-compact-sheet .astrael-compact-specialty-item button {
   display: grid;
   place-items: center;
-  width: 21px;
-  height: 21px;
-  min-width: 21px;
-  min-height: 21px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
   margin: 0;
   padding: 0;
   border: 1px solid #493d32;
@@ -1919,24 +2009,49 @@
 }
 
 .astrael-compact-sheet .astrael-compact-specialties-empty {
+  display: grid;
+  place-items: center;
+  min-height: 100%;
   margin: 0;
-  padding: 7px 8px;
+  padding: 20px;
   border: 1px dashed #39362e;
   color: #716b5f;
   font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-dock-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #39372f;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-dock-footer > span {
+  color: #746e61;
+  font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 8px;
+  line-height: 1.3;
 }
 
 .astrael-compact-sheet .astrael-compact-specialty-add {
-  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 0 0 auto;
   width: auto;
-  min-height: 24px;
+  min-height: 29px;
   margin: 0;
-  padding: 3px 7px;
-  border: 1px solid #4a4438;
+  padding: 5px 10px;
+  border: 1px solid #6f593d;
   border-radius: 0;
   color: #aaa08c;
-  background: #171914;
+  background: rgba(155, 116, 69, 0.14);
   box-shadow: none;
   font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 8px;
@@ -1952,38 +2067,119 @@
   background: #242219;
 }
 
-.astrael-compact-sheet .astrael-compact-specialty-entry {
+.astrael-compact-sheet .astrael-compact-specialty-composer {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 21px 21px;
-  gap: 5px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #4a4135;
 }
 
-.astrael-compact-sheet .astrael-compact-specialty-entry input {
+.astrael-compact-sheet .astrael-compact-specialty-composer label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-composer label > span {
+  color: #958a76;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-composer input {
   width: 100%;
-  height: 23px;
+  height: 30px;
   margin: 0;
-  padding: 3px 7px;
+  padding: 4px 8px;
   border: 1px solid #584b39;
   border-radius: 0;
   color: var(--astrael-compact-bone);
   background: #0b0d0b;
   box-shadow: none;
-  font-size: 9px;
+  font-size: 10px;
 }
 
-.astrael-compact-sheet .astrael-compact-specialty-entry input:focus {
+.astrael-compact-sheet .astrael-compact-specialty-composer input:focus {
   border-color: var(--astrael-nav-bronze);
   outline: 0;
 }
 
-.astrael-compact-sheet .astrael-compact-specialty-entry button {
-  color: #8f897d;
+.astrael-compact-sheet .astrael-compact-specialty-composer > div {
+  display: flex;
+  gap: 7px;
 }
 
-.astrael-compact-sheet .astrael-compact-specialty-entry button.is-primary {
+.astrael-compact-sheet .astrael-compact-specialty-composer button {
+  width: auto;
+  min-width: 68px;
+  min-height: 30px;
+  margin: 0;
+  padding: 4px 8px;
+  border: 1px solid #4b504a;
+  border-radius: 0;
+  color: #aaa99f;
+  background: #11130f;
+  box-shadow: none;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-composer button.is-primary {
   border-color: #6f593d;
   color: var(--astrael-nav-bronze-light);
   background: #211c14;
+}
+
+.astrael-compact-sheet .astrael-compact-specialty-composer button:hover,
+.astrael-compact-sheet .astrael-compact-specialty-composer button:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: var(--astrael-compact-bone);
+  background: #242219;
+}
+
+/* Modal focus state for docked menus */
+.application.astrael-rpg.compact-character-sheet.has-compact-dock .window-header,
+.astrael-compact-sheet.is-dock-focused [inert] {
+  filter: brightness(0.34) saturate(0.55);
+  pointer-events: none;
+  user-select: none;
+}
+
+.application.astrael-rpg.compact-character-sheet.has-compact-dock .window-header,
+.astrael-compact-sheet.is-dock-focused [inert],
+.astrael-compact-sheet .astrael-compact-character-header,
+.astrael-compact-sheet .astrael-compact-tabs,
+.astrael-compact-sheet .astrael-compact-status-strip,
+.astrael-compact-sheet .astrael-compact-attributes,
+.astrael-compact-sheet .astrael-compact-skills-header,
+.astrael-compact-sheet .astrael-compact-skill-list,
+.astrael-compact-sheet .astrael-compact-characteristics-header,
+.astrael-compact-sheet .astrael-compact-characteristic-modes,
+.astrael-compact-sheet .astrael-compact-characteristic-list {
+  transition: filter 140ms ease;
+}
+
+.astrael-compact-sheet.is-dock-focused .astrael-compact-skill-dock,
+.astrael-compact-sheet.is-dock-focused .astrael-compact-specialty-dock,
+.astrael-compact-sheet.is-dock-focused .astrael-compact-characteristic-dock {
+  z-index: 50;
+  box-shadow:
+    0 0 0 100vmax rgba(3, 5, 4, 0.56),
+    0 -8px 22px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(198, 163, 111, 0.08);
+}
+
+.astrael-compact-sheet.is-dock-focused .astrael-compact-skill-dock,
+.astrael-compact-sheet.is-dock-focused .astrael-compact-characteristic-dock {
+  position: relative;
 }
 
 .astrael-compact-sheet .astrael-compact-skill-editor {
@@ -3066,4 +3262,111 @@
   border-color: var(--astrael-gold-bright);
   color: var(--astrael-text);
   background: #242219;
+}
+
+/* Read-only combat instruments */
+.astrael-compact-sheet .astrael-compact-status-strip {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-height: 54px;
+  border-bottom: 1px solid #4a4134;
+  background:
+    linear-gradient(90deg, transparent, rgba(155, 116, 69, 0.07) 50%, transparent),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.009) 0 1px, transparent 1px 6px),
+    #0b0e0c;
+  box-shadow:
+    inset 0 1px rgba(216, 207, 188, 0.035),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.astrael-compact-sheet .astrael-compact-status-strip::before,
+.astrael-compact-sheet .astrael-compact-status-strip::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.astrael-compact-sheet .astrael-compact-status-strip::before {
+  top: 0;
+  left: 12px;
+  width: 44px;
+  border-top: 2px solid var(--astrael-nav-bronze-light);
+}
+
+.astrael-compact-sheet .astrael-compact-status-strip::after {
+  right: 12px;
+  bottom: -1px;
+  width: 58px;
+  border-bottom: 2px solid var(--astrael-compact-oxidized);
+}
+
+.astrael-compact-sheet .astrael-compact-status {
+  position: relative;
+  display: grid;
+  grid-template-columns: 25px minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 11px;
+  min-width: 0;
+  padding: 9px 12px;
+  color: #958d7d;
+}
+
+.astrael-compact-sheet .astrael-compact-status + .astrael-compact-status {
+  border-left: 1px solid #39372f;
+}
+
+.astrael-compact-sheet .astrael-compact-status + .astrael-compact-status::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: -1px;
+  border-left: 1px solid rgba(198, 163, 111, 0.12);
+  transform: skew(-9deg);
+}
+
+.astrael-compact-sheet .astrael-compact-status-icon {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #50483b;
+  color: var(--astrael-nav-bronze-light);
+  background: radial-gradient(circle at 42% 35%, #26261f, #10120f 72%);
+  box-shadow: inset 0 0 0 2px #090a09;
+  transform: rotate(45deg);
+}
+
+.astrael-compact-sheet .astrael-compact-status-icon i {
+  font-size: 10px;
+  transform: rotate(-45deg);
+}
+
+.astrael-compact-sheet .astrael-compact-status.is-armor .astrael-compact-status-icon {
+  color: #a39a88;
+}
+
+.astrael-compact-sheet .astrael-compact-status.is-movement .astrael-compact-status-icon {
+  color: #6f9498;
+}
+
+.astrael-compact-sheet .astrael-compact-status-label {
+  overflow: hidden;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-compact-sheet .astrael-compact-status strong {
+  color: var(--astrael-compact-bone);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 1px 8px rgba(198, 163, 111, 0.15);
 }

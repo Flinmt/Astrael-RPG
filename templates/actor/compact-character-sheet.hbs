@@ -1,4 +1,4 @@
-<form class="{{cssClass}} astrael-compact-sheet {{#if compactPortraitViewer}}is-portrait-viewer{{/if}}" autocomplete="off">
+<form class="{{cssClass}} astrael-compact-sheet {{#if compactPortraitViewer}}is-portrait-viewer{{/if}} {{#if compactDockFocused}}is-dock-focused{{/if}}" autocomplete="off">
   <main class="astrael-compact-shell">
     {{#if compactPortraitViewer}}
     <section class="astrael-compact-portrait-viewer" aria-label="{{localize 'ASTRAEL.CompactPortrait.FullImage'}}">
@@ -93,10 +93,28 @@
 
       <section class="sheet-body astrael-compact-body">
         <div class="tab-panel astrael-compact-panel active" data-tab="attributes">
+          <section class="astrael-compact-status-strip" aria-label="{{localize 'ASTRAEL.CompactStatus.Title'}}">
+            <div class="astrael-compact-status is-initiative" role="group" title="{{localize 'ASTRAEL.CompactStatus.Initiative'}}: {{compactStatus.initiative}}" aria-label="{{localize 'ASTRAEL.CompactStatus.Initiative'}}: {{compactStatus.initiative}}">
+              <span class="astrael-compact-status-icon" aria-hidden="true"><i class="fas fa-bolt"></i></span>
+              <span class="astrael-compact-status-label" aria-hidden="true">{{localize "ASTRAEL.CompactStatus.Initiative"}}</span>
+              <strong>{{compactStatus.initiative}}</strong>
+            </div>
+            <div class="astrael-compact-status is-armor" role="group" title="{{localize 'ASTRAEL.CompactStatus.Armor'}}: {{compactStatus.armor}}" aria-label="{{localize 'ASTRAEL.CompactStatus.Armor'}}: {{compactStatus.armor}}">
+              <span class="astrael-compact-status-icon" aria-hidden="true"><i class="fas fa-shield-halved"></i></span>
+              <span class="astrael-compact-status-label" aria-hidden="true">{{localize "ASTRAEL.CompactStatus.Armor"}}</span>
+              <strong>{{compactStatus.armor}}</strong>
+            </div>
+            <div class="astrael-compact-status is-movement" role="group" title="{{localize 'ASTRAEL.CompactStatus.MovementValue' value=compactStatus.movement}}" aria-label="{{localize 'ASTRAEL.CompactStatus.MovementValue' value=compactStatus.movement}}">
+              <span class="astrael-compact-status-icon" aria-hidden="true"><i class="fas fa-shoe-prints"></i></span>
+              <span class="astrael-compact-status-label" aria-hidden="true">{{localize "ASTRAEL.CompactStatus.Movement"}}</span>
+              <strong>{{compactStatus.movement}}</strong>
+            </div>
+          </section>
+
           <section class="astrael-compact-attributes {{#if compactAttributesCollapsed}}is-collapsed{{/if}}">
             <header class="astrael-compact-attribute-region-title">
               <span aria-hidden="true"></span>
-              <h3>{{localize "ASTRAEL.Tab.Attributes"}}</h3>
+              <h3>{{localize "ASTRAEL.CompactAttributes.Title"}}</h3>
               <button type="button" class="astrael-compact-attributes-toggle" data-action="toggle-compact-attributes" title="{{#if compactAttributesCollapsed}}{{localize 'ASTRAEL.CompactAttributes.Expand'}}{{else}}{{localize 'ASTRAEL.CompactAttributes.Collapse'}}{{/if}}" aria-label="{{#if compactAttributesCollapsed}}{{localize 'ASTRAEL.CompactAttributes.Expand'}}{{else}}{{localize 'ASTRAEL.CompactAttributes.Collapse'}}{{/if}}" aria-expanded="{{#if compactAttributesCollapsed}}false{{else}}true{{/if}}">
                 <i class="fas {{#if compactAttributesCollapsed}}fa-chevron-down{{else}}fa-chevron-up{{/if}}" aria-hidden="true"></i>
               </button>
@@ -175,7 +193,7 @@
             </section>
           </section>
 
-          <section class="astrael-compact-skills">
+          <section class="astrael-compact-skills {{#if compactSpecialtyDock}}has-specialty-dock{{/if}}">
             <header class="astrael-compact-skills-header">
               <div class="astrael-compact-skills-title">
                 <span aria-hidden="true"></span>
@@ -209,40 +227,6 @@
                 <button type="button" class="astrael-compact-skill-edit" disabled aria-label="{{localize 'ASTRAEL.CompactSkills.Edit'}}: {{skill.label}}"><i class="fas fa-pen" aria-hidden="true"></i></button>
                 {{/if}}
 
-                {{#if skill.specialtiesOpen}}
-                <section class="astrael-compact-specialties" aria-label="{{localize 'ASTRAEL.CompactSpecialties.Title'}}: {{skill.label}}">
-                  <header>
-                    <span>{{localize "ASTRAEL.CompactSpecialties.Title"}}</span>
-                    <strong>{{skill.label}}</strong>
-                  </header>
-
-                  <div class="astrael-compact-specialty-list">
-                    {{#each skill.specialties as |specialty|}}
-                    <div class="astrael-compact-specialty-item">
-                      <span>{{#if specialty.name}}{{specialty.name}}{{else}}{{localize "ASTRAEL.CompactSpecialties.Unnamed"}}{{/if}}</span>
-                      {{#if ../canManageSpecialties}}
-                      <button type="button" data-action="remove-compact-specialty" data-index="{{specialty.index}}" title="{{localize 'ASTRAEL.CompactSpecialties.Remove'}}" aria-label="{{localize 'ASTRAEL.CompactSpecialties.Remove'}}: {{specialty.name}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
-                      {{/if}}
-                    </div>
-                    {{/each}}
-                    {{#unless skill.specialties.length}}
-                    <p class="astrael-compact-specialties-empty">{{localize "ASTRAEL.CompactSpecialties.Empty"}}</p>
-                    {{/unless}}
-                  </div>
-
-                  {{#if skill.canManageSpecialties}}
-                    {{#if skill.addingSpecialty}}
-                    <div class="astrael-compact-specialty-entry">
-                      <input type="text" data-action="compact-specialty-name" maxlength="120" placeholder="{{localize 'ASTRAEL.CompactSpecialties.NamePlaceholder'}}" aria-label="{{localize 'ASTRAEL.CompactSpecialties.Name'}}">
-                      <button type="button" data-action="cancel-compact-specialty" title="{{localize 'ASTRAEL.CompactSkills.Cancel'}}" aria-label="{{localize 'ASTRAEL.CompactSkills.Cancel'}}"><i class="fas fa-xmark" aria-hidden="true"></i></button>
-                      <button type="button" class="is-primary" data-action="save-compact-specialty" title="{{localize 'ASTRAEL.CompactSkills.Save'}}" aria-label="{{localize 'ASTRAEL.CompactSkills.Save'}}"><i class="fas fa-check" aria-hidden="true"></i></button>
-                    </div>
-                    {{else}}
-                    <button type="button" class="astrael-compact-specialty-add" data-action="begin-compact-specialty" data-key="{{skill.key}}"><i class="fas fa-plus" aria-hidden="true"></i>{{localize "ASTRAEL.CompactSpecialties.Add"}}</button>
-                    {{/if}}
-                  {{/if}}
-                </section>
-                {{/if}}
               </article>
               {{/each}}
               {{#unless compactActiveSkills.length}}
@@ -252,8 +236,58 @@
               {{/unless}}
             </div>
 
+            {{#if compactSpecialtyDock}}
+            <section class="astrael-compact-specialty-dock" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CompactSpecialties.Title'}}: {{compactSpecialtyDock.label}}">
+              <header class="astrael-compact-specialty-dock-header">
+                <div class="astrael-compact-specialty-dock-heading">
+                  <span>{{localize "ASTRAEL.CompactSpecialties.Title"}}</span>
+                  <strong>{{compactSpecialtyDock.label}}</strong>
+                </div>
+                <div class="astrael-compact-specialty-dock-tools">
+                  <span class="astrael-compact-specialty-count" aria-label="{{localize 'ASTRAEL.CompactSpecialties.Count'}}: {{compactSpecialtyDock.specialties.length}}">{{compactSpecialtyDock.specialties.length}}</span>
+                  <button type="button" data-action="close-compact-specialties" title="{{localize 'ASTRAEL.CompactSpecialties.Close'}}" aria-label="{{localize 'ASTRAEL.CompactSpecialties.Close'}}"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+                </div>
+              </header>
+
+              <div class="astrael-compact-specialty-list">
+                {{#each compactSpecialtyDock.specialties as |specialty|}}
+                <div class="astrael-compact-specialty-item">
+                  <span class="astrael-compact-specialty-marker" aria-hidden="true"></span>
+                  <span class="astrael-compact-specialty-name">{{#if specialty.name}}{{specialty.name}}{{else}}{{localize "ASTRAEL.CompactSpecialties.Unnamed"}}{{/if}}</span>
+                  {{#if ../canManage}}
+                  <button type="button" data-action="remove-compact-specialty" data-index="{{specialty.index}}" title="{{localize 'ASTRAEL.CompactSpecialties.Remove'}}" aria-label="{{localize 'ASTRAEL.CompactSpecialties.Remove'}}: {{specialty.name}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
+                  {{/if}}
+                </div>
+                {{/each}}
+                {{#unless compactSpecialtyDock.specialties.length}}
+                <p class="astrael-compact-specialties-empty">{{localize "ASTRAEL.CompactSpecialties.Empty"}}</p>
+                {{/unless}}
+              </div>
+
+              {{#if compactSpecialtyDock.canManage}}
+                {{#if compactSpecialtyDock.adding}}
+                <div class="astrael-compact-specialty-composer">
+                  <label>
+                    <span>{{localize "ASTRAEL.CompactSpecialties.Name"}}</span>
+                    <input type="text" data-action="compact-specialty-name" maxlength="120" placeholder="{{localize 'ASTRAEL.CompactSpecialties.NamePlaceholder'}}">
+                  </label>
+                  <div>
+                    <button type="button" data-action="cancel-compact-specialty">{{localize "ASTRAEL.CompactSkills.Cancel"}}</button>
+                    <button type="button" class="is-primary" data-action="save-compact-specialty">{{localize "ASTRAEL.CompactSkills.Save"}}</button>
+                  </div>
+                </div>
+                {{else}}
+                <footer class="astrael-compact-specialty-dock-footer">
+                  <span>{{localize "ASTRAEL.CompactSpecialties.ManageHint"}}</span>
+                  <button type="button" class="astrael-compact-specialty-add" data-action="begin-compact-specialty" data-key="{{compactSpecialtyDock.key}}"><i class="fas fa-plus" aria-hidden="true"></i>{{localize "ASTRAEL.CompactSpecialties.Add"}}</button>
+                </footer>
+                {{/if}}
+              {{/if}}
+            </section>
+            {{/if}}
+
             {{#if compactSkillEditor}}
-            <section class="astrael-compact-skill-dock {{#if compactSkillEditor.confirmingRemoval}}is-confirming{{/if}}">
+            <section class="astrael-compact-skill-dock {{#if compactSkillEditor.confirmingRemoval}}is-confirming{{/if}}" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CompactSkills.Skill'}}">
               {{#if compactSkillEditor.confirmingRemoval}}
               <div class="astrael-compact-skill-remove-confirmation">
                 <strong>{{localize "ASTRAEL.CompactSkills.RemoveConfirmTitle"}}</strong>
@@ -344,7 +378,7 @@
             </div>
 
             {{#if compactCharacteristicDock}}
-            <section class="astrael-compact-characteristic-dock {{#if compactCharacteristicDock.isFlaw}}is-flaw{{else}}is-advantage{{/if}}">
+            <section class="astrael-compact-characteristic-dock {{#if compactCharacteristicDock.isFlaw}}is-flaw{{else}}is-advantage{{/if}}" role="dialog" aria-modal="true" aria-label="{{compactCharacteristicDock.typeLabel}}">
               {{#if compactCharacteristicDock.isRemove}}
               <div class="astrael-compact-characteristic-remove">
                 <strong>{{localize "ASTRAEL.CompactCharacteristics.RemoveTitle"}}</strong>

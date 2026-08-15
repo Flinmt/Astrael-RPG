@@ -1,50 +1,107 @@
-# Objetivo da Nova Ficha Compacta
+# Ficha Compacta — Objetivo e Estado Atual
 
 ## Propósito deste documento
 
-Este documento orienta futuras sessões de desenvolvimento do Astrael RPG. Antes de alterar a ficha de Personagem ou NPC, releia estas decisões para evitar que a interface volte a crescer ou que a lógica existente seja reescrita sem necessidade.
+Este documento é a fonte de contexto para futuras sessões de desenvolvimento da nova ficha de Personagem do Astrael RPG. Antes de alterar a ficha compacta, releia estas decisões para preservar sua arquitetura, linguagem visual e contratos de interação.
 
-## Objetivo principal
+## Objetivo e arquitetura
 
-Remodelar a ficha de Personagem para uma interface compacta, densa e adequada a um jogo digital. A marcação vermelha em `image.png`, na raiz do projeto, representa a dimensão visual desejada: aproximadamente **440 × 570 px** em comparação com a ficha atual.
+A nova ficha é uma apresentação compacta e densa, pensada como uma interface de videogame inspirada em **Dishonored**: metal envelhecido, bronze moderno, superfícies escuras, tipografia legível e composição de dossiê ocultista. Ela não deve assumir aparência de ficção científica espacial nem copiar visualmente a ficha legada.
 
-O objetivo não é simplesmente reduzir o CSS da ficha existente. Cada região deve ser redesenhada para funcionar nessa escala, mantendo leitura, acesso rápido às ações e identidade visual de dossiê do Astrael RPG.
-
-## Decisão de arquitetura
-
-Criar uma **nova apresentação da ficha**, preservando o Actor, os modelos de dados e a lógica de jogo atuais.
-
-- Não criar outro tipo de Actor.
-- Não duplicar atributos, recursos ou regras no modelo de dados.
+- A ficha compacta reutiliza o mesmo Actor, modelo de dados e regras da ficha antiga.
+- Não duplicar atributos, recursos ou lógica de jogo.
 - Reutilizar cálculos, rolagens, macros, atualizações e localização existentes.
-- Preservar, sempre que possível, atributos como `name`, `data-action`, `data-tab` e demais contratos usados pelos event handlers.
-- Construir templates compactos e CSS com namespace próprio, evitando acumular remendos sobre o layout legado.
-- Manter a ficha antiga disponível durante a migração e removê-la somente após a nova atingir paridade funcional.
+- Preservar contratos como `name`, `data-action`, `data-tab` e chaves de dados sempre que possível.
+- Manter template e CSS próprios, com seletores sob `.astrael-compact-sheet` ou `.compact-character-sheet`.
+- Manter a ficha legada disponível até a compacta alcançar paridade funcional.
+- Não incorporar à ficha compacta alterações experimentais feitas na ficha legada.
 
-As alterações visuais atualmente não commitadas na ficha antiga são experimentos. Elas podem fornecer ideias, mas não devem limitar a arquitetura da nova ficha.
+## Estrutura e direção visual consolidadas
 
-## Direção visual
+- Janela fixa de **560 × 720 px**, sem redimensionamento manual.
+- Navbar flutuante fora da lateral esquerda, vertical, transparente e sem trilho conectando a aba ativa à ficha.
+- Botões circulares com ícones, acabamento escuro e bronze; apenas o estado ativo recebe destaque.
+- O antigo controle de recolher o header foi removido. O header permanece visível em todas as abas.
+- Conteúdo interno usa uma escala ligeiramente maior que a proposta inicial, priorizando leitura sem abandonar a densidade.
+- O rótulo da primeira aba é **Estatísticas** em português e **Stats** em inglês; o identificador técnico continua `attributes`.
+- Listas longas usam `overflow-y` sem scrollbar visível.
+- Editores contextuais surgem como painéis dockados na base da ficha, com animação de baixo para cima. Apenas um dock deve competir pela área inferior por vez.
+- Ao abrir um dock, o restante da ficha entra em estado de foco: fica escurecido e inerte para mouse e teclado até o dock ser fechado. Tooltips não ativam esse estado.
 
-- Janela-alvo próxima de 440 × 570 px.
-- Navegação lateral com botões circulares de ícone, parcialmente posicionados atrás da borda esquerda da ficha.
-- Abas sem expansão textual; usar tooltip e estados claros de hover, foco e seleção.
-- Cabeçalho baixo, com identidade, retrato, experiência e recursos reorganizados.
-- Espaçamento, tipografia e decoração mais econômicos, sem sacrificar legibilidade.
-- Corpo rolável, com alta densidade de informação e hierarquia visual clara.
-- Interfaces extensas devem usar listas compactas, seções recolhíveis, diálogos ou painéis auxiliares em vez de forçar tudo na tela principal.
+## Funcionalidades concluídas
 
-## Ordem de implementação
+### Header e retrato
 
-1. Criar a estrutura da nova ficha e a alternância temporária entre layout legado e compacto.
-2. Implementar dimensões, navegação e estrutura de rolagem.
-3. Remodelar cabeçalho, retrato, experiência e recursos.
-4. Migrar Atributos e Perícias.
-5. Migrar Vantagens e Convicções.
-6. Migrar Virtudes, Hemomancia e Marca do Estranho.
-7. Migrar Configurações e validar paridade funcional.
-8. Aplicar a mesma linguagem à ficha de NPC e, depois, ao criador de NPC.
-9. Tornar o layout compacto padrão e remover o legado apenas após aprovação.
+- Header global com retrato, nome, Pontos de Vida e Força de Vontade.
+- Retrato em moldura retangular de **88 × 112 px**, com o botão de visualização completa sobre o canto superior direito.
+- O retrato suporta enquadramento próprio: zoom de 1× a 3× e reposicionamento por arraste, persistidos em `flags.astrael-rpg.compactPortrait`.
+- A imagem escolhida no editor atualiza `actor.img`; o enquadramento é reiniciado quando a origem da imagem muda.
+- O diretório de Atores usa a imagem do token protótipo quando ela é estática e se atualiza após mudanças em `prototypeToken.texture.src` ou `prototypeToken.randomImg`.
+- A visualização completa não usa `ImagePopout`. A ficha entra em um modo temporário de visualizador, independente da aba ativa.
+- Nesse modo, o chrome nativo, navbar e conteúdo comum são ocultados. Uma barra própria exibe o nome e o botão **Voltar à ficha**.
+- A arte usa `contain` dentro de um palco escuro e emoldurado, mostrando a imagem inteira sem deformação. O botão ou `Escape` retornam à ficha e preservam aba e docks anteriores.
 
-## Critérios de sucesso
+### Vida e Força de Vontade
 
-A remodelação estará concluída quando a ficha compacta operar na dimensão-alvo, todas as ações da ficha anterior continuarem funcionando, português e inglês permanecerem legíveis e os fluxos principais forem validados manualmente no Foundry VTT v14 para Personagem e NPC.
+- Toda a área de cada recurso aceita os controles de dano, não apenas as caixas individuais.
+- Clique esquerdo recupera dano, clique direito aplica dano superficial e `Shift + clique direito` aplica dano agravado.
+- Um tooltip global explica os controles em qualquer aba e aparece como dock na base.
+- O tooltip não aparece enquanto um dock de perícia, especialidade ou característica estiver ativo.
+- A opção **Não mostrar novamente** é uma preferência por jogador (`scope: client`). Quando desativado, o tooltip e os ícones de alerta em Vida e Vontade desaparecem.
+- A reativação não existe no header; será adicionada futuramente na aba Configurações.
+
+### Estatísticas: atributos
+
+- Uma faixa somente leitura entre o header e os Atributos apresenta Iniciativa, Armadura e Movimento com ícones, nomes completos e valores.
+- Iniciativa é calculada como Destreza + Astúcia; Armadura permanece em 0 e Movimento em 6 células até que suas regras sejam expandidas.
+- Nove atributos organizados em três colunas verticais: físicos, sociais e mentais.
+- As categorias não possuem título textual; são diferenciadas por marcadores de cor discretos.
+- Cada atributo usa um mostrador circular segmentado de nível 1 a 5, com ação de rolagem integrada.
+- A região ocupa toda a largura disponível e encosta no header, sem margem vertical intermediária.
+- A seção possui título discreto e pode ser recolhida ou expandida pela seta no extremo direito.
+- O estado recolhido é uma preferência do cliente.
+
+### Estatísticas: perícias e especialidades
+
+- Perícias em nível 0 não são exibidas.
+- A lista possui uma única coluna, ordenada alfabeticamente; cada card ocupa toda a largura.
+- Cards exibem nome, cinco marcadores de nível, acesso às especialidades e edição por ícone de lápis.
+- **Adicionar perícia** abre um editor dockado para selecionar uma perícia ainda ausente e definir nível de 1 a 5.
+- Editar reutiliza o mesmo dock; salvar, cancelar e remover têm estados e cores distintos. `Escape` cancela ou retorna do estado de remoção.
+- Cada perícia aceita zero ou mais especialidades, armazenadas na lista existente `system.specialties`.
+- O botão do card abre um dock inferior com as especialidades daquela perícia. Nomes são adicionados no próprio dock e podem ser removidos individualmente; não há ícones por especialidade.
+
+### Características
+
+- A aba Características reutiliza a filosofia de cards e docks das perícias.
+- Possui dois modos: **Vantagens** e **Desvantagens**, com contadores e alternador segmentado.
+- Vantagens usam bronze/dourado; Desvantagens usam cobre oxidado/bordô, sem fugir da paleta geral.
+- Ambas usam os dados existentes `system.advantages` e `system.flaws`.
+- Cada entrada possui nome obrigatório, descrição opcional e nível de 1 a 5.
+- Listas são ordenadas alfabeticamente para exibição, preservando o índice original para atualizações.
+- Cards abrem um inspetor dockado. Proprietários podem adicionar, editar e remover; campos desconhecidos do objeto são preservados durante a edição.
+- Apenas Vantagens expõem a rolagem existente de `advantage`; Desvantagens não rolam.
+- A interface respeita modo somente leitura e oferece navegação por foco e `Escape`.
+
+## Estado da migração
+
+1. Base, dimensões e navegação: **concluídas**.
+2. Header, recursos e retrato: **concluídos**.
+3. Estatísticas, perícias e especialidades: **concluídas**.
+4. Características — Vantagens e Desvantagens: **concluídas**.
+5. Convicções: **pendente**.
+6. Virtudes: **pendente**.
+7. Hemomancia: **pendente**.
+8. Marca do Estranho: **pendente**.
+9. Configurações, incluindo reativação do tooltip: **pendente**.
+10. Paridade funcional, ficha de NPC e criador de NPC: **pendentes**.
+
+## Critérios permanentes de implementação
+
+- Manter português e inglês sincronizados; não embutir novos textos de interface no template.
+- Preservar a ficha legada e os dados existentes enquanto a migração estiver incompleta.
+- Priorizar legibilidade, alvos clicáveis claros e hierarquia compacta.
+- Não abrir popups quando a interação puder ser resolvida por expansão inline ou dock inferior coerente.
+- Um tooltip de recurso nunca deve cobrir ou competir com outro dock ativo.
+- Validar JavaScript, manifesto, JSON dos dois idiomas, estrutura Handlebars e `git diff --check` após alterações.
+- Fazer smoke test no Foundry VTT v14 das abas e fluxos afetados antes de considerar um módulo concluído.

@@ -4048,8 +4048,8 @@ class AstraelCharacterSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
 class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   static LAYOUT_OPTIONS = {
-    width: 520,
-    minWidth: 520,
+    width: 560,
+    minWidth: 560,
     minHeight: 450,
     heightSetting: null
   };
@@ -4057,7 +4057,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
   static DEFAULT_OPTIONS = {
     classes: ["astrael-rpg", "sheet", "actor", "compact-character-sheet"],
     position: {
-      width: 520,
+      width: 560,
       height: 720
     },
     form: {
@@ -4084,6 +4084,13 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     context.compactCanEditPortrait = this.actor.isOwner;
     context.compactAttributesCollapsed = game.settings.get(SYSTEM_ID, "compactAttributesCollapsed");
     context.compactResourceTooltipsDisabled = game.settings.get(SYSTEM_ID, "compactResourceTooltipsDisabled");
+    const dexterity = Number(this.actor.system.attributes?.dexterity?.value) || 0;
+    const wits = Number(this.actor.system.attributes?.wits?.value) || 0;
+    context.compactStatus = {
+      initiative: dexterity + wits,
+      armor: 0,
+      movement: 6
+    };
     const specialties = Array.isArray(this.actor.system.specialties) ? this.actor.system.specialties : [];
     const buildLevels = (value) => Array.from({ length: 5 }, (_, index) => ({
       value: index + 1,
@@ -4104,7 +4111,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
           key,
           value,
           label: game.i18n.localize(LOCALIZE_SKILL[key]),
-          selected: this._compactSkillEditor?.mode === "edit" && this._compactSkillEditor.key === key,
+          selected: (this._compactSkillEditor?.mode === "edit" && this._compactSkillEditor.key === key)
+            || this._compactSpecialtySkillKey === key,
           canEdit: !this._compactSkillEditor,
           canOpenSpecialties: !this._compactSkillEditor,
           canManageSpecialties: this.actor.isOwner,
@@ -4117,6 +4125,20 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       })
       .filter((skill) => skill.value > 0)
       .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang));
+    const specialtySkill = context.compactActiveSkills.find((skill) => skill.key === this._compactSpecialtySkillKey);
+    if (specialtySkill) {
+      context.compactSpecialtyDock = {
+        key: specialtySkill.key,
+        label: specialtySkill.label,
+        specialties: specialtySkill.specialties,
+        canManage: specialtySkill.canManageSpecialties,
+        adding: specialtySkill.addingSpecialty
+      };
+    } else {
+      this._compactSpecialtySkillKey = null;
+      this._compactSpecialtyAdding = false;
+      context.compactSpecialtyDock = null;
+    }
     const activeKeys = new Set(context.compactActiveSkills.map((skill) => skill.key));
     const availableSkills = SKILL_KEYS
       .filter((key) => !activeKeys.has(key))
@@ -4197,13 +4219,20 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     context.compactResourceTooltipAvailable = !context.compactPortraitViewer
       && !context.compactResourceTooltipsDisabled
       && !context.compactSkillEditor
+      && !context.compactSpecialtyDock
       && !context.compactCharacteristicDock;
+    context.compactDockFocused = Boolean(
+      context.compactSkillEditor
+      || context.compactSpecialtyDock
+      || context.compactCharacteristicDock
+    );
     return context;
   }
 
   async _onRender(context, options) {
     await super._onRender(context, options);
     this.element.classList.toggle("is-portrait-viewer", context.compactPortraitViewer);
+    this.element.classList.toggle("has-compact-dock", context.compactDockFocused);
     this.element.querySelectorAll("[data-action='adjust-compact-attribute']").forEach((button) => {
       button.addEventListener("click", this.#onAdjustCompactAttribute.bind(this, 1));
       button.addEventListener("contextmenu", this.#onAdjustCompactAttribute.bind(this, -1));
@@ -4245,6 +4274,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     this.element.querySelectorAll("[data-action='toggle-compact-specialties']").forEach((button) => {
       button.addEventListener("click", this.#onToggleCompactSpecialties.bind(this));
     });
+    this.element.querySelector("[data-action='close-compact-specialties']")?.addEventListener("click", this.#onCloseCompactSpecialties.bind(this));
     this.element.querySelectorAll("[data-action='begin-compact-specialty']").forEach((button) => {
       button.addEventListener("click", this.#onBeginCompactSpecialty.bind(this));
     });
@@ -4291,6 +4321,23 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     this.element.querySelector("[data-action='confirm-remove-compact-skill']")?.addEventListener("click", this.#onConfirmRemoveCompactSkill.bind(this));
     this.element.addEventListener("keydown", this.#onCompactSkillEditorKeydown.bind(this));
 
+    const activeDock = this.element.querySelector(
+      ".astrael-compact-skill-dock, .astrael-compact-specialty-dock, .astrael-compact-characteristic-dock"
+    );
+    const compactFrame = this.element.querySelector(".astrael-compact-frame");
+    if (activeDock && compactFrame) {
+      const windowHeader = this.element.querySelector(".window-header");
+      if (windowHeader) windowHeader.inert = true;
+      let branch = activeDock;
+      while (branch.parentElement && branch !== compactFrame) {
+        const parent = branch.parentElement;
+        for (const sibling of parent.children) {
+          if (sibling !== branch) sibling.inert = true;
+        }
+        branch = parent;
+      }
+    }
+
     if (context.compactPortraitViewer) {
       this.element.querySelector("[data-action='close-compact-portrait-viewer']")?.focus();
     } else if (this._compactPortraitViewerReturnFocus) {
@@ -4310,12 +4357,18 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
         : `[data-action='edit-compact-skill'][data-key='${this._compactSkillReturnFocus}']`;
       this._compactSkillReturnFocus = null;
       this.element.querySelector(selector)?.focus();
+    } else if (this._compactSpecialtyReturnFocus) {
+      const key = this._compactSpecialtyReturnFocus;
+      this._compactSpecialtyReturnFocus = null;
+      this.element.querySelector(`[data-action='toggle-compact-specialties'][data-key='${key}']`)?.focus();
     } else if (this._compactSpecialtyFocus) {
       const selector = this._compactSpecialtyFocus === "input"
         ? "[data-action='compact-specialty-name']"
         : this._compactSpecialtyFocus === "add"
           ? `[data-action='begin-compact-specialty'][data-key='${this._compactSpecialtySkillKey}']`
-          : `[data-action='toggle-compact-specialties'][data-key='${this._compactSpecialtySkillKey}']`;
+          : this._compactSpecialtyFocus === "close"
+            ? "[data-action='close-compact-specialties']"
+            : `[data-action='toggle-compact-specialties'][data-key='${this._compactSpecialtySkillKey}']`;
       this._compactSpecialtyFocus = null;
       this.element.querySelector(selector)?.focus();
     } else if (this._compactCharacteristicFocus) {
@@ -4489,9 +4542,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     if (this._compactSpecialtySkillKey) {
       event.preventDefault();
       event.stopPropagation();
-      this._compactSpecialtySkillKey = null;
-      this._compactSpecialtyFocus = null;
-      return this.render({ force: true });
+      return this.#onCloseCompactSpecialties();
     }
     if (!this._compactSkillEditor) return;
     event.preventDefault();
@@ -4506,7 +4557,22 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     const closing = this._compactSpecialtySkillKey === key;
     this._compactSpecialtySkillKey = closing ? null : key;
     this._compactSpecialtyAdding = false;
-    this._compactSpecialtyFocus = closing ? null : "toggle";
+    this._compactSpecialtyFocus = closing ? null : "close";
+    if (!closing) {
+      this._compactCharacteristicDock = null;
+      this._compactCharacteristicFocus = null;
+    }
+    return this.render({ force: true });
+  }
+
+  #onCloseCompactSpecialties(event) {
+    event?.preventDefault();
+    if (!this._compactSpecialtySkillKey) return;
+    const key = this._compactSpecialtySkillKey;
+    this._compactSpecialtySkillKey = null;
+    this._compactSpecialtyAdding = false;
+    this._compactSpecialtyFocus = null;
+    this._compactSpecialtyReturnFocus = key;
     return this.render({ force: true });
   }
 
@@ -4556,7 +4622,7 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
       : [];
     if (!Number.isInteger(index) || specialties[index]?.skill !== this._compactSpecialtySkillKey) return;
     specialties.splice(index, 1);
-    this._compactSpecialtyFocus = "toggle";
+    this._compactSpecialtyFocus = "close";
     return this.actor.update({ "system.specialties": specialties });
   }
 
@@ -4578,6 +4644,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     event.preventDefault();
     if (!this.actor.isOwner || (this._compactCharacteristicDock && this._compactCharacteristicDock.mode !== "view")) return;
     this._compactSkillEditor = null;
+    this._compactSpecialtySkillKey = null;
+    this._compactSpecialtyAdding = false;
     this._compactSkillReturnFocus = null;
     this._compactSkillNeedsInitialFocus = false;
     this._compactCharacteristicDock = {
@@ -4597,6 +4665,8 @@ class AstraelCompactCharacterSheet extends AstraelCharacterSheet {
     event.preventDefault();
     if (this._compactCharacteristicDock && this._compactCharacteristicDock.mode !== "view") return;
     this._compactSkillEditor = null;
+    this._compactSpecialtySkillKey = null;
+    this._compactSpecialtyAdding = false;
     this._compactSkillReturnFocus = null;
     this._compactSkillNeedsInitialFocus = false;
     const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
