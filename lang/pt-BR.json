@@ -1,10 +1,7 @@
 {
   "ASTRAEL.Actor.Character": "Personagem",
-  "ASTRAEL.Actor.NPC": "NPC",
   "ASTRAEL.Item.Trait": "Caracteristica",
-  "ASTRAEL.Sheet.NPC": "Ficha de NPC",
   "ASTRAEL.Sheet.Character": "Ficha de Personagem — Astrael RPG",
-  "ASTRAEL.Sheet.CharacterLegacy": "Ficha Legada — Astrael RPG (será removida)",
   "ASTRAEL.CharacterHeader.Name": "Nome",
   "ASTRAEL.CharacterHeader.ChangePortrait": "Alterar retrato",
   "ASTRAEL.CharacterHeader.Collapse": "Recolher cabeçalho",
@@ -116,7 +113,6 @@
   "ASTRAEL.Convictions.Fractures": "Fraturas",
   "ASTRAEL.Convictions.FracturesHint": "Marcador narrativo",
   "TYPES.Actor.character": "Personagem",
-  "TYPES.Actor.npc": "NPC",
   "TYPES.Item.trait": "Caracteristica",
   "ASTRAEL.Chat.WillpowerReroll": "Rerrolar (Força de Vontade)",
   "ASTRAEL.Chat.RerollPrompt": "Clique nos dados que deseja rerrolar (até 3):",
