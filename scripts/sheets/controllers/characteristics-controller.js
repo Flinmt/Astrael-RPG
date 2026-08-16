@@ -132,13 +132,18 @@ class CharacteristicsController {
   }
 
   #clearSkillEditors() {
-    this.host._characterSkillEditor = null;
+    this.host._characterSkillPicker = null;
+    this.host._characterSkillPickerNeedsInitialFocus = false;
     this.host._characterSkillRemoval = null;
     this.host._characterSkillRemovalNeedsInitialFocus = false;
     this.host._characterSpecialtySkillKey = null;
     this.host._characterSpecialtyAdding = false;
+    this.host._characterSpecialtyRemoval = null;
+    this.host._characterSpecialtyRemovalNeedsInitialFocus = false;
+    this.host._characterSpecialtyFocus = null;
+    this.host._characterSpecialtyReturnFocus = null;
     this.host._characterSkillReturnFocus = null;
-    this.host._characterSkillNeedsInitialFocus = false;
+    this.host._characterSkillMarkerReturnFocus = null;
   }
 
   #onSetMode(event) {

@@ -128,14 +128,32 @@
 
 .astrael-character-sheet .astrael-character-skill-level {
   display: grid;
-  grid-template-columns: repeat(5, 10px);
+  grid-template-columns: repeat(5, 18px);
   align-items: center;
   justify-content: center;
   gap: 4px;
-  width: 66px;
+  width: auto;
 }
 
-.astrael-character-sheet .astrael-character-skill-level > span {
+.astrael-character-sheet .astrael-character-skill-level > button {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.astrael-character-sheet .astrael-character-skill-level > button::before {
+  content: "";
   display: block;
   box-sizing: border-box;
   width: 10px;
@@ -144,14 +162,36 @@
   border-radius: 50%;
   background: radial-gradient(circle at 38% 32%, #252720, #090b09 72%);
   box-shadow: inset 0 0 0 2px #0b0d0b;
+  transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease, filter 120ms ease;
 }
 
-.astrael-character-sheet .astrael-character-skill-level > span.is-filled {
+.astrael-character-sheet .astrael-character-skill-level > button.is-filled::before {
   border-color: #c6a36f;
   background: radial-gradient(circle at 38% 32%, #d7b77f, #8b673d 68%);
   box-shadow:
     inset 0 0 0 2px #362a1d,
     0 0 3px rgba(198, 163, 111, 0.18);
+}
+
+.astrael-character-sheet .astrael-character-skill-level > button.is-current::before {
+  box-shadow:
+    inset 0 0 0 2px #362a1d,
+    0 0 0 2px rgba(216, 207, 188, 0.62),
+    0 0 5px rgba(198, 163, 111, 0.24);
+}
+
+.astrael-character-sheet .astrael-character-skill-level > button:hover::before,
+.astrael-character-sheet .astrael-character-skill-level > button:focus-visible::before {
+  border-color: #ead1a5;
+  filter: brightness(1.16);
+}
+
+.astrael-character-sheet .astrael-character-skill-level > button:disabled {
+  cursor: default;
+}
+
+.astrael-character-sheet .astrael-character-skill-level > button:disabled::before {
+  opacity: 0.45;
 }
 
 .astrael-character-sheet .astrael-character-skill-specialties,
@@ -227,21 +267,16 @@
   box-shadow: inset 0 0 0 1px rgba(198, 163, 111, 0.12);
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock {
-  position: absolute;
-  z-index: 20;
-  right: -13px;
-  bottom: 0;
-  left: -13px;
+.astrael-character-sheet .astrael-character-specialties-view {
+  flex: 1;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 12px;
   box-sizing: border-box;
-  height: 300px;
+  min-height: 0;
   margin: 0;
   padding: 14px 16px 13px;
   border: 1px solid #745a37;
-  border-bottom: 0;
   background:
     radial-gradient(circle at 14% 0, rgba(155, 116, 69, 0.15), transparent 34%),
     repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
@@ -252,7 +287,7 @@
   animation: astrael-character-skill-dock-in 150ms ease-out;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-header {
+.astrael-character-sheet .astrael-character-specialties-view-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -262,13 +297,13 @@
   border-bottom: 1px solid #4a4135;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-heading {
+.astrael-character-sheet .astrael-character-specialties-view-heading {
   display: grid;
   gap: 5px;
   min-width: 0;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-heading > span {
+.astrael-character-sheet .astrael-character-specialties-view-heading > span {
   color: #8c826f;
   font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 8px;
@@ -277,7 +312,7 @@
   text-transform: uppercase;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-heading > strong {
+.astrael-character-sheet .astrael-character-specialties-view-heading > strong {
   overflow: hidden;
   color: var(--astrael-character-bone);
   font-family: "Cinzel", Georgia, serif;
@@ -287,7 +322,7 @@
   white-space: nowrap;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-tools {
+.astrael-character-sheet .astrael-character-specialties-view-tools {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -307,7 +342,7 @@
   font-weight: 700;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-tools > button {
+.astrael-character-sheet .astrael-character-specialties-view-tools > button {
   display: grid;
   place-items: center;
   width: 25px;
@@ -324,8 +359,8 @@
   font-size: 9px;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-tools > button:hover,
-.astrael-character-sheet .astrael-character-specialty-dock-tools > button:focus-visible {
+.astrael-character-sheet .astrael-character-specialties-view-tools > button:hover,
+.astrael-character-sheet .astrael-character-specialties-view-tools > button:focus-visible {
   border-color: var(--astrael-nav-bronze-light);
   color: var(--astrael-character-bone);
   background: #242219;
@@ -339,10 +374,6 @@
   overflow-y: auto;
   padding: 2px 3px 2px 0;
   scrollbar-width: none;
-}
-
-.astrael-character-sheet .astrael-character-skills.has-specialty-dock {
-  overflow: visible;
 }
 
 .astrael-character-sheet .astrael-character-specialty-list::-webkit-scrollbar {
@@ -418,7 +449,7 @@
   text-align: center;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-footer {
+.astrael-character-sheet .astrael-character-specialties-view-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -427,7 +458,7 @@
   border-top: 1px solid #39372f;
 }
 
-.astrael-character-sheet .astrael-character-specialty-dock-footer > span {
+.astrael-character-sheet .astrael-character-specialties-view-footer > span {
   color: #746e61;
   font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 8px;
@@ -625,6 +656,307 @@
 
 .astrael-character-sheet .astrael-character-removal-confirmation-actions button:hover,
 .astrael-character-sheet .astrael-character-removal-confirmation-actions button:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: var(--astrael-character-bone);
+  background: #242219;
+}
+
+/* Full-tab skill picker */
+.astrael-character-sheet .astrael-character-skill-picker {
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 12px;
+  box-sizing: border-box;
+  min-height: 0;
+  margin: 0;
+  padding: 14px 16px 13px;
+  border: 1px solid #745a37;
+  background:
+    radial-gradient(circle at 14% 0, rgba(155, 116, 69, 0.15), transparent 34%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
+    #121510;
+  box-shadow:
+    0 -8px 18px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(198, 163, 111, 0.06);
+  animation: astrael-character-skill-dock-in 150ms ease-out;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 48px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #4a4135;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-heading {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-heading > span {
+  color: #8c826f;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-heading > strong {
+  overflow: hidden;
+  color: var(--astrael-character-bone);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 15px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-tools {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-tools > button {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
+  min-height: 25px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #4b504a;
+  border-radius: 0;
+  color: #aaa99f;
+  background: #11130f;
+  box-shadow: none;
+  font-size: 9px;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-tools > button:hover,
+.astrael-character-sheet .astrael-character-skill-picker-tools > button:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: var(--astrael-character-bone);
+  background: #242219;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #4e493e;
+  color: #8c826f;
+  background: #0d0f0c;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-search > i {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-search input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: var(--astrael-character-bone);
+  background: transparent;
+  box-shadow: none;
+  font-size: 11px;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-search input:focus-visible {
+  outline: 0;
+  box-shadow: none;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 6px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 2px 3px 2px 0;
+  scrollbar-width: none;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-list::-webkit-scrollbar {
+  display: none;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  min-height: 42px;
+  padding: 7px 10px 7px 11px;
+  border: 1px solid #302f29;
+  background: #151713;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row[hidden] {
+  display: none;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row.is-selected {
+  border-color: var(--astrael-nav-bronze);
+  background:
+    linear-gradient(90deg, rgba(155, 116, 69, 0.1), transparent 44%),
+    #171914;
+  box-shadow: inset 2px 0 0 var(--astrael-nav-bronze-light);
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row .astrael-character-skill-name {
+  font-size: 11px;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row .astrael-character-skill-level {
+  display: grid;
+  grid-template-columns: repeat(5, 18px);
+  align-items: center;
+  justify-content: end;
+  gap: 4px;
+  width: auto;
+  min-height: 27px;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row .astrael-character-skill-level button {
+  box-sizing: border-box;
+  width: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  height: 18px;
+  min-height: 18px;
+  max-height: 18px;
+  flex: 0 0 18px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row .astrael-character-skill-level button::before {
+  content: "";
+  display: block;
+  box-sizing: border-box;
+  width: 10px;
+  height: 10px;
+  border: 1px solid #5a5447;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #252720, #090b09 72%);
+  box-shadow: inset 0 0 0 2px #0b0d0b;
+  transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease, filter 120ms ease;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row .astrael-character-skill-level button.is-filled::before {
+  border-color: #c6a36f;
+  background: radial-gradient(circle at 38% 32%, #d7b77f, #8b673d 68%);
+  box-shadow:
+    inset 0 0 0 2px #362a1d,
+    0 0 3px rgba(198, 163, 111, 0.18);
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row .astrael-character-skill-level button.is-current::before {
+  box-shadow:
+    inset 0 0 0 2px #362a1d,
+    0 0 0 2px rgba(216, 207, 188, 0.62),
+    0 0 5px rgba(198, 163, 111, 0.24);
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-row .astrael-character-skill-level button:hover::before,
+.astrael-character-sheet .astrael-character-skill-picker-row .astrael-character-skill-level button:focus-visible::before {
+  border-color: #ead1a5;
+  filter: brightness(1.16);
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 22px 0;
+  color: #746e61;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #39372f;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-footer > span {
+  color: #746e61;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  line-height: 1.3;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-footer > div {
+  display: flex;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-footer button {
+  width: auto;
+  min-width: 70px;
+  min-height: 25px;
+  margin: 0;
+  padding: 4px 8px;
+  border: 1px solid #4b504a;
+  border-radius: 0;
+  color: #aaa99f;
+  background: #11130f;
+  box-shadow: none;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-footer button.is-primary {
+  border-color: var(--astrael-nav-bronze);
+  color: #eadcc3;
+  background: rgba(155, 116, 69, 0.25);
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-footer button:disabled {
+  border-color: #343229;
+  color: #5e5a50;
+  background: #10120f;
+  cursor: default;
+  opacity: 0.68;
+}
+
+.astrael-character-sheet .astrael-character-skill-picker-footer button:hover,
+.astrael-character-sheet .astrael-character-skill-picker-footer button:focus-visible {
   border-color: var(--astrael-nav-bronze-light);
   color: var(--astrael-character-bone);
   background: #242219;

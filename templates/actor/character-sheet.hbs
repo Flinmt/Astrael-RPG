@@ -101,6 +101,107 @@
               <button type="button" class="is-danger" data-action="confirm-skill-removal">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
             </div>
           </section>
+          {{else if characterSpecialtyRemoval}}
+          <section class="astrael-character-removal-confirmation" role="alertdialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.RemoveConfirmTitle'}}">
+            <span class="astrael-character-removal-confirmation-icon" aria-hidden="true"><i class="fas fa-trash"></i></span>
+            <h2 class="astrael-character-removal-confirmation-title">{{localize "ASTRAEL.CharacterSpecialties.RemoveConfirmTitle"}}</h2>
+            <strong class="astrael-character-removal-confirmation-skill">{{characterSpecialtyRemoval.name}}</strong>
+            <p class="astrael-character-removal-confirmation-hint">{{localize "ASTRAEL.CharacterSpecialties.RemoveConfirmHint"}}</p>
+            <div class="astrael-character-removal-confirmation-actions">
+              <button type="button" data-action="cancel-specialty-removal">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
+              <button type="button" class="is-danger" data-action="confirm-specialty-removal">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
+            </div>
+          </section>
+          {{else if characterSpecialtiesView}}
+          <section class="astrael-character-specialties-view" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Title'}}: {{characterSpecialtiesView.label}}">
+            <header class="astrael-character-specialties-view-header">
+              <div class="astrael-character-specialties-view-heading">
+                <span>{{localize "ASTRAEL.CharacterSpecialties.Title"}}</span>
+                <strong>{{characterSpecialtiesView.label}}</strong>
+              </div>
+              <div class="astrael-character-specialties-view-tools">
+                <span class="astrael-character-specialty-count" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Count'}}: {{characterSpecialtiesView.specialties.length}}">{{characterSpecialtiesView.specialties.length}}</span>
+                <button type="button" data-action="close-character-specialties" title="{{localize 'ASTRAEL.CharacterSpecialties.Close'}}" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Close'}}"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+              </div>
+            </header>
+
+            <div class="astrael-character-specialty-list">
+              {{#each characterSpecialtiesView.specialties as |specialty|}}
+              <div class="astrael-character-specialty-item">
+                <span class="astrael-character-specialty-marker" aria-hidden="true"></span>
+                <span class="astrael-character-specialty-name">{{#if specialty.name}}{{specialty.name}}{{else}}{{localize "ASTRAEL.CharacterSpecialties.Unnamed"}}{{/if}}</span>
+                {{#if ../characterSpecialtiesView.canManage}}
+                <button type="button" data-action="remove-character-specialty" data-index="{{specialty.index}}" title="{{localize 'ASTRAEL.CharacterSpecialties.Remove'}}" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Remove'}}: {{specialty.name}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
+                {{/if}}
+              </div>
+              {{/each}}
+              {{#unless characterSpecialtiesView.specialties.length}}
+              <p class="astrael-character-specialties-empty">{{localize "ASTRAEL.CharacterSpecialties.Empty"}}</p>
+              {{/unless}}
+            </div>
+
+            {{#if characterSpecialtiesView.canManage}}
+              {{#if characterSpecialtiesView.adding}}
+              <div class="astrael-character-specialty-composer">
+                <label>
+                  <span>{{localize "ASTRAEL.CharacterSpecialties.Name"}}</span>
+                  <input type="text" data-action="character-specialty-name" maxlength="120" placeholder="{{localize 'ASTRAEL.CharacterSpecialties.NamePlaceholder'}}">
+                </label>
+                <div>
+                  <button type="button" data-action="cancel-character-specialty">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
+                  <button type="button" class="is-primary" data-action="save-character-specialty">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
+                </div>
+              </div>
+              {{else}}
+              <footer class="astrael-character-specialties-view-footer">
+                <span>{{localize "ASTRAEL.CharacterSpecialties.ManageHint"}}</span>
+                <button type="button" class="astrael-character-specialty-add" data-action="begin-character-specialty" data-key="{{characterSpecialtiesView.key}}"><i class="fas fa-plus" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSpecialties.Add"}}</button>
+              </footer>
+              {{/if}}
+            {{/if}}
+          </section>
+          {{else if characterSkillPicker}}
+          <section class="astrael-character-skill-picker" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterSkills.PickerTitle'}}">
+            <header class="astrael-character-skill-picker-header">
+              <div class="astrael-character-skill-picker-heading">
+                <span>{{localize "ASTRAEL.CharacterSkills.PickerTitle"}}</span>
+                <strong>{{characterSkillPicker.total}} {{localize "ASTRAEL.CharacterSkills.Available"}}</strong>
+              </div>
+              <div class="astrael-character-skill-picker-tools">
+                <span class="astrael-character-specialty-count" aria-label="{{localize 'ASTRAEL.CharacterSkills.Count'}}: {{characterSkillPicker.selectedCount}}">{{characterSkillPicker.selectedCount}}</span>
+                <button type="button" data-action="close-character-skill-picker" title="{{localize 'ASTRAEL.CharacterSpecialties.Close'}}" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Close'}}"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+              </div>
+            </header>
+
+            <div class="astrael-character-skill-picker-search">
+              <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+              <input type="search" data-action="search-character-skill-picker" value="{{characterSkillPicker.query}}" placeholder="{{localize 'ASTRAEL.CharacterSkills.SearchPlaceholder'}}" aria-label="{{localize 'ASTRAEL.CharacterSkills.SearchPlaceholder'}}">
+            </div>
+
+            <div class="astrael-character-skill-picker-list">
+              {{#each characterSkillPicker.rows as |row|}}
+              <article class="astrael-character-skill-picker-row {{#if row.selected}}is-selected{{/if}}" data-key="{{row.key}}">
+                <span class="astrael-character-skill-name">{{row.label}}</span>
+                <div class="astrael-character-skill-level" aria-label="{{row.label}}, {{localize 'ASTRAEL.CharacterAttributes.Level'}} {{row.level}}">
+                  {{#each row.levels as |level|}}
+                  <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-character-skill-picker-level" data-key="{{../key}}" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}: {{../label}}"></button>
+                  {{/each}}
+                </div>
+              </article>
+              {{/each}}
+              {{#unless characterSkillPicker.rows.length}}
+              <p class="astrael-character-skill-picker-empty">{{localize "ASTRAEL.CharacterSkills.SearchEmpty"}}</p>
+              {{/unless}}
+            </div>
+
+            <footer class="astrael-character-skill-picker-footer">
+              <span>{{localize "ASTRAEL.CharacterSkills.PickerHint"}}</span>
+              <div>
+                <button type="button" data-action="cancel-character-skill-picker">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
+                <button type="button" class="is-primary" data-action="save-character-skill-picker" {{#unless characterSkillPicker.selectedCount}}disabled{{/unless}}>{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
+              </div>
+            </footer>
+          </section>
           {{else}}
           <section class="astrael-character-status-strip" aria-label="{{localize 'ASTRAEL.CharacterStatus.Title'}}">
             <div class="astrael-character-status is-initiative" role="group" title="{{localize 'ASTRAEL.CharacterStatus.Initiative'}}: {{characterStatus.initiative}}" aria-label="{{localize 'ASTRAEL.CharacterStatus.Initiative'}}: {{characterStatus.initiative}}">
@@ -204,7 +305,7 @@
             </section>
           </section>
 
-          <section class="astrael-character-skills {{#if characterSpecialtyDock}}has-specialty-dock{{/if}}">
+          <section class="astrael-character-skills">
             <header class="astrael-character-skills-header">
               <div class="astrael-character-skills-title">
                 <span aria-hidden="true"></span>
@@ -225,7 +326,7 @@
                 </a>
                 <div class="astrael-character-skill-level" aria-label="{{skill.label}}, {{localize 'ASTRAEL.CharacterAttributes.Level'}} {{skill.value}}">
                   {{#each skill.levels as |level|}}
-                  <span class="{{#if level.filled}}is-filled{{/if}}"></span>
+                  <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-character-skill-level" data-key="{{../key}}" data-level="{{level.value}}" title="{{localize 'ASTRAEL.CharacterSkills.LevelHint'}}: {{../label}} {{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}: {{../label}}" {{#unless ../canAdjustLevel}}disabled{{/unless}}></button>
                   {{/each}}
                 </div>
                 <button type="button" class="astrael-character-skill-specialties {{#if skill.specialtiesOpen}}is-active{{/if}}" data-action="toggle-character-specialties" data-key="{{skill.key}}" title="{{localize 'ASTRAEL.CharacterSpecialties.Open'}}: {{skill.label}}" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Open'}}: {{skill.label}}" aria-expanded="{{#if skill.specialtiesOpen}}true{{else}}false{{/if}}" {{#unless skill.canOpenSpecialties}}disabled{{/unless}}>
@@ -246,92 +347,6 @@
               </div>
               {{/unless}}
             </div>
-
-            {{#if characterSpecialtyDock}}
-            <section class="astrael-character-specialty-dock" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Title'}}: {{characterSpecialtyDock.label}}">
-              <header class="astrael-character-specialty-dock-header">
-                <div class="astrael-character-specialty-dock-heading">
-                  <span>{{localize "ASTRAEL.CharacterSpecialties.Title"}}</span>
-                  <strong>{{characterSpecialtyDock.label}}</strong>
-                </div>
-                <div class="astrael-character-specialty-dock-tools">
-                  <span class="astrael-character-specialty-count" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Count'}}: {{characterSpecialtyDock.specialties.length}}">{{characterSpecialtyDock.specialties.length}}</span>
-                  <button type="button" data-action="close-character-specialties" title="{{localize 'ASTRAEL.CharacterSpecialties.Close'}}" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Close'}}"><i class="fas fa-xmark" aria-hidden="true"></i></button>
-                </div>
-              </header>
-
-              <div class="astrael-character-specialty-list">
-                {{#each characterSpecialtyDock.specialties as |specialty|}}
-                <div class="astrael-character-specialty-item">
-                  <span class="astrael-character-specialty-marker" aria-hidden="true"></span>
-                  <span class="astrael-character-specialty-name">{{#if specialty.name}}{{specialty.name}}{{else}}{{localize "ASTRAEL.CharacterSpecialties.Unnamed"}}{{/if}}</span>
-                  {{#if ../canManage}}
-                  <button type="button" data-action="remove-character-specialty" data-index="{{specialty.index}}" title="{{localize 'ASTRAEL.CharacterSpecialties.Remove'}}" aria-label="{{localize 'ASTRAEL.CharacterSpecialties.Remove'}}: {{specialty.name}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
-                  {{/if}}
-                </div>
-                {{/each}}
-                {{#unless characterSpecialtyDock.specialties.length}}
-                <p class="astrael-character-specialties-empty">{{localize "ASTRAEL.CharacterSpecialties.Empty"}}</p>
-                {{/unless}}
-              </div>
-
-              {{#if characterSpecialtyDock.canManage}}
-                {{#if characterSpecialtyDock.adding}}
-                <div class="astrael-character-specialty-composer">
-                  <label>
-                    <span>{{localize "ASTRAEL.CharacterSpecialties.Name"}}</span>
-                    <input type="text" data-action="character-specialty-name" maxlength="120" placeholder="{{localize 'ASTRAEL.CharacterSpecialties.NamePlaceholder'}}">
-                  </label>
-                  <div>
-                    <button type="button" data-action="cancel-character-specialty">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
-                    <button type="button" class="is-primary" data-action="save-character-specialty">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
-                  </div>
-                </div>
-                {{else}}
-                <footer class="astrael-character-specialty-dock-footer">
-                  <span>{{localize "ASTRAEL.CharacterSpecialties.ManageHint"}}</span>
-                  <button type="button" class="astrael-character-specialty-add" data-action="begin-character-specialty" data-key="{{characterSpecialtyDock.key}}"><i class="fas fa-plus" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSpecialties.Add"}}</button>
-                </footer>
-                {{/if}}
-              {{/if}}
-            </section>
-            {{/if}}
-
-            {{#if characterSkillEditor}}
-            <section class="astrael-character-skill-dock" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterSkills.Skill'}}">
-              <div class="astrael-character-skill-dock-fields">
-                {{#if characterSkillEditor.adding}}
-                <label class="astrael-character-skill-dock-select">
-                  <span>{{localize "ASTRAEL.CharacterSkills.Skill"}}</span>
-                  <select data-action="select-character-editor-skill">
-                    <option value="">{{localize "ASTRAEL.CharacterSkills.Select"}}</option>
-                    {{#each characterSkillEditor.options as |option|}}
-                    <option value="{{option.key}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>
-                    {{/each}}
-                  </select>
-                </label>
-                {{else}}
-                <div class="astrael-character-skill-dock-name">
-                  <span>{{localize "ASTRAEL.CharacterSkills.Edit"}}</span>
-                  <strong>{{characterSkillEditor.label}}</strong>
-                </div>
-                {{/if}}
-
-                <div class="astrael-character-skill-dock-level">
-                  <span>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterSkillEditor.level}}</span>
-                  <div>
-                    {{#each characterSkillEditor.levels as |level|}}
-                    <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-character-editor-level" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}"></button>
-                    {{/each}}
-                  </div>
-                </div>
-              </div>
-              <div class="astrael-character-skill-dock-actions">
-                <button type="button" data-action="cancel-character-skill-editor">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
-                <button type="button" class="is-primary" data-action="save-character-skill-editor">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
-              </div>
-            </section>
-            {{/if}}
           </section>
           {{/if}}
         </div>
