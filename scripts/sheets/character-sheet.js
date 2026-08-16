@@ -1,4 +1,4 @@
-import { CHARACTER_SHEET_TEMPLATE, LOCALIZE_SKILL, SKILL_KEYS, SYSTEM_ID } from "../core/constants.js";
+import { ATTRIBUTE_KEYS, CHARACTER_SHEET_TEMPLATE, LOCALIZE_SKILL, SKILL_KEYS, SYSTEM_ID } from "../core/constants.js";
 import {
   clampNumber,
   getCharacterPortraitFraming,
