@@ -30,7 +30,7 @@
 
 .astrael-character-sheet .astrael-character-settings-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 9px;
   margin-bottom: 18px;
   padding-bottom: 11px;
@@ -41,32 +41,8 @@
   flex: 0 0 auto;
   width: 6px;
   height: 6px;
-  margin-top: 5px;
   background: var(--astrael-nav-bronze-light);
   transform: rotate(45deg);
-}
-
-.astrael-character-sheet .astrael-character-settings-header h2,
-.astrael-character-sheet .astrael-character-settings-header p {
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.astrael-character-sheet .astrael-character-settings-header h2 {
-  color: #d2c7b3;
-  font-family: "Cinzel", Georgia, serif;
-  font-size: 13px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.astrael-character-sheet .astrael-character-settings-header p {
-  margin-top: 4px;
-  color: #817a6d;
-  font-family: "IBM Plex Mono", Consolas, monospace;
-  font-size: 9px;
-  line-height: 1.45;
 }
 
 .astrael-character-sheet .astrael-character-settings-group {

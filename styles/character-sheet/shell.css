@@ -64,6 +64,19 @@
   -webkit-backdrop-filter: none;
 }
 
+.astrael-character-sheet .astrael-character-panel .astrael-character-section-title {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #9b927f;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .astrael-character-sheet.is-portrait-viewer .astrael-character-shell {
   position: relative;
   overflow: hidden;

@@ -35,17 +35,6 @@
   transform: rotate(45deg);
 }
 
-.astrael-character-sheet .astrael-character-skills-title h3 {
-  margin: 0;
-  color: #9b927f;
-  font-family: "Cinzel", Georgia, serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 .astrael-character-sheet .astrael-character-skills-configure {
   display: inline-flex;
   align-items: center;
@@ -551,4 +540,3 @@
   color: var(--astrael-character-bone);
   background: #242219;
 }
-

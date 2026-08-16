@@ -52,16 +52,6 @@
   transform: rotate(45deg);
 }
 
-.astrael-character-sheet .astrael-convictions-header h2 {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  color: #d2c7b3;
-  font-family: "Cinzel", Georgia, serif;
-  font-size: 12px;
-  letter-spacing: 0.1em;
-}
-
 .astrael-character-sheet .astrael-convictions-header > span,
 .astrael-character-sheet .astrael-conviction-fractures > span,
 .astrael-character-sheet .astrael-conviction-card-pillar small,

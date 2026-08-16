@@ -114,7 +114,7 @@
           <section class="astrael-character-attributes {{#if characterAttributesCollapsed}}is-collapsed{{/if}}">
             <header class="astrael-character-attribute-region-title">
               <span aria-hidden="true"></span>
-              <h3>{{localize "ASTRAEL.CharacterAttributes.Title"}}</h3>
+              <h3 class="astrael-character-section-title">{{localize "ASTRAEL.CharacterAttributes.Title"}}</h3>
               <button type="button" class="astrael-character-attributes-toggle" data-action="toggle-character-attributes" title="{{#if characterAttributesCollapsed}}{{localize 'ASTRAEL.CharacterAttributes.Expand'}}{{else}}{{localize 'ASTRAEL.CharacterAttributes.Collapse'}}{{/if}}" aria-label="{{#if characterAttributesCollapsed}}{{localize 'ASTRAEL.CharacterAttributes.Expand'}}{{else}}{{localize 'ASTRAEL.CharacterAttributes.Collapse'}}{{/if}}" aria-expanded="{{#if characterAttributesCollapsed}}false{{else}}true{{/if}}">
                 <i class="fas {{#if characterAttributesCollapsed}}fa-chevron-down{{else}}fa-chevron-up{{/if}}" aria-hidden="true"></i>
               </button>
@@ -197,7 +197,7 @@
             <header class="astrael-character-skills-header">
               <div class="astrael-character-skills-title">
                 <span aria-hidden="true"></span>
-                <h3>{{localize "ASTRAEL.Skills.Title"}}</h3>
+                <h3 class="astrael-character-section-title">{{localize "ASTRAEL.Skills.Title"}}</h3>
               </div>
               {{#if characterCanAddSkill}}
               <button type="button" class="astrael-character-skills-configure" data-action="add-character-skill">{{localize "ASTRAEL.CharacterSkills.Add"}}</button>
@@ -342,7 +342,7 @@
             <header class="astrael-characteristics-header">
               <div>
                 <span aria-hidden="true"></span>
-                <h2>{{localize "ASTRAEL.Tab.Advantages"}}</h2>
+                <h2 class="astrael-character-section-title">{{localize "ASTRAEL.Tab.Advantages"}}</h2>
               </div>
               {{#if characterCharacteristics.canAdd}}
               <button type="button" class="astrael-characteristic-add" data-action="add-characteristic"><i class="fas fa-plus" aria-hidden="true"></i>{{#if characterCharacteristics.isFlaw}}{{localize "ASTRAEL.CharacterCharacteristics.AddFlaw"}}{{else}}{{localize "ASTRAEL.CharacterCharacteristics.AddAdvantage"}}{{/if}}</button>
@@ -438,7 +438,7 @@
         <div class="tab-panel astrael-character-panel" data-tab="convictions">
           <section class="astrael-convictions">
             <header class="astrael-convictions-header">
-              <div><span aria-hidden="true"></span><h2>{{localize "ASTRAEL.Convictions.Title"}}</h2></div>
+              <div><span aria-hidden="true"></span><h2 class="astrael-character-section-title">{{localize "ASTRAEL.Convictions.Title"}}</h2></div>
               <span>{{characterConvictionView.completed}}/3 {{localize "ASTRAEL.Convictions.Defined"}}</span>
             </header>
             <div class="astrael-conviction-list">
@@ -518,8 +518,7 @@
             <header class="astrael-character-settings-header">
               <span aria-hidden="true"></span>
               <div>
-                <h2>{{localize "ASTRAEL.Tab.Settings"}}</h2>
-                <p>{{localize "ASTRAEL.Settings.Description"}}</p>
+                <h2 class="astrael-character-section-title">{{localize "ASTRAEL.Tab.Settings"}}</h2>
               </div>
             </header>
 

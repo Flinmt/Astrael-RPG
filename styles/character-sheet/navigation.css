@@ -275,13 +275,6 @@
   transform: rotate(45deg);
 }
 
-.astrael-character-sheet .astrael-character-attribute-region-title h3 {
-  color: #9b927f;
-  font-family: "Cinzel", Georgia, serif;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-}
-
 .astrael-character-sheet .astrael-character-attribute-band {
   border-color: #39372f;
   background:

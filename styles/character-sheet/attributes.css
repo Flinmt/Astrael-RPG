@@ -55,17 +55,6 @@
   background: var(--astrael-nav-bronze-light);
 }
 
-.astrael-character-sheet .astrael-character-attribute-region-title h3 {
-  margin: 0;
-  color: #7f8c92;
-  font-family: "IBM Plex Mono", Consolas, monospace;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
 .astrael-character-sheet .astrael-character-attributes-toggle {
   display: grid;
   place-items: center;
@@ -215,4 +204,3 @@
 .astrael-character-sheet .astrael-character-panel::-webkit-scrollbar-thumb:hover {
   background: var(--astrael-gold);
 }
-
