@@ -4016,7 +4016,8 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
   async _onRender(context, options) {
     await super._onRender(context, options);
     this.element.classList.toggle("is-portrait-viewer", context.characterPortraitViewer);
-    this.element.classList.toggle("has-character-dock", context.characterDockFocused);
+    const windowHeader = this.element.querySelector(".window-header");
+    if (windowHeader) windowHeader.inert = false;
     this.element.querySelectorAll("[data-action='adjust-character-attribute']").forEach((button) => {
       button.addEventListener("click", this.#onAdjustCharacterAttribute.bind(this, 1));
       button.addEventListener("contextmenu", this.#onAdjustCharacterAttribute.bind(this, -1));
@@ -4110,8 +4111,6 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     );
     const characterFrame = this.element.querySelector(".astrael-character-frame");
     if (activeDock && characterFrame) {
-      const windowHeader = this.element.querySelector(".window-header");
-      if (windowHeader) windowHeader.inert = true;
       let branch = activeDock;
       while (branch.parentElement && branch !== characterFrame) {
         const parent = branch.parentElement;

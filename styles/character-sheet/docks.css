@@ -1,12 +1,10 @@
 /* Modal focus state for docked menus */
-.application.astrael-rpg.character-sheet.has-character-dock .window-header,
 .astrael-character-sheet.is-dock-focused [inert] {
   filter: brightness(0.34) saturate(0.55);
   pointer-events: none;
   user-select: none;
 }
 
-.application.astrael-rpg.character-sheet.has-character-dock .window-header,
 .astrael-character-sheet.is-dock-focused [inert],
 .astrael-character-sheet .astrael-character-header,
 .astrael-character-sheet .astrael-character-tabs,
