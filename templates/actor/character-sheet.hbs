@@ -514,7 +514,41 @@
           <h2>{{localize "ASTRAEL.Tab.StrangerMark"}}</h2>
         </div>
         <div class="tab-panel astrael-character-panel" data-tab="settings">
-          <h2>{{localize "ASTRAEL.Tab.Settings"}}</h2>
+          <section class="astrael-character-settings">
+            <header class="astrael-character-settings-header">
+              <span aria-hidden="true"></span>
+              <div>
+                <h2>{{localize "ASTRAEL.Tab.Settings"}}</h2>
+                <p>{{localize "ASTRAEL.Settings.Description"}}</p>
+              </div>
+            </header>
+
+            <section class="astrael-character-settings-group" aria-label="{{localize 'ASTRAEL.Settings.Interface'}}">
+              <header>
+                <i class="fas fa-display" aria-hidden="true"></i>
+                <h3>{{localize "ASTRAEL.Settings.Interface"}}</h3>
+              </header>
+              <div class="astrael-character-setting-row">
+                <span class="astrael-character-setting-icon" aria-hidden="true"><i class="fas fa-circle-info"></i></span>
+                <span class="astrael-character-setting-copy">
+                  <strong>{{localize "ASTRAEL.Settings.ResourceTooltips"}}</strong>
+                  <small>{{localize "ASTRAEL.Settings.ResourceTooltipsHint"}}</small>
+                </span>
+                <button
+                  type="button"
+                  class="astrael-character-setting-toggle {{#if characterResourceTooltipsEnabled}}is-active{{/if}}"
+                  data-action="set-character-resource-tooltips"
+                  data-disabled="{{#if characterResourceTooltipsEnabled}}true{{else}}false{{/if}}"
+                  role="switch"
+                  aria-checked="{{#if characterResourceTooltipsEnabled}}true{{else}}false{{/if}}"
+                  aria-label="{{localize 'ASTRAEL.Settings.ResourceTooltips'}}"
+                >
+                  <span aria-hidden="true"></span>
+                  <strong>{{#if characterResourceTooltipsEnabled}}{{localize "ASTRAEL.Settings.Enabled"}}{{else}}{{localize "ASTRAEL.Settings.Disabled"}}{{/if}}</strong>
+                </button>
+              </div>
+            </section>
+          </section>
         </div>
       </section>
       {{#if characterResourceTooltipAvailable}}

@@ -1,0 +1,216 @@
+/* Character sheet settings */
+.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="settings"].active {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+}
+
+.application.astrael-rpg.character-sheet[data-active-tab="settings"] .astrael-character-body {
+  padding: 0;
+}
+
+.astrael-character-sheet .astrael-character-settings {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 14px 13px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  background:
+    radial-gradient(circle at 18% 0, rgba(155, 116, 69, 0.09), transparent 34%),
+    #10130f;
+}
+
+.astrael-character-sheet .astrael-character-settings::-webkit-scrollbar {
+  display: none;
+}
+
+.astrael-character-sheet .astrael-character-settings-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-bottom: 18px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #3d392f;
+}
+
+.astrael-character-sheet .astrael-character-settings-header > span {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  margin-top: 5px;
+  background: var(--astrael-nav-bronze-light);
+  transform: rotate(45deg);
+}
+
+.astrael-character-sheet .astrael-character-settings-header h2,
+.astrael-character-sheet .astrael-character-settings-header p {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.astrael-character-sheet .astrael-character-settings-header h2 {
+  color: #d2c7b3;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-settings-header p {
+  margin-top: 4px;
+  color: #817a6d;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.astrael-character-sheet .astrael-character-settings-group {
+  border: 1px solid #3d392f;
+  background: rgba(10, 12, 9, 0.76);
+  box-shadow: inset 3px 0 #80643e;
+}
+
+.astrael-character-sheet .astrael-character-settings-group > header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 31px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #343229;
+  color: #a9977c;
+  background: linear-gradient(90deg, rgba(155, 116, 69, 0.1), transparent 62%);
+}
+
+.astrael-character-sheet .astrael-character-settings-group > header i {
+  color: var(--astrael-nav-bronze-light);
+  font-size: 10px;
+}
+
+.astrael-character-sheet .astrael-character-settings-group > header h3 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-setting-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 72px;
+  padding: 11px 12px;
+}
+
+.astrael-character-sheet .astrael-character-setting-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #50483b;
+  color: var(--astrael-nav-bronze-light);
+  background: #151712;
+  transform: rotate(45deg);
+}
+
+.astrael-character-sheet .astrael-character-setting-icon i {
+  font-size: 11px;
+  transform: rotate(-45deg);
+}
+
+.astrael-character-sheet .astrael-character-setting-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-character-setting-copy strong {
+  color: #d0c5b1;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 11px;
+}
+
+.astrael-character-sheet .astrael-character-setting-copy small {
+  color: #817a6d;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.astrael-character-sheet .astrael-character-setting-toggle {
+  display: grid;
+  grid-template-columns: 26px auto;
+  align-items: center;
+  gap: 7px;
+  width: auto;
+  min-width: 91px;
+  min-height: 29px;
+  margin: 0;
+  padding: 3px 7px 3px 4px;
+  border: 1px solid #49453a;
+  border-radius: 0;
+  color: #8e8779;
+  background: #11130f;
+  box-shadow: none;
+}
+
+.astrael-character-sheet .astrael-character-setting-toggle > span {
+  position: relative;
+  width: 25px;
+  height: 13px;
+  border: 1px solid #514c41;
+  background: #090b09;
+}
+
+.astrael-character-sheet .astrael-character-setting-toggle > span::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 7px;
+  height: 7px;
+  background: #716b60;
+  transition: transform 140ms ease, background-color 140ms ease;
+}
+
+.astrael-character-sheet .astrael-character-setting-toggle strong {
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-setting-toggle.is-active {
+  border-color: #80643e;
+  color: var(--astrael-nav-bronze-light);
+  background: rgba(155, 116, 69, 0.09);
+}
+
+.astrael-character-sheet .astrael-character-setting-toggle.is-active > span {
+  border-color: #80643e;
+}
+
+.astrael-character-sheet .astrael-character-setting-toggle.is-active > span::after {
+  background: var(--astrael-nav-bronze-light);
+  transform: translateX(12px);
+}
+
+.astrael-character-sheet .astrael-character-setting-toggle:hover,
+.astrael-character-sheet .astrael-character-setting-toggle:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: var(--astrael-character-bone);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .astrael-character-sheet .astrael-character-setting-toggle > span::after {
+    transition: none;
+  }
+}

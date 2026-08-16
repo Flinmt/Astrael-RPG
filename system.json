@@ -28,6 +28,7 @@
     "styles/character-sheet/characteristics.css",
     "styles/character-sheet/convictions.css",
     "styles/character-sheet/portrait.css",
+    "styles/character-sheet/settings.css",
     "styles/applications/portrait-editor.css",
     "styles/character-sheet/stats.css",
     "styles/applications/panels.css",

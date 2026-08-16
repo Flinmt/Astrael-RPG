@@ -46,6 +46,7 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     context.characterCanEditPortrait = this.actor.isOwner;
     context.characterAttributesCollapsed = game.settings.get(SYSTEM_ID, "compactAttributesCollapsed");
     context.characterResourceTooltipsDisabled = game.settings.get(SYSTEM_ID, "compactResourceTooltipsDisabled");
+    context.characterResourceTooltipsEnabled = !context.characterResourceTooltipsDisabled;
     const dexterity = Number(this.actor.system.attributes?.dexterity?.value) || 0;
     const wits = Number(this.actor.system.attributes?.wits?.value) || 0;
     context.characterStatus = {

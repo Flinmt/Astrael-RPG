@@ -87,6 +87,16 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return this._characteristicsController;
   }
 
+  _getHeaderControls() {
+    return super._getHeaderControls().filter((control) => control.action !== "configurePrototypeToken");
+  }
+
+  _getFrameButtons(options) {
+    const buttons = super._getFrameButtons(options);
+    const prototypeToken = super._getHeaderControls().find((control) => control.action === "configurePrototypeToken");
+    return prototypeToken ? [prototypeToken, ...buttons] : buttons;
+  }
+
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
     const systemData = this.actor.system?.toObject?.() ?? this.actor.system;

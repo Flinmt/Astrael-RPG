@@ -48,7 +48,7 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 - Um tooltip global explica os controles em qualquer aba e aparece como dock na base.
 - O tooltip não aparece enquanto um dock de perícia, especialidade ou característica estiver ativo.
 - A opção **Não mostrar novamente** é uma preferência por jogador (`scope: client`). Quando desativado, o tooltip e os ícones de alerta em Vida e Vontade desaparecem.
-- A reativação não existe no header; será adicionada futuramente na aba Configurações.
+- A reativação não existe no header; a aba Configuração permite ativar ou desativar novamente essas dicas, mantendo a preferência individual por jogador.
 
 ### Estatísticas: atributos
 
@@ -106,7 +106,7 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 6. Virtudes: **pendente**.
 7. Hemomancia: **pendente**.
 8. Marca do Estranho: **pendente**.
-9. Configurações, incluindo reativação do tooltip: **pendente**.
+9. Configurações — estrutura visual e controle das dicas de Vida e Vontade: **concluídas**; novas preferências podem ser adicionadas por seção.
 10. Paridade funcional, ficha de NPC e criador de NPC: **pendentes**.
 
 ## Critérios permanentes de implementação
