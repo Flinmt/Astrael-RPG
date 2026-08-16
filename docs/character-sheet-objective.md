@@ -83,13 +83,26 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 - Apenas Vantagens expõem a rolagem existente de `advantage`; Desvantagens não rolam.
 - A interface respeita modo somente leitura e oferece navegação por foco e `Escape`.
 
+### Convicções
+
+- Todo personagem possui exatamente três Convicções, apresentadas como estruturas verticais contínuas que dividem igualmente a área útil da aba.
+- Cada Convicção armazena nome, descrição, Fraturas entre 0 e 2 e um único Pilar, composto por nome e descrição. Todos os textos são opcionais.
+- Cada coluna é composta por três zonas conectadas: demonstrativo do Pilar no topo, corpo clicável e flexível da Convicção no centro e controles de Fratura na base; estados vazios mantêm a mesma altura e orientam o preenchimento.
+- A metáfora de sustentação permanece em ícones, linhas e fissuras ornamentais, sem determinar a estrutura ou reduzir o espaço de conteúdo.
+- Os marcadores de Fratura podem ser alterados diretamente na visão geral. Clicar em 1 ou 2 define esse valor; clicar novamente no valor ativo retorna a 0.
+- Clicar no corpo de uma coluna abre diretamente o editor para proprietários; usuários somente leitura recebem o inspetor. O painel sobrepõe a lista e ocupa toda a área abaixo do título da aba, usando o mesmo estado de foco modal dos demais docks.
+- Proprietários editam os quatro campos textuais e as Fraturas em um único rascunho local, com indicação de alterações pendentes e **Salvar** inativo até que algo mude. **Salvar** confirma todo o rascunho; **Cancelar** ou `Escape` o descarta e retorna à visão das três colunas. Na visão geral, Fraturas permanecem um controle rápido com persistência imediata.
+- Usuários sem propriedade podem navegar e inspecionar, mas não alterar campos nem Fraturas.
+- A arte é construída em CSS e Font Awesome, sem imagens rasterizadas, e respeita a preferência de movimento reduzido.
+- O contrato persistido é `system.convictions[3]`, com cada entrada no formato `{ name, description, fractures, pillar: { name, description } }`.
+
 ## Estado da migração
 
 1. Base, dimensões e navegação: **concluídas**.
 2. Header, recursos e retrato: **concluídos**.
 3. Estatísticas, perícias e especialidades: **concluídas**.
 4. Características — Vantagens e Desvantagens: **concluídas**.
-5. Convicções: **pendente**.
+5. Convicções: **concluídas**.
 6. Virtudes: **pendente**.
 7. Hemomancia: **pendente**.
 8. Marca do Estranho: **pendente**.
@@ -99,7 +112,7 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 ## Critérios permanentes de implementação
 
 - Manter português e inglês sincronizados; não embutir novos textos de interface no template.
-- Preservar a ficha legada e os dados existentes enquanto a migração estiver incompleta.
+- Preservar os dados existentes enquanto a migração estiver incompleta.
 - Priorizar legibilidade, alvos clicáveis claros e hierarquia compacta.
 - Não abrir popups quando a interação puder ser resolvida por expansão inline ou dock inferior coerente.
 - Um tooltip de recurso nunca deve cobrir ou competir com outro dock ativo.

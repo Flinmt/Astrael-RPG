@@ -6,8 +6,6 @@ const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stran
 const DICE_POOL_CHAT_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/dice-pool-card.hbs`;
 const RESOURCE_MINIMUMS = { health: 4, willpower: 2 };
 const CONVICTION_CARD_COUNT = 3;
-const CONVICTION_CENTER_INDEX = 1;
-const CONVICTION_PILLAR_TYPES = ["Local", "Objeto", "Pessoa"];
 const ATTRIBUTE_KEYS = ["strength", "dexterity", "stamina", "charisma", "manipulation", "composure", "intelligence", "wits", "resolve"];
 const SKILL_KEYS = ["athletics", "brawl", "crafts", "drive", "firearms", "larceny", "melee", "stealth", "survival", "animalKen", "empathy", "etiquette", "expression", "intimidation", "leadership", "persuasion", "streetwise", "subterfuge", "academics", "awareness", "finance", "investigation", "medicine", "occult", "politics", "science", "technology"];
 const LOCALIZE_ATTR = { strength: "ASTRAEL.Attribute.Strength", dexterity: "ASTRAEL.Attribute.Dexterity", stamina: "ASTRAEL.Attribute.Stamina", charisma: "ASTRAEL.Attribute.Charisma", manipulation: "ASTRAEL.Attribute.Manipulation", composure: "ASTRAEL.Attribute.Composure", intelligence: "ASTRAEL.Attribute.Intelligence", wits: "ASTRAEL.Attribute.Wits", resolve: "ASTRAEL.Attribute.Resolve" };
@@ -66,6 +64,30 @@ function resourceField(resourceId) {
     superficial: new NumberField({ required: true, integer: true, min: 0, initial: resource.superficial }),
     aggravated: new NumberField({ required: true, integer: true, min: 0, initial: resource.aggravated })
   });
+}
+
+function convictionField() {
+  return new SchemaField({
+    name: stringField(),
+    description: stringField(),
+    fractures: new NumberField({ required: true, integer: true, min: 0, max: 2, initial: 0 }),
+    pillar: new SchemaField({
+      name: stringField(),
+      description: stringField()
+    })
+  });
+}
+
+function createEmptyConviction() {
+  return {
+    name: "",
+    description: "",
+    fractures: 0,
+    pillar: {
+      name: "",
+      description: ""
+    }
+  };
 }
 
 function migrateLegacyResource(resourceId, source) {
@@ -133,7 +155,10 @@ class AstraelCharacterData extends TypeDataModel {
         selectedAbilityLevel: new NumberField({ required: true, integer: true, min: 1, max: 5, initial: 1 }),
         marks: new ArrayField(new ObjectField(), { required: true, initial: () => [] })
       }),
-      convictions: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
+      convictions: new ArrayField(convictionField(), {
+        required: true,
+        initial: () => Array.from({ length: CONVICTION_CARD_COUNT }, createEmptyConviction)
+      }),
       virtues: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),
       sangria: traitValueField(5, 0),
       vazio: traitValueField(0, 0),
@@ -374,41 +399,28 @@ function normalizeVisibleTabs(source = {}) {
   };
 }
 
-function normalizeConviction(source = {}, index = 0) {
-  const pillars = Array.isArray(source.pillars) ? source.pillars : [];
-  const sourcePillar = pillars[0] ?? {};
-  const type = index === CONVICTION_CENTER_INDEX
-    ? "Pessoa"
-    : (CONVICTION_PILLAR_TYPES.includes(sourcePillar.type) ? sourcePillar.type : "Local");
-
+function normalizeConviction(source = {}) {
+  const sourcePillar = source.pillar ?? {};
   return {
     name: source.name || "",
     description: source.description || "",
     fractures: clampNumber(source.fractures ?? source.fracture ?? 0, 0, 2),
-    pillars: [{
+    pillar: {
       name: sourcePillar.name || "",
-      type
-    }]
+      description: sourcePillar.description || ""
+    }
   };
 }
 
 function normalizeConvictionList(source = []) {
-  return Array.from({ length: CONVICTION_CARD_COUNT }, (_, index) => normalizeConviction(source[index] ?? {}, index));
+  return Array.from({ length: CONVICTION_CARD_COUNT }, (_, index) => normalizeConviction(source[index] ?? {}));
 }
 
 function buildFractureBoxes(value) {
   const active = clampNumber(value, 0, 2);
   return Array.from({ length: 2 }, (_, index) => ({
-    index,
+    value: index + 1,
     filled: index < active
-  }));
-}
-
-function getConvictionPillarTypeOptions(selectedType) {
-  return CONVICTION_PILLAR_TYPES.map((type) => ({
-    value: type,
-    label: game.i18n.localize(`ASTRAEL.Convictions.PillarType${type}`),
-    selected: type === selectedType
   }));
 }
 
@@ -1241,18 +1253,48 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     context.system.customRolls = Array.isArray(context.system.customRolls) ? context.system.customRolls : [];
     context.system.advantages = Array.isArray(context.system.advantages) ? context.system.advantages : [];
     context.system.flaws = Array.isArray(context.system.flaws) ? context.system.flaws : [];
-    context.system.convictions = normalizeConvictionList(Array.isArray(context.system.convictions) ? context.system.convictions : []).map((conviction, index) => {
-      const normalized = normalizeConviction(conviction, index);
-      return {
-        ...normalized,
-        index,
-        editing: index === this._editingConvictionIndex,
-        isCenter: index === CONVICTION_CENTER_INDEX,
-        pillar: normalized.pillars[0],
-        fractureBoxes: buildFractureBoxes(normalized.fractures),
-        pillarTypeOptions: getConvictionPillarTypeOptions(normalized.pillars[0].type)
-      };
+    context.system.convictions = normalizeConvictionList(Array.isArray(context.system.convictions) ? context.system.convictions : []);
+    const convictionDock = this._characterConvictionDock;
+    const selectedConvictionIndex = Number.isInteger(convictionDock?.index)
+      && convictionDock.index >= 0
+      && convictionDock.index < CONVICTION_CARD_COUNT
+      ? convictionDock.index
+      : null;
+    const prepareConvictionPresentation = (conviction, index) => ({
+      ...conviction,
+      index,
+      number: index + 1,
+      nameLabel: conviction.name || game.i18n.localize("ASTRAEL.Convictions.EmptyName"),
+      descriptionLabel: conviction.description || game.i18n.localize("ASTRAEL.Convictions.EmptyDescription"),
+      pillarNameLabel: conviction.pillar.name || game.i18n.localize("ASTRAEL.Convictions.EmptyPillarName"),
+      filled: Boolean(conviction.name || conviction.description || conviction.pillar.name || conviction.pillar.description),
+      fractureBoxes: buildFractureBoxes(conviction.fractures),
+      fractureClass: `is-fractured-${conviction.fractures}`,
+      selected: index === selectedConvictionIndex
     });
+    context.characterConvictions = context.system.convictions.map(prepareConvictionPresentation);
+    context.characterConvictionView = {
+      canEdit: this.actor.isOwner,
+      completed: context.characterConvictions.filter((conviction) => conviction.filled).length,
+      selectedIndex: selectedConvictionIndex
+    };
+    if (selectedConvictionIndex !== null) {
+      const source = context.system.convictions[selectedConvictionIndex];
+      const displaySource = convictionDock.mode === "edit" ? normalizeConviction(convictionDock) : source;
+      const convictionDirty = convictionDock.mode === "edit"
+        && JSON.stringify(displaySource) !== JSON.stringify(normalizeConviction(convictionDock.original));
+      context.characterConvictionDock = {
+        ...prepareConvictionPresentation(displaySource, selectedConvictionIndex),
+        mode: convictionDock.mode,
+        isView: convictionDock.mode === "view",
+        isEdit: convictionDock.mode === "edit",
+        dirty: convictionDirty,
+        canManage: this.actor.isOwner
+      };
+    } else {
+      this._characterConvictionDock = null;
+      context.characterConvictionDock = null;
+    }
     context.system.hemomancy ??= { level: 0, alchemyLevel: 0, powers: [], formulas: [] };
     context.system.hemomancy.level = clampNumber(context.system.hemomancy.level, 0, 5);
     context.system.hemomancy.alchemyLevel = clampNumber(context.system.hemomancy.alchemyLevel, 0, 5);
@@ -1392,9 +1434,8 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       resource.addEventListener("contextmenu", this.#onCharacterResourceContext.bind(this));
     });
 
-    this.element.querySelectorAll(".fracture-box").forEach((box) => {
+    this.element.querySelectorAll(".astrael-conviction-fracture").forEach((box) => {
       box.addEventListener("click", this.#onFractureBoxClick.bind(this));
-      box.addEventListener("contextmenu", this.#onFractureBoxContext.bind(this));
     });
 
     this.element.querySelectorAll("[data-damage]").forEach((button) => {
@@ -1457,11 +1498,20 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       rank.addEventListener("click", this.#onAdvantageRankClick.bind(this));
       rank.addEventListener("contextmenu", this.#onAdvantageRankContext.bind(this));
     });
-    this.element.querySelectorAll("[data-action='edit-conviction']").forEach((button) => {
-      button.addEventListener("click", this.#onEditConviction.bind(this));
+    this.element.querySelectorAll("[data-action='inspect-conviction']").forEach((button) => {
+      button.addEventListener("click", this.#onInspectConviction.bind(this));
     });
     this.element.querySelectorAll("[data-action='save-conviction']").forEach((button) => {
       button.addEventListener("click", this.#onSaveConviction.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='cancel-conviction']").forEach((button) => {
+      button.addEventListener("click", this.#onCancelConviction.bind(this));
+    });
+    this.element.querySelectorAll("[data-conviction-field]").forEach((field) => {
+      field.addEventListener("input", this.#onConvictionDraftInput.bind(this));
+    });
+    this.element.querySelectorAll("[data-action='set-conviction-draft-fractures']").forEach((button) => {
+      button.addEventListener("click", this.#onConvictionDraftFracture.bind(this));
     });
     this.element.querySelectorAll("[data-action='set-hemomancy-mode']").forEach((button) => {
       button.addEventListener("click", this.#onSetHemomancyMode.bind(this));
@@ -2029,18 +2079,15 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   #onFractureBoxClick(event) {
     event.preventDefault();
+    event.stopPropagation();
+    if (!this.actor.isOwner) return;
     const convictionIndex = Number(event.currentTarget.dataset.convictionIndex);
-    const value = clampNumber(Number(event.currentTarget.dataset.index) + 1, 0, 2);
+    const value = clampNumber(Number(event.currentTarget.dataset.value), 0, 2);
     return this.#updateConvictionFractures(convictionIndex, value);
   }
 
-  #onFractureBoxContext(event) {
-    event.preventDefault();
-    return this.#updateConvictionFractures(Number(event.currentTarget.dataset.convictionIndex), 0);
-  }
-
   #updateConvictionFractures(index, value) {
-    const convictions = this.#getConvictionsFromSheet();
+    const convictions = this.#getConvictions();
     if (!Number.isInteger(index) || !convictions[index]) return;
 
     const current = clampNumber(convictions[index].fractures ?? 0, 0, 2);
@@ -2397,67 +2444,127 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return normalizeConvictionList(list);
   }
 
-  #readConvictionFromSheet(conviction, index) {
-    const nameInput = this.element.querySelector(`.conviction-name-input[data-index='${index}']`);
-    const descriptionInput = this.element.querySelector(`.conviction-description-input[data-index='${index}']`);
-    const pillarNameInput = this.element.querySelector(`.pillar-name-input[data-conviction-index='${index}']`);
-    const pillarTypeInput = this.element.querySelector(`.pillar-type-input[data-conviction-index='${index}']`);
-    const fallback = normalizeConviction(conviction, index);
-    const pillarType = index === CONVICTION_CENTER_INDEX
-      ? "Pessoa"
-      : (CONVICTION_PILLAR_TYPES.includes(pillarTypeInput?.value) ? pillarTypeInput.value : fallback.pillars[0].type);
-
-    return {
-      name: nameInput?.value?.trim() ?? conviction.name,
-      description: descriptionInput?.value?.trim() ?? conviction.description,
-      fractures: fallback.fractures,
-      pillars: [{
-        name: pillarNameInput?.value?.trim() ?? fallback.pillars[0].name,
-        type: pillarType
-      }]
-    };
+  #captureConvictionDraft() {
+    const dock = this._characterConvictionDock;
+    const index = dock?.index;
+    if (dock?.mode !== "edit" || !Number.isInteger(index)) return null;
+    const stored = this.#getConvictions()[index];
+    if (!stored) return null;
+    const readField = (field, fallback) => this.element
+      ?.querySelector(`[data-conviction-field='${field}']`)
+      ?.value ?? fallback;
+    return normalizeConviction({
+      name: readField("name", dock.name ?? stored.name).trim(),
+      description: readField("description", dock.description ?? stored.description).trim(),
+      fractures: dock.fractures ?? stored.fractures,
+      pillar: {
+        name: readField("pillar-name", dock.pillar?.name ?? stored.pillar.name).trim(),
+        description: readField("pillar-description", dock.pillar?.description ?? stored.pillar.description).trim()
+      }
+    });
   }
 
-  #getConvictionsFromSheet() {
-    return this.#getConvictions().map((conviction, index) => {
-      if (index !== this._editingConvictionIndex) return conviction;
-      return this.#readConvictionFromSheet(conviction, index);
+  #convictionDraftIsDirty() {
+    const dock = this._characterConvictionDock;
+    if (dock?.mode !== "edit") return false;
+    return JSON.stringify(normalizeConviction(dock)) !== JSON.stringify(normalizeConviction(dock.original));
+  }
+
+  #refreshConvictionDirtyState() {
+    const dockElement = this.element?.querySelector(".astrael-conviction-dock");
+    if (!dockElement) return;
+    const dirty = this.#convictionDraftIsDirty();
+    dockElement.classList.toggle("is-dirty", dirty);
+    dockElement.querySelector("[data-conviction-dirty]")?.toggleAttribute("hidden", !dirty);
+    const saveButton = dockElement.querySelector("[data-action='save-conviction']");
+    if (saveButton) saveButton.disabled = !dirty;
+  }
+
+  #onConvictionDraftInput(event) {
+    const dock = this._characterConvictionDock;
+    if (dock?.mode !== "edit") return;
+    const field = event.currentTarget.dataset.convictionField;
+    const value = event.currentTarget.value;
+    if (field === "name") dock.name = value;
+    else if (field === "description") dock.description = value;
+    else if (field === "pillar-name") dock.pillar.name = value;
+    else if (field === "pillar-description") dock.pillar.description = value;
+    else return;
+    if (field === "name") {
+      const heading = this.element.querySelector(".astrael-conviction-editor-head strong");
+      if (heading) heading.textContent = value.trim() || game.i18n.localize("ASTRAEL.Convictions.EmptyName");
+    }
+    this.#refreshConvictionDirtyState();
+  }
+
+  #onConvictionDraftFracture(event) {
+    event.preventDefault();
+    const dock = this._characterConvictionDock;
+    if (dock?.mode !== "edit" || !this.actor.isOwner) return;
+    const value = clampNumber(Number(event.currentTarget.dataset.value), 0, 2);
+    const current = clampNumber(dock.fractures, 0, 2);
+    dock.fractures = current === value ? 0 : value;
+
+    const controls = event.currentTarget.closest(".astrael-conviction-editor-fractures");
+    controls?.querySelectorAll("[data-action='set-conviction-draft-fractures']").forEach((button) => {
+      const filled = Number(button.dataset.value) <= dock.fractures;
+      button.classList.toggle("is-filled", filled);
+      button.setAttribute("aria-pressed", filled ? "true" : "false");
     });
+    const count = controls?.querySelector("[data-conviction-fracture-count]");
+    if (count) count.textContent = `${dock.fractures}/2`;
+    this.#refreshConvictionDirtyState();
   }
 
   #updateConvictions(convictions) {
     return this.actor.update({ "system.convictions": normalizeConvictionList(convictions) });
   }
 
-  async #onEditConviction(event) {
-    event.preventDefault();
-    const index = Number(event.currentTarget.dataset.index);
-    const convictions = this.#getConvictionsFromSheet();
-    if (!Number.isInteger(index) || !convictions[index]) return;
-
-    this._editingConvictionIndex = index;
-    return this.#updateConvictions(convictions);
-  }
-
-  async #onSaveConviction(event) {
+  #onInspectConviction(event) {
     event.preventDefault();
     const index = Number(event.currentTarget.dataset.index);
     const convictions = this.#getConvictions();
     if (!Number.isInteger(index) || !convictions[index]) return;
-
-    const updated = this.#readConvictionFromSheet(convictions[index], index);
-    if (!updated.name) {
-      ui.notifications.warn(game.i18n.localize("ASTRAEL.Convictions.SaveRequired"));
-      return;
+    if (this._characterConvictionDock?.mode === "edit") return;
+    const closing = this._characterConvictionDock?.mode === "view" && this._characterConvictionDock.index === index;
+    if (closing) {
+      this._characterConvictionDock = null;
+      this._characterConvictionFocus = String(index);
+    } else if (this.actor.isOwner) {
+      const original = foundry.utils.deepClone(convictions[index]);
+      this._characterConvictionDock = {
+        mode: "edit",
+        index,
+        ...foundry.utils.deepClone(original),
+        original
+      };
+      this._characterConvictionFocus = "name";
+    } else {
+      this._characterConvictionDock = { mode: "view", index };
+      this._characterConvictionFocus = "close";
     }
-    if (!updated.pillars[0].name) {
-      ui.notifications.warn(game.i18n.localize("ASTRAEL.Convictions.PillarSaveRequired"));
-      return;
-    }
+    return this.render({ force: true });
+  }
 
-    convictions[index] = updated;
-    this._editingConvictionIndex = null;
+  async #onSaveConviction(event) {
+    event.preventDefault();
+    if (!this.actor.isOwner) return;
+    const index = this._characterConvictionDock?.index;
+    const convictions = this.#getConvictions();
+    if (this._characterConvictionDock?.mode !== "edit" || !Number.isInteger(index) || !convictions[index]) return;
+    convictions[index] = this.#captureConvictionDraft() ?? convictions[index];
+    this._characterConvictionDock = null;
+    this._characterConvictionFocus = String(index);
     return this.#updateConvictions(convictions);
+  }
+
+  #onCancelConviction(event) {
+    event?.preventDefault();
+    const dock = this._characterConvictionDock;
+    if (!dock) return;
+    this._characterConvictionDock = null;
+    this._characterConvictionFocus = String(dock.index);
+    return this.render({ force: true });
   }
 
   #prepareHemomancySelection(system) {
@@ -3895,11 +4002,13 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
       && !context.characterResourceTooltipsDisabled
       && !context.characterSkillEditor
       && !context.characterSpecialtyDock
-      && !context.characterCharacteristicDock;
+      && !context.characterCharacteristicDock
+      && !context.characterConvictionDock;
     context.characterDockFocused = Boolean(
       context.characterSkillEditor
       || context.characterSpecialtyDock
       || context.characterCharacteristicDock
+      || context.characterConvictionDock
     );
     return context;
   }
@@ -3997,7 +4106,7 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     this.element.addEventListener("keydown", this.#onCharacterSkillEditorKeydown.bind(this));
 
     const activeDock = this.element.querySelector(
-      ".astrael-character-skill-dock, .astrael-character-specialty-dock, .astrael-characteristic-dock"
+      ".astrael-character-skill-dock, .astrael-character-specialty-dock, .astrael-characteristic-dock, .astrael-conviction-dock"
     );
     const characterFrame = this.element.querySelector(".astrael-character-frame");
     if (activeDock && characterFrame) {
@@ -4007,7 +4116,9 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
       while (branch.parentElement && branch !== characterFrame) {
         const parent = branch.parentElement;
         for (const sibling of parent.children) {
-          if (sibling !== branch) sibling.inert = true;
+          const keepConvictionTitle = activeDock.classList.contains("astrael-conviction-dock")
+            && sibling.classList.contains("astrael-convictions-header");
+          if (sibling !== branch && !keepConvictionTitle) sibling.inert = true;
         }
         branch = parent;
       }
@@ -4053,6 +4164,14 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
           ? "[data-action='add-characteristic']"
           : `[data-action='select-characteristic'][data-list='${this._characterCharacteristicMode}'][data-index='${this._characterCharacteristicFocus}']`;
       this._characterCharacteristicFocus = null;
+      this.element.querySelector(selector)?.focus();
+    } else if (this._characterConvictionFocus) {
+      const selector = this._characterConvictionFocus === "name"
+        ? "[data-conviction-field='name']"
+        : this._characterConvictionFocus === "close"
+          ? "[data-action='cancel-conviction']"
+          : `[data-action='inspect-conviction'][data-index='${this._characterConvictionFocus}']`;
+      this._characterConvictionFocus = null;
       this.element.querySelector(selector)?.focus();
     }
   }
@@ -4218,6 +4337,14 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
       event.preventDefault();
       event.stopPropagation();
       return this.#onCloseCharacterSpecialties();
+    }
+    if (this._characterConvictionDock) {
+      event.preventDefault();
+      event.stopPropagation();
+      const dock = this._characterConvictionDock;
+      this._characterConvictionDock = null;
+      this._characterConvictionFocus = String(dock.index);
+      return this.render({ force: true });
     }
     if (!this._characterSkillEditor) return;
     event.preventDefault();
@@ -4463,6 +4590,8 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     clearTimeout(this._characterResourceTooltipTimer);
     await this._characterPortraitEditor?.close();
     this._characterPortraitEditor = null;
+    this._characterConvictionDock = null;
+    this._characterConvictionFocus = null;
     return super.close(options);
   }
 }

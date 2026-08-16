@@ -22,7 +22,8 @@
 
 .astrael-character-sheet.is-dock-focused .astrael-character-skill-dock,
 .astrael-character-sheet.is-dock-focused .astrael-character-specialty-dock,
-.astrael-character-sheet.is-dock-focused .astrael-characteristic-dock {
+.astrael-character-sheet.is-dock-focused .astrael-characteristic-dock,
+.astrael-character-sheet.is-dock-focused .astrael-conviction-dock {
   z-index: 50;
   box-shadow:
     0 0 0 100vmax rgba(3, 5, 4, 0.56),
@@ -377,4 +378,3 @@
   font-family: "Cinzel", Georgia, serif;
   font-size: 12px;
 }
-

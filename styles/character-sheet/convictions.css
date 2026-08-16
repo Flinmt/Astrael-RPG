@@ -1,0 +1,707 @@
+/* Character convictions */
+.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="convictions"].active {
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+}
+
+.application.astrael-rpg.character-sheet[data-active-tab="convictions"] .astrael-character-body {
+  padding: 0;
+}
+
+.astrael-character-sheet .astrael-convictions {
+  --conviction-accent: #c6a36f;
+  --conviction-accent-dark: #705737;
+  --conviction-wash: rgba(155, 116, 69, 0.09);
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 11px 13px 14px;
+  overflow: hidden;
+  color: var(--astrael-character-bone);
+  background:
+    radial-gradient(circle at 18% 0, var(--conviction-wash), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 22%),
+    #10130f;
+}
+
+.astrael-character-sheet .astrael-convictions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 30px;
+  margin-bottom: 9px;
+}
+
+.astrael-character-sheet .astrael-convictions-header > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.astrael-character-sheet .astrael-convictions-header > div > span {
+  width: 5px;
+  height: 5px;
+  background: var(--conviction-accent);
+  transform: rotate(45deg);
+}
+
+.astrael-character-sheet .astrael-convictions-header h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #d2c7b3;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+.astrael-character-sheet .astrael-convictions-header > span,
+.astrael-character-sheet .astrael-conviction-fractures > span,
+.astrael-character-sheet .astrael-conviction-card-pillar small,
+.astrael-character-sheet .astrael-conviction-editor-head > span,
+.astrael-character-sheet .astrael-conviction-inspector-head > span,
+.astrael-character-sheet .astrael-conviction-form label > span,
+.astrael-character-sheet .astrael-conviction-form section > header,
+.astrael-character-sheet .astrael-conviction-editor-fractures > span,
+.astrael-character-sheet .astrael-conviction-inspector-body small {
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-convictions-header > span {
+  color: #81796b;
+  font-size: 9px;
+}
+
+.astrael-character-sheet .astrael-conviction-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 9px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.astrael-character-sheet .astrael-conviction-card {
+  position: relative;
+  display: grid;
+  grid-template-rows: 62px minmax(0, 1fr) 70px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #363b36;
+  color: #c9c0af;
+  background: #10130f;
+  box-shadow: 0 7px 15px rgba(0, 0, 0, 0.24);
+}
+
+.astrael-character-sheet .astrael-conviction-fractures {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, 31px);
+  place-content: center;
+  gap: 4px 8px;
+  padding: 6px 8px;
+  border-top: 2px solid #574038;
+  background:
+    linear-gradient(180deg, rgba(139, 72, 61, 0.07), transparent),
+    #0d110f;
+}
+
+.astrael-character-sheet .astrael-conviction-fractures::after {
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--conviction-accent-dark);
+  background: #111510;
+  content: "";
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.astrael-character-sheet .astrael-conviction-fractures > span {
+  grid-column: 1 / -1;
+  color: #918878;
+  font-size: 8px;
+  text-align: center;
+}
+
+.astrael-character-sheet .astrael-conviction-fractures > span strong,
+.astrael-character-sheet .astrael-conviction-editor-fractures > span strong {
+  color: #c5b9a5;
+}
+
+.astrael-character-sheet .astrael-conviction-fracture,
+.astrael-character-sheet .astrael-conviction-draft-fracture {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  min-width: 31px;
+  min-height: 31px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #4b514c;
+  border-radius: 0;
+  color: #68706a;
+  background: #0b0e0c;
+  box-shadow: inset 0 0 0 4px #151713;
+  transform: rotate(45deg) scale(0.7);
+}
+
+.astrael-character-sheet .astrael-conviction-fracture i,
+.astrael-character-sheet .astrael-conviction-draft-fracture i {
+  font-size: 7px;
+  transform: rotate(-45deg);
+}
+
+.astrael-character-sheet .astrael-conviction-fracture:hover:not(:disabled),
+.astrael-character-sheet .astrael-conviction-fracture:focus-visible:not(:disabled),
+.astrael-character-sheet .astrael-conviction-draft-fracture:hover,
+.astrael-character-sheet .astrael-conviction-draft-fracture:focus-visible {
+  border-color: var(--conviction-accent);
+  color: var(--conviction-accent);
+  outline: 2px solid rgba(198, 163, 111, 0.35);
+  outline-offset: 2px;
+}
+
+.astrael-character-sheet .astrael-conviction-fracture.is-filled,
+.astrael-character-sheet .astrael-conviction-draft-fracture.is-filled {
+  border-color: #a85f53;
+  color: #f0b0a2;
+  background: #704039;
+  box-shadow: inset 0 0 0 4px #281714;
+}
+
+.astrael-character-sheet .astrael-conviction-fracture:disabled {
+  cursor: default;
+}
+
+.astrael-character-sheet .astrael-conviction-card-main {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-rows: 46px auto;
+  place-content: center;
+  place-items: center;
+  align-self: stretch;
+  gap: 13px;
+  width: 100%;
+  height: 100% !important;
+  min-width: 0;
+  min-height: 100% !important;
+  max-height: none !important;
+  margin: 0;
+  padding: 18px 15px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: linear-gradient(180deg, #171c18, #111511 62%, #151914);
+  box-shadow: inset 0 1px #252c26, inset 0 -1px #292c25;
+  text-align: center;
+}
+
+.astrael-character-sheet .astrael-conviction-card-main:hover,
+.astrael-character-sheet .astrael-conviction-card-main:focus-visible,
+.astrael-character-sheet .astrael-conviction-card.is-selected .astrael-conviction-card-main {
+  color: #eee2cb;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(155, 116, 69, 0.15), transparent 48%),
+    #171b16;
+  box-shadow: inset 0 1px var(--conviction-accent-dark), inset 0 -1px var(--conviction-accent-dark);
+  outline: 0;
+}
+
+.astrael-character-sheet .astrael-conviction-card-emblem {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #514b3f;
+  color: var(--conviction-accent);
+  background: #10120f;
+  box-shadow: inset 0 0 0 3px #191b16;
+  transform: rotate(45deg) scale(0.78);
+}
+
+.astrael-character-sheet .astrael-conviction-card-emblem > i:first-child {
+  transform: rotate(-45deg);
+}
+
+.astrael-character-sheet .astrael-conviction-crack {
+  position: absolute;
+  top: 7px;
+  left: 17px;
+  width: 1px;
+  height: 0;
+  opacity: 0;
+  background: #d48678;
+  box-shadow: -3px 7px #d48678, 2px 14px #d48678;
+  transform: rotate(-32deg);
+}
+
+.astrael-character-sheet .is-fractured-1 .astrael-conviction-crack {
+  height: 12px;
+  opacity: 0.65;
+}
+
+.astrael-character-sheet .is-fractured-2 .astrael-conviction-crack {
+  height: 23px;
+  opacity: 1;
+}
+
+.astrael-character-sheet .astrael-conviction-card-copy {
+  display: grid;
+  align-self: stretch;
+  align-content: center;
+  justify-items: center;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  text-align: center;
+}
+
+.astrael-character-sheet .astrael-conviction-card-copy strong {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #d6cbb6;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 12px;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.astrael-character-sheet .astrael-conviction-card-copy > span {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #989182;
+  font-size: 10px;
+  line-height: 1.45;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 11;
+}
+
+.astrael-character-sheet .astrael-conviction-card-pillar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 9px 10px;
+  border-bottom: 2px solid var(--conviction-accent-dark);
+  background:
+    linear-gradient(90deg, var(--conviction-wash), transparent 70%),
+    linear-gradient(180deg, #0e120f, #151914);
+  box-shadow: inset 0 -1px #252820;
+  text-align: left;
+}
+
+.astrael-character-sheet .astrael-conviction-card-pillar::before,
+.astrael-character-sheet .astrael-conviction-card-pillar::after {
+  position: absolute;
+  bottom: -5px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--conviction-accent-dark);
+  background: #111510;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.astrael-character-sheet .astrael-conviction-card-pillar::before {
+  left: 5px;
+}
+
+.astrael-character-sheet .astrael-conviction-card-pillar::after {
+  right: 5px;
+}
+
+.astrael-character-sheet .astrael-conviction-card-pillar > i {
+  color: var(--conviction-accent-dark);
+  font-size: 10px;
+}
+
+.astrael-character-sheet .astrael-conviction-card-pillar > span {
+  display: grid;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-conviction-card-pillar small,
+.astrael-character-sheet .astrael-conviction-inspector-body small {
+  color: #81796b;
+  font-size: 8px;
+}
+
+.astrael-character-sheet .astrael-conviction-card-pillar strong {
+  overflow: hidden;
+  color: #bfb5a3;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-character-sheet .astrael-conviction-card.is-empty {
+  color: #85877f;
+}
+
+.astrael-character-sheet .astrael-conviction-card.is-empty .astrael-conviction-card-main {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(155, 116, 69, 0.055), transparent 45%),
+    #121612;
+}
+
+.astrael-character-sheet .astrael-conviction-card.is-empty .astrael-conviction-card-emblem,
+.astrael-character-sheet .astrael-conviction-card.is-empty .astrael-conviction-card-copy > span {
+  color: #74776f;
+}
+
+/* Full-area conviction editor and read-only inspector */
+.astrael-character-sheet .astrael-conviction-dock {
+  position: absolute;
+  inset: 49px 0 0;
+  z-index: 50;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 13px 12px;
+  overflow: hidden;
+  border: 0;
+  border-top: 1px solid var(--conviction-accent-dark);
+  background:
+    linear-gradient(105deg, var(--conviction-wash), transparent 52%),
+    #111411;
+  box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.3);
+  animation: astrael-character-skill-dock-in 150ms ease-out;
+}
+
+.astrael-character-sheet .astrael-conviction-dock.is-view {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.astrael-character-sheet .astrael-conviction-editor-head,
+.astrael-character-sheet .astrael-conviction-inspector-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 3px 9px;
+}
+
+.astrael-character-sheet .astrael-conviction-editor-head > span,
+.astrael-character-sheet .astrael-conviction-inspector-head > span {
+  grid-column: 1 / -1;
+  color: var(--conviction-accent);
+  font-size: 9px;
+}
+
+.astrael-character-sheet .astrael-conviction-editor-head strong,
+.astrael-character-sheet .astrael-conviction-inspector-head strong {
+  overflow: hidden;
+  color: var(--astrael-character-bone);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-character-sheet .astrael-conviction-editor-head em {
+  color: #aea38f;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-conviction-editor-head em[hidden] {
+  display: none;
+}
+
+.astrael-character-sheet .astrael-conviction-dock-close {
+  display: grid;
+  place-items: center;
+  grid-column: 3;
+  grid-row: 2;
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
+  min-height: 25px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #4a4438;
+  border-radius: 0;
+  color: #a99f8e;
+  background: #11130f;
+  box-shadow: none;
+}
+
+.astrael-character-sheet .astrael-conviction-dock-close:hover,
+.astrael-character-sheet .astrael-conviction-dock-close:focus-visible {
+  border-color: var(--conviction-accent-dark);
+  color: var(--astrael-character-bone);
+  background: var(--conviction-wash);
+  outline: 0;
+}
+
+.astrael-character-sheet .astrael-conviction-editor-fractures {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 3px 8px;
+  border: 1px solid #39372f;
+  border-left: 2px solid #875047;
+  background: linear-gradient(90deg, rgba(139, 72, 61, 0.1), transparent 54%), #0f120f;
+}
+
+.astrael-character-sheet .astrael-conviction-editor-fractures > span {
+  color: #a89986;
+  font-size: 9px;
+}
+
+.astrael-character-sheet .astrael-conviction-editor-fractures > div {
+  display: flex;
+  gap: 7px;
+}
+
+.astrael-character-sheet .astrael-conviction-draft-fracture {
+  width: 27px;
+  height: 27px;
+  min-width: 27px;
+  min-height: 27px;
+}
+
+.astrael-character-sheet .astrael-conviction-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.astrael-character-sheet .astrael-conviction-belief-form,
+.astrael-character-sheet .astrael-conviction-pillar-form {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 7px;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 8px;
+  border: 0;
+  border-left: 2px solid var(--conviction-accent-dark);
+  background: #0d0f0c;
+}
+
+.astrael-character-sheet .astrael-conviction-pillar-form {
+  border-left-color: #80643e;
+  background: linear-gradient(90deg, rgba(155, 116, 69, 0.07), transparent 56%), #0d0f0c;
+}
+
+.astrael-character-sheet .astrael-conviction-form section > header {
+  padding-bottom: 5px;
+  border-bottom: 1px solid #39372f;
+  color: var(--conviction-accent);
+  font-size: 9px;
+}
+
+.astrael-character-sheet .astrael-conviction-form section > header i {
+  margin-right: 5px;
+}
+
+.astrael-character-sheet .astrael-conviction-form label {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-height: 0;
+}
+
+.astrael-character-sheet .astrael-conviction-form label:last-child {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.astrael-character-sheet .astrael-conviction-form label > span {
+  color: #b2a793;
+  font-size: 9px;
+}
+
+.astrael-character-sheet .astrael-conviction-form input,
+.astrael-character-sheet .astrael-conviction-form textarea {
+  width: 100%;
+  margin: 0;
+  padding: 4px 7px;
+  border: 1px solid #4e493e;
+  border-radius: 0;
+  color: var(--astrael-character-bone);
+  background: #0b0e0c;
+  box-shadow: none;
+  font-size: 11px;
+}
+
+.astrael-character-sheet .astrael-conviction-form input {
+  height: 27px;
+}
+
+.astrael-character-sheet .astrael-conviction-form textarea {
+  height: 100%;
+  min-height: 0;
+  resize: none;
+}
+
+.astrael-character-sheet .astrael-conviction-form input:focus,
+.astrael-character-sheet .astrael-conviction-form textarea:focus {
+  border-color: var(--conviction-accent);
+  outline: 0;
+}
+
+.astrael-character-sheet .astrael-conviction-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-top: 7px;
+  border-top: 1px solid #39372f;
+}
+
+.astrael-character-sheet .astrael-conviction-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  min-height: 25px;
+  margin: 0;
+  padding: 4px 8px;
+  border: 1px solid #4a4438;
+  border-radius: 0;
+  color: #c0b5a1;
+  background: #11130f;
+  box-shadow: none;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-conviction-actions button:hover:not(:disabled),
+.astrael-character-sheet .astrael-conviction-actions button:focus-visible:not(:disabled),
+.astrael-character-sheet .astrael-conviction-actions button.is-primary:not(:disabled) {
+  border-color: var(--conviction-accent-dark);
+  color: var(--astrael-character-bone);
+  background: var(--conviction-wash);
+}
+
+.astrael-character-sheet .astrael-conviction-actions button.is-primary:not(:disabled) {
+  border-color: var(--conviction-accent-dark);
+  color: #eadcc3;
+  background: rgba(155, 116, 69, 0.25);
+  box-shadow: none;
+}
+
+.astrael-character-sheet .astrael-conviction-actions button:disabled {
+  color: #625d52;
+  opacity: 0.55;
+  cursor: default;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-body {
+  display: grid;
+  grid-template-rows: minmax(0, 0.82fr) minmax(0, 1fr) 48px;
+  gap: 9px;
+  min-height: 0;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-fractures {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 11px;
+  border: 1px solid #46352f;
+  border-left: 2px solid #875047;
+  color: #a89986;
+  background: linear-gradient(90deg, rgba(139, 72, 61, 0.1), transparent 54%), #0f120f;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-fractures strong {
+  color: #d3b7a8;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-belief,
+.astrael-character-sheet .astrael-conviction-inspector-pillar {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 8px;
+  min-height: 0;
+  padding: 10px;
+  overflow: hidden;
+  border: 1px solid #39372f;
+  border-left: 2px solid var(--conviction-accent-dark);
+  color: #c8c0b1;
+  background: #0d0f0c;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-pillar {
+  background: linear-gradient(90deg, var(--conviction-wash), transparent 65%), #0d0f0c;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-belief > i,
+.astrael-character-sheet .astrael-conviction-inspector-pillar > i {
+  color: var(--conviction-accent);
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-belief > span,
+.astrael-character-sheet .astrael-conviction-inspector-pillar > span {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-body strong {
+  color: #d2c7b3;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 12px;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-body p {
+  margin: 2px 0 0;
+  overflow-y: auto;
+  color: #999181;
+  font-size: 10px;
+  line-height: 1.45;
+  scrollbar-width: none;
+}
+
+.astrael-character-sheet .astrael-conviction-inspector-body p::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .astrael-character-sheet .astrael-conviction-card,
+  .astrael-character-sheet .astrael-conviction-dock {
+    transition: none;
+    animation: none;
+  }
+}

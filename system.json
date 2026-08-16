@@ -26,6 +26,7 @@
     "styles/character-sheet/skills.css",
     "styles/character-sheet/docks.css",
     "styles/character-sheet/characteristics.css",
+    "styles/character-sheet/convictions.css",
     "styles/character-sheet/portrait.css",
     "styles/applications/portrait-editor.css",
     "styles/character-sheet/stats.css",
