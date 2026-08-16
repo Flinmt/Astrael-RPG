@@ -479,3 +479,17 @@
   color: #9d9483;
   font-size: 10px;
 }
+
+/* Pointer mode: restore base look once the pointer leaves a focused control. */
+html[data-input="pointer"] .astrael-character-sheet .astrael-characteristic-modes .is-advantage:focus-visible:not(:hover):not(.is-active),
+html[data-input="pointer"] .astrael-character-sheet .astrael-characteristic-modes .is-flaw:focus-visible:not(:hover):not(.is-active) {
+  border-color: #39372f;
+  color: #a49b8a;
+  background: #12140f;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-characteristic-actions button:focus-visible:not(:hover):not(.is-primary):not(.is-roll) {
+  border-color: #4a4438;
+  color: #c0b5a1;
+  background: #11130f;
+}

@@ -41,3 +41,12 @@
   min-height: 0;
 }
 
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* In pointer mode the theme's :focus-visible styling must not linger after a mouse click. */
+html[data-input="pointer"] .astrael-character-sheet :focus-visible {
+  outline: none;
+}
+

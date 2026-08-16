@@ -5,6 +5,8 @@ import { showRerollDialog } from "../chat/dice-pool.js";
 import { AstraelCharacterData, AstraelTraitData, removeDeprecatedActorTypes } from "../data/models.js";
 import { AstraelCharacterSheet } from "../sheets/character-sheet.js";
 
+const FOCUS_NAVIGATION_KEYS = ["Tab", "Enter", " ", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+
 function registerSystemHooks() {
   Hooks.once("init", () => {
     console.log("Astrael RPG | Initializing system");
@@ -123,6 +125,16 @@ function registerSystemHooks() {
       }
     };
   
+    document.addEventListener("pointerdown", () => {
+      document.documentElement.dataset.input = "pointer";
+    }, true);
+
+    document.addEventListener("keydown", (event) => {
+      if (FOCUS_NAVIGATION_KEYS.includes(event.key)) {
+        document.documentElement.dataset.input = "keyboard";
+      }
+    }, true);
+
     document.body.addEventListener("click", (event) => {
       const rerollBtn = event.target.closest(".astrael-reroll-btn");
       if (rerollBtn) {

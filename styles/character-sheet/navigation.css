@@ -325,3 +325,24 @@
   border-bottom-color: rgba(155, 116, 69, 0.38);
   color: var(--astrael-character-bone);
 }
+
+/* Pointer mode: restore base look once the pointer leaves a focused control. */
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-header-toggle:focus-visible:not(:hover),
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-tabs .astrael-character-tab:focus-visible:not(:hover):not(.active) {
+  border-color: #4a4438 !important;
+  color: #898273 !important;
+  background:
+    radial-gradient(circle at 38% 30%, #20231d, #0c0e0c 68%) !important;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-attribute-dial:focus-visible:not(:hover) {
+  border-color: #514b3f;
+  color: var(--astrael-character-bone);
+  background: radial-gradient(circle, #1c1f19 0 42%, #0b0d0b 44% 100%);
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-attribute-roll:focus-visible:not(:hover) {
+  border-color: #4d473b;
+  color: #918976;
+  background: #11130f;
+}

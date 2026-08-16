@@ -968,3 +968,43 @@
   color: var(--astrael-character-bone);
   background: #242219;
 }
+
+/* Pointer mode: restore base look once the pointer leaves a focused control. */
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-skill-specialties:focus-visible:not(:hover):not(.is-active) {
+  border-color: #4a4438;
+  color: #8e887a;
+  background: #11130f;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-skill-remove:focus-visible:not(:hover),
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-skill-editor-actions button:focus-visible:not(:hover) {
+  border-color: #4a4438;
+  color: #9f9684;
+  background: #11130f;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-specialties-view-tools > button:focus-visible:not(:hover),
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-skill-picker-tools > button:focus-visible:not(:hover),
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-skill-picker-footer button:focus-visible:not(:hover):not(.is-primary) {
+  border-color: #4b504a;
+  color: #aaa99f;
+  background: #11130f;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-specialty-item button:focus-visible:not(:hover) {
+  border-color: #493d32;
+  color: #9b6b61;
+  background: #11130f;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-specialty-composer button:focus-visible:not(:hover):not(.is-primary) {
+  border-color: #4b504a;
+  color: #aaa99f;
+  background: #11130f;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-removal-confirmation-actions button:focus-visible:not(:hover):not(.is-danger) {
+  border-color: #4b504a;
+  color: #aaa99f;
+  background: #11130f;
+}

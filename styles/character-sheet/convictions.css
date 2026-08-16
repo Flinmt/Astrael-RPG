@@ -721,3 +721,10 @@
     animation: none;
   }
 }
+
+/* Pointer mode: restore base look once the pointer leaves a focused control. */
+html[data-input="pointer"] .astrael-character-sheet .astrael-conviction-actions button:focus-visible:not(:hover):not(:disabled):not(.is-primary) {
+  border-color: #4a4438;
+  color: #c0b5a1;
+  background: #11130f;
+}
