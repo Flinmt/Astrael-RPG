@@ -47,12 +47,19 @@
   padding: 0 2px;
 }
 
-.astrael-character-sheet .astrael-character-attribute-region-title > span {
-  width: 4px;
-  height: 4px;
-  flex: 0 0 4px;
-  border-radius: 50%;
+.astrael-character-sheet .astrael-character-attribute-region-title > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-character-attribute-region-title > div > span {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
   background: var(--astrael-nav-bronze-light);
+  transform: rotate(45deg);
 }
 
 .astrael-character-sheet .astrael-character-attributes-toggle {

@@ -29,8 +29,8 @@
 }
 
 .astrael-character-sheet .astrael-character-skills-title > span {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
   background: var(--astrael-nav-bronze-light);
   transform: rotate(45deg);
 }

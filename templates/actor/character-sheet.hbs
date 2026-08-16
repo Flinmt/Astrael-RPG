@@ -113,8 +113,10 @@
 
           <section class="astrael-character-attributes {{#if characterAttributesCollapsed}}is-collapsed{{/if}}">
             <header class="astrael-character-attribute-region-title">
-              <span aria-hidden="true"></span>
-              <h3 class="astrael-character-section-title">{{localize "ASTRAEL.CharacterAttributes.Title"}}</h3>
+              <div>
+                <span aria-hidden="true"></span>
+                <h2 class="astrael-character-section-title">{{localize "ASTRAEL.CharacterAttributes.Title"}}</h2>
+              </div>
               <button type="button" class="astrael-character-attributes-toggle" data-action="toggle-character-attributes" title="{{#if characterAttributesCollapsed}}{{localize 'ASTRAEL.CharacterAttributes.Expand'}}{{else}}{{localize 'ASTRAEL.CharacterAttributes.Collapse'}}{{/if}}" aria-label="{{#if characterAttributesCollapsed}}{{localize 'ASTRAEL.CharacterAttributes.Expand'}}{{else}}{{localize 'ASTRAEL.CharacterAttributes.Collapse'}}{{/if}}" aria-expanded="{{#if characterAttributesCollapsed}}false{{else}}true{{/if}}">
                 <i class="fas {{#if characterAttributesCollapsed}}fa-chevron-down{{else}}fa-chevron-up{{/if}}" aria-hidden="true"></i>
               </button>
@@ -197,7 +199,7 @@
             <header class="astrael-character-skills-header">
               <div class="astrael-character-skills-title">
                 <span aria-hidden="true"></span>
-                <h3 class="astrael-character-section-title">{{localize "ASTRAEL.Skills.Title"}}</h3>
+                <h2 class="astrael-character-section-title">{{localize "ASTRAEL.Skills.Title"}}</h2>
               </div>
               {{#if characterCanAddSkill}}
               <button type="button" class="astrael-character-skills-configure" data-action="add-character-skill">{{localize "ASTRAEL.CharacterSkills.Add"}}</button>
@@ -516,8 +518,8 @@
         <div class="tab-panel astrael-character-panel" data-tab="settings">
           <section class="astrael-character-settings">
             <header class="astrael-character-settings-header">
-              <span aria-hidden="true"></span>
               <div>
+                <span aria-hidden="true"></span>
                 <h2 class="astrael-character-section-title">{{localize "ASTRAEL.Tab.Settings"}}</h2>
               </div>
             </header>

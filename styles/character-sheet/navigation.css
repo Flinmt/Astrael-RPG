@@ -269,12 +269,6 @@
   box-shadow: inset 0 -12px 24px rgba(0, 0, 0, 0.14);
 }
 
-.astrael-character-sheet .astrael-character-attribute-region-title > span {
-  border-radius: 0;
-  background: var(--astrael-nav-bronze-light);
-  transform: rotate(45deg);
-}
-
 .astrael-character-sheet .astrael-character-attribute-band {
   border-color: #39372f;
   background:

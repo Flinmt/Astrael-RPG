@@ -32,15 +32,20 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  margin-bottom: 18px;
-  padding-bottom: 11px;
-  border-bottom: 1px solid #3d392f;
+  min-height: 30px;
+  margin-bottom: 9px;
 }
 
-.astrael-character-sheet .astrael-character-settings-header > span {
+.astrael-character-sheet .astrael-character-settings-header > div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.astrael-character-sheet .astrael-character-settings-header > div > span {
   flex: 0 0 auto;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background: var(--astrael-nav-bronze-light);
   transform: rotate(45deg);
 }
