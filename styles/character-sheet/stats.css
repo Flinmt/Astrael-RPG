@@ -14,26 +14,15 @@
     inset 0 -8px 16px rgba(0, 0, 0, 0.2);
 }
 
-.astrael-character-sheet .astrael-character-status-strip::before,
 .astrael-character-sheet .astrael-character-status-strip::after {
   content: "";
   position: absolute;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.astrael-character-sheet .astrael-character-status-strip::before {
-  top: 0;
-  left: 12px;
-  width: 44px;
-  border-top: 2px solid var(--astrael-nav-bronze-light);
-}
-
-.astrael-character-sheet .astrael-character-status-strip::after {
   right: 12px;
   bottom: -1px;
   width: 58px;
+  z-index: 2;
   border-bottom: 2px solid var(--astrael-character-oxidized);
+  pointer-events: none;
 }
 
 .astrael-character-sheet .astrael-character-status {

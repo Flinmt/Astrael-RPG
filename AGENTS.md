@@ -2,10 +2,11 @@
 
 ## Context Docs (read first)
 
-Before changing the character sheet or any CSS, read:
+Before changing the sheet, scripts, or CSS, read:
 
 - `docs/character-sheet-objective.md` — product decisions, interaction contracts, and the migration status checklist for the sheet.
 - `docs/sheet-and-css-architecture-spec.md` — binding architecture: CSS is modular by sheet/application/functional region with `.astrael-character-sheet` (or `.astrael-rpg`) selector roots. No Sass, bundler, or `@import`; no duplicate overridden rules.
+- `docs/javascript-architecture-spec.md` — JS layering: `core -> data/rules -> applications/controllers -> sheets -> hooks`; a layer must not import a later one, Foundry-global access stays at the edges, named exports with explicit `.js` extensions, no new globals/prototype changes/mixins, handlers bound by `data-action` not visual classes.
 
 ## Project Structure & Module Organization
 
@@ -35,7 +36,9 @@ Two-space indentation, semicolons, double-quoted strings, `camelCase` functions 
 
 ## Testing Guidelines
 
-No automated test framework is configured. Every change passes `npm run validate` plus a Foundry v14 smoke test (and `git diff --check`). In pull requests, document the actor type, workflow, and locale tested; include screenshots for sheet, dialog, chat-card, or styling changes.
+No automated test framework beyond `node:test`. Tests live in `test/` and are run by `node --test` (part of `npm run validate`). Pure rules modules are unit-tested directly; `test/module-graph.test.js` stubs `globalThis.foundry`, `Hooks`, and `Actor` before importing the entrypoint — mirror that stub pattern when adding integration-style tests.
+
+Every change passes `npm run validate` plus a Foundry v14 smoke test (and `git diff --check`). In pull requests, document the actor type, workflow, and locale tested; include screenshots for sheet, dialog, chat-card, or styling changes.
 
 ## Commit & Pull Request Guidelines
 
