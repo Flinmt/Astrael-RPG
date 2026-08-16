@@ -74,9 +74,9 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
           key,
           value,
           label: game.i18n.localize(LOCALIZE_SKILL[key]),
-          selected: (this._characterSkillEditor?.mode === "edit" && this._characterSkillEditor.key === key)
+          selected: (this._characterSkillEditor?.mode !== "add" && this._characterSkillEditor?.key === key)
             || this._characterSpecialtySkillKey === key,
-          canEdit: !this._characterSkillEditor,
+          canRemove: !this._characterSkillEditor && !this._characterSkillRemoval && this.actor.isOwner,
           canOpenSpecialties: !this._characterSkillEditor,
           canManageSpecialties: this.actor.isOwner,
           specialtiesOpen: this._characterSpecialtySkillKey === key,
@@ -111,22 +111,28 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
         selected: this._characterSkillEditor?.key === key
       }))
       .sort((left, right) => left.label.localeCompare(right.label, game.i18n.lang));
-    context.characterCanAddSkill = availableSkills.length > 0 && !this._characterSkillEditor;
+    context.characterCanAddSkill = availableSkills.length > 0 && !this._characterSkillEditor && !this._characterSkillRemoval;
     context.characterSkillEditor = this._characterSkillEditor
       ? {
         ...this._characterSkillEditor,
         adding: this._characterSkillEditor.mode === "add",
-        editing: this._characterSkillEditor.mode === "edit",
-        label: this._characterSkillEditor.mode === "edit"
+        label: this._characterSkillEditor.mode === "edit" || this._characterSkillEditor.mode === "remove"
           ? game.i18n.localize(LOCALIZE_SKILL[this._characterSkillEditor.key])
           : "",
         levels: buildLevels(this._characterSkillEditor.level),
         options: availableSkills
       }
       : null;
+    context.characterSkillRemoval = this._characterSkillRemoval
+      ? {
+        key: this._characterSkillRemoval.key,
+        label: game.i18n.localize(LOCALIZE_SKILL[this._characterSkillRemoval.key])
+      }
+      : null;
     context.characterResourceTooltipAvailable = !context.characterPortraitViewer
       && !context.characterResourceTooltipsDisabled
       && !context.characterSkillEditor
+      && !context.characterSkillRemoval
       && !context.characterSpecialtyDock
       && !context.characterCharacteristicDock
       && !context.characterConvictionDock;
@@ -179,8 +185,8 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     this.element.querySelector("[data-action='view-character-portrait']")?.addEventListener("click", this.#onViewCharacterPortrait.bind(this));
     this.element.querySelector("[data-action='close-character-portrait-viewer']")?.addEventListener("click", this.#onCloseCharacterPortraitViewer.bind(this));
     this.element.querySelector("[data-action='add-character-skill']")?.addEventListener("click", this.#onAddCharacterSkill.bind(this));
-    this.element.querySelectorAll("[data-action='edit-character-skill']").forEach((button) => {
-      button.addEventListener("click", this.#onEditCharacterSkill.bind(this));
+    this.element.querySelectorAll("[data-action='delete-character-skill']").forEach((button) => {
+      button.addEventListener("click", this.#onDeleteCharacterSkill.bind(this));
     });
     this.element.querySelectorAll("[data-action='toggle-character-specialties']").forEach((button) => {
       button.addEventListener("click", this.#onToggleCharacterSpecialties.bind(this));
@@ -209,9 +215,8 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     });
     this.element.querySelector("[data-action='save-character-skill-editor']")?.addEventListener("click", this.#onSaveCharacterSkillEditor.bind(this));
     this.element.querySelector("[data-action='cancel-character-skill-editor']")?.addEventListener("click", this.#onCancelCharacterSkillEditor.bind(this));
-    this.element.querySelector("[data-action='request-remove-character-skill']")?.addEventListener("click", this.#onRequestRemoveCharacterSkill.bind(this));
-    this.element.querySelector("[data-action='back-remove-character-skill']")?.addEventListener("click", this.#onBackRemoveCharacterSkill.bind(this));
-    this.element.querySelector("[data-action='confirm-remove-character-skill']")?.addEventListener("click", this.#onConfirmRemoveCharacterSkill.bind(this));
+    this.element.querySelector("[data-action='cancel-skill-removal']")?.addEventListener("click", this.#onCancelCharacterSkillRemoval.bind(this));
+    this.element.querySelector("[data-action='confirm-skill-removal']")?.addEventListener("click", this.#onConfirmCharacterSkillRemoval.bind(this));
     this.element.addEventListener("keydown", this.#onCharacterSkillEditorKeydown.bind(this));
 
     const activeDock = this.element.querySelector(
@@ -236,18 +241,21 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     } else if (this._characterPortraitViewerReturnFocus) {
       this._characterPortraitViewerReturnFocus = false;
       this.element.querySelector("[data-action='view-character-portrait']")?.focus();
+    } else if (this._characterSkillRemoval) {
+      if (this._characterSkillRemovalNeedsInitialFocus) {
+        this._characterSkillRemovalNeedsInitialFocus = false;
+        this.element.querySelector("[data-action='cancel-skill-removal']")?.focus();
+      }
     } else if (this._characterSkillNeedsInitialFocus && this._characterSkillEditor) {
       this._characterSkillNeedsInitialFocus = false;
-      const focusTarget = this._characterSkillEditor.confirmingRemoval
-        ? this.element.querySelector("[data-action='back-remove-character-skill']")
-        : this._characterSkillEditor.mode === "add"
-          ? this.element.querySelector("[data-action='select-character-editor-skill']")
-          : this.element.querySelector("[data-action='set-character-editor-level'].is-current");
+      const focusTarget = this._characterSkillEditor.mode === "add"
+        ? this.element.querySelector("[data-action='select-character-editor-skill']")
+        : this.element.querySelector("[data-action='set-character-editor-level'].is-current");
       focusTarget?.focus();
     } else if (!this._characterSkillEditor && this._characterSkillReturnFocus) {
       const selector = this._characterSkillReturnFocus === "add"
         ? "[data-action='add-character-skill']"
-        : `[data-action='edit-character-skill'][data-key='${this._characterSkillReturnFocus}']`;
+        : `[data-action='delete-character-skill'][data-key='${this._characterSkillReturnFocus}']`;
       this._characterSkillReturnFocus = null;
       this.element.querySelector(selector)?.focus();
     } else if (this._characterSpecialtyReturnFocus) {
@@ -323,30 +331,13 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
 
   #onAddCharacterSkill(event) {
     event.preventDefault();
-    if (this._characterSkillEditor) return;
+    if (this._characterSkillEditor || this._characterSkillRemoval) return;
     this._characterSpecialtySkillKey = null;
     this._characterSpecialtyAdding = false;
     this.characteristicsController.close();
     this._characterSkillReturnFocus = "add";
     this._characterSkillNeedsInitialFocus = true;
-    this._characterSkillEditor = { mode: "add", key: "", level: 1, confirmingRemoval: false };
-    return this.render({ force: true });
-  }
-
-  #onEditCharacterSkill(event) {
-    event.preventDefault();
-    const key = event.currentTarget.dataset.key;
-    if (this._characterSkillEditor || !SKILL_KEYS.includes(key)) return;
-    this._characterSpecialtySkillKey = null;
-    this._characterSpecialtyAdding = false;
-    this._characterSkillReturnFocus = key;
-    this._characterSkillNeedsInitialFocus = true;
-    this._characterSkillEditor = {
-      mode: "edit",
-      key,
-      level: clampNumber(this.actor.system.skills?.[key]?.value, 1, 5),
-      confirmingRemoval: false
-    };
+    this._characterSkillEditor = { mode: "add", key: "", level: 1 };
     return this.render({ force: true });
   }
 
@@ -360,11 +351,6 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
   #onCancelCharacterSkillEditor(event) {
     event?.preventDefault();
     if (!this._characterSkillEditor) return;
-    if (this._characterSkillEditor.confirmingRemoval) {
-      this._characterSkillEditor.confirmingRemoval = false;
-      this._characterSkillNeedsInitialFocus = true;
-      return this.render({ force: true });
-    }
     this._characterSkillEditor = null;
     return this.render({ force: true });
   }
@@ -381,29 +367,34 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     return this.actor.update({ [`system.skills.${editor.key}.value`]: clampNumber(editor.level, 1, 5) });
   }
 
-  #onRequestRemoveCharacterSkill(event) {
+  #onDeleteCharacterSkill(event) {
     event.preventDefault();
-    if (this._characterSkillEditor?.mode !== "edit") return;
-    this._characterSkillEditor.confirmingRemoval = true;
-    this._characterSkillNeedsInitialFocus = true;
+    const key = event.currentTarget.dataset.key;
+    if (this._characterSkillEditor || this._characterSkillRemoval || !SKILL_KEYS.includes(key)) return;
+    this._characterSpecialtySkillKey = null;
+    this._characterSpecialtyAdding = false;
+    this.characteristicsController.close();
+    this._characterSkillRemoval = { key };
+    this._characterSkillRemovalNeedsInitialFocus = true;
     return this.render({ force: true });
   }
 
-  #onBackRemoveCharacterSkill(event) {
-    event.preventDefault();
-    if (!this._characterSkillEditor) return;
-    this._characterSkillEditor.confirmingRemoval = false;
-    this._characterSkillNeedsInitialFocus = true;
+  #onCancelCharacterSkillRemoval(event) {
+    event?.preventDefault();
+    if (!this._characterSkillRemoval) return;
+    const key = this._characterSkillRemoval.key;
+    this._characterSkillRemoval = null;
+    this._characterSkillReturnFocus = key;
     return this.render({ force: true });
   }
 
-  async #onConfirmRemoveCharacterSkill(event) {
+  async #onConfirmCharacterSkillRemoval(event) {
     event.preventDefault();
-    const key = this._characterSkillEditor?.mode === "edit" ? this._characterSkillEditor.key : "";
+    const key = this._characterSkillRemoval?.key;
     if (!SKILL_KEYS.includes(key)) return;
     if (this._characterSpecialtySkillKey === key) this._characterSpecialtySkillKey = null;
+    this._characterSkillRemoval = null;
     this._characterSkillReturnFocus = "add";
-    this._characterSkillEditor = null;
     return this.actor.update({ [`system.skills.${key}.value`]: 0 });
   }
 
@@ -413,6 +404,11 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
       event.preventDefault();
       event.stopPropagation();
       return this.#onCloseCharacterPortraitViewer();
+    }
+    if (this._characterSkillRemoval) {
+      event.preventDefault();
+      event.stopPropagation();
+      return this.#onCancelCharacterSkillRemoval();
     }
     if (this._characterSpecialtyAdding) {
       event.preventDefault();
@@ -434,7 +430,7 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
   #onToggleCharacterSpecialties(event) {
     event.preventDefault();
     const key = event.currentTarget.dataset.key;
-    if (this._characterSkillEditor || !SKILL_KEYS.includes(key)) return;
+    if (this._characterSkillEditor || this._characterSkillRemoval || !SKILL_KEYS.includes(key)) return;
     const closing = this._characterSpecialtySkillKey === key;
     this._characterSpecialtySkillKey = closing ? null : key;
     this._characterSpecialtyAdding = false;

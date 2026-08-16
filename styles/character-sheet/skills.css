@@ -64,7 +64,7 @@
 
 .astrael-character-sheet .astrael-character-skills-configure:disabled,
 .astrael-character-sheet .astrael-character-skill-specialties:disabled,
-.astrael-character-sheet .astrael-character-skill-edit:disabled {
+.astrael-character-sheet .astrael-character-skill-remove:disabled {
   border-color: #343229;
   color: #5e5a50;
   background: #10120f;
@@ -155,7 +155,7 @@
 }
 
 .astrael-character-sheet .astrael-character-skill-specialties,
-.astrael-character-sheet .astrael-character-skill-edit,
+.astrael-character-sheet .astrael-character-skill-remove,
 .astrael-character-sheet .astrael-character-skill-editor-actions button {
   width: auto;
   min-width: 0;
@@ -175,7 +175,7 @@
 }
 
 .astrael-character-sheet .astrael-character-skill-specialties,
-.astrael-character-sheet .astrael-character-skill-edit {
+.astrael-character-sheet .astrael-character-skill-remove {
   display: grid;
   place-items: center;
   width: 26px;
@@ -213,8 +213,8 @@
 .astrael-character-sheet .astrael-character-skill-specialties:hover,
 .astrael-character-sheet .astrael-character-skill-specialties:focus-visible,
 .astrael-character-sheet .astrael-character-skill-specialties.is-active,
-.astrael-character-sheet .astrael-character-skill-edit:hover,
-.astrael-character-sheet .astrael-character-skill-edit:focus-visible,
+.astrael-character-sheet .astrael-character-skill-remove:hover,
+.astrael-character-sheet .astrael-character-skill-remove:focus-visible,
 .astrael-character-sheet .astrael-character-skill-editor-actions button:hover,
 .astrael-character-sheet .astrael-character-skill-editor-actions button:focus-visible {
   border-color: var(--astrael-nav-bronze);
@@ -536,6 +536,95 @@
 
 .astrael-character-sheet .astrael-character-specialty-composer button:hover,
 .astrael-character-sheet .astrael-character-specialty-composer button:focus-visible {
+  border-color: var(--astrael-nav-bronze-light);
+  color: var(--astrael-character-bone);
+  background: #242219;
+}
+
+/* Full-tab skill removal confirmation */
+.astrael-character-sheet .astrael-character-removal-confirmation {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 18px;
+  text-align: center;
+}
+
+.astrael-character-sheet .astrael-character-removal-confirmation-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #70423c;
+  border-radius: 50%;
+  color: #c47b71;
+  background: rgba(112, 66, 60, 0.14);
+  box-shadow: inset 0 0 0 4px #11130f;
+  font-size: 15px;
+}
+
+.astrael-character-sheet .astrael-character-removal-confirmation-title {
+  margin: 0;
+  color: #c47b71;
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-removal-confirmation-skill {
+  overflow: hidden;
+  max-width: 100%;
+  color: var(--astrael-character-bone);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 16px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-character-sheet .astrael-character-removal-confirmation-hint {
+  margin: 0;
+  color: #958a76;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.astrael-character-sheet .astrael-character-removal-confirmation-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.astrael-character-sheet .astrael-character-removal-confirmation-actions button {
+  min-width: 90px;
+  min-height: 27px;
+  margin: 0;
+  padding: 5px 10px;
+  border: 1px solid #4b504a;
+  border-radius: 0;
+  color: #aaa99f;
+  background: #11130f;
+  box-shadow: none;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-removal-confirmation-actions button.is-danger {
+  border-color: #70423c;
+  color: #c47b71;
+  background: rgba(112, 66, 60, 0.14);
+}
+
+.astrael-character-sheet .astrael-character-removal-confirmation-actions button:hover,
+.astrael-character-sheet .astrael-character-removal-confirmation-actions button:focus-visible {
   border-color: var(--astrael-nav-bronze-light);
   color: var(--astrael-character-bone);
   background: #242219;

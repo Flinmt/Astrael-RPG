@@ -90,6 +90,18 @@
 
       <section class="sheet-body astrael-character-body">
         <div class="tab-panel astrael-character-panel active" data-tab="attributes">
+          {{#if characterSkillRemoval}}
+          <section class="astrael-character-removal-confirmation" role="alertdialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterSkills.RemoveConfirmTitle'}}">
+            <span class="astrael-character-removal-confirmation-icon" aria-hidden="true"><i class="fas fa-trash"></i></span>
+            <h2 class="astrael-character-removal-confirmation-title">{{localize "ASTRAEL.CharacterSkills.RemoveConfirmTitle"}}</h2>
+            <strong class="astrael-character-removal-confirmation-skill">{{characterSkillRemoval.label}}</strong>
+            <p class="astrael-character-removal-confirmation-hint">{{localize "ASTRAEL.CharacterSkills.RemoveConfirmHint"}}</p>
+            <div class="astrael-character-removal-confirmation-actions">
+              <button type="button" data-action="cancel-skill-removal">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
+              <button type="button" class="is-danger" data-action="confirm-skill-removal">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
+            </div>
+          </section>
+          {{else}}
           <section class="astrael-character-status-strip" aria-label="{{localize 'ASTRAEL.CharacterStatus.Title'}}">
             <div class="astrael-character-status is-initiative" role="group" title="{{localize 'ASTRAEL.CharacterStatus.Initiative'}}: {{characterStatus.initiative}}" aria-label="{{localize 'ASTRAEL.CharacterStatus.Initiative'}}: {{characterStatus.initiative}}">
               <span class="astrael-character-status-icon" aria-hidden="true"><i class="fas fa-bolt"></i></span>
@@ -220,10 +232,10 @@
                   <i class="fas fa-tags" aria-hidden="true"></i>
                   {{#if skill.specialtyCount}}<span>{{skill.specialtyCount}}</span>{{/if}}
                 </button>
-                {{#if skill.canEdit}}
-                <button type="button" class="astrael-character-skill-edit" data-action="edit-character-skill" data-key="{{skill.key}}" title="{{localize 'ASTRAEL.CharacterSkills.Edit'}}" aria-label="{{localize 'ASTRAEL.CharacterSkills.Edit'}}: {{skill.label}}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                {{#if skill.canRemove}}
+                <button type="button" class="astrael-character-skill-remove" data-action="delete-character-skill" data-key="{{skill.key}}" title="{{localize 'ASTRAEL.CharacterSkills.Remove'}}" aria-label="{{localize 'ASTRAEL.CharacterSkills.Remove'}}: {{skill.label}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
                 {{else}}
-                <button type="button" class="astrael-character-skill-edit" disabled aria-label="{{localize 'ASTRAEL.CharacterSkills.Edit'}}: {{skill.label}}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                <button type="button" class="astrael-character-skill-remove" disabled aria-label="{{localize 'ASTRAEL.CharacterSkills.Remove'}}: {{skill.label}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
                 {{/if}}
 
               </article>
@@ -286,17 +298,7 @@
             {{/if}}
 
             {{#if characterSkillEditor}}
-            <section class="astrael-character-skill-dock {{#if characterSkillEditor.confirmingRemoval}}is-confirming{{/if}}" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterSkills.Skill'}}">
-              {{#if characterSkillEditor.confirmingRemoval}}
-              <div class="astrael-character-skill-remove-confirmation">
-                <strong>{{localize "ASTRAEL.CharacterSkills.RemoveConfirmTitle"}}</strong>
-                <span>{{localize "ASTRAEL.CharacterSkills.RemoveConfirmHint"}}</span>
-              </div>
-              <div class="astrael-character-skill-dock-actions">
-                <button type="button" data-action="back-remove-character-skill">{{localize "ASTRAEL.CharacterSkills.Back"}}</button>
-                <button type="button" class="is-danger" data-action="confirm-remove-character-skill">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
-              </div>
-              {{else}}
+            <section class="astrael-character-skill-dock" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterSkills.Skill'}}">
               <div class="astrael-character-skill-dock-fields">
                 {{#if characterSkillEditor.adding}}
                 <label class="astrael-character-skill-dock-select">
@@ -325,16 +327,13 @@
                 </div>
               </div>
               <div class="astrael-character-skill-dock-actions">
-                {{#if characterSkillEditor.editing}}
-                <button type="button" class="is-danger is-remove" data-action="request-remove-character-skill">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
-                {{/if}}
                 <button type="button" data-action="cancel-character-skill-editor">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
                 <button type="button" class="is-primary" data-action="save-character-skill-editor">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
               </div>
-              {{/if}}
             </section>
             {{/if}}
           </section>
+          {{/if}}
         </div>
         <div class="tab-panel astrael-character-panel" data-tab="advantages">
           <section class="astrael-characteristics {{#if characterCharacteristics.isFlaw}}is-flaws{{else}}is-advantages{{/if}}">

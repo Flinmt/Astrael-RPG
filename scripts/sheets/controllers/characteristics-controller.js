@@ -133,6 +133,8 @@ class CharacteristicsController {
 
   #clearSkillEditors() {
     this.host._characterSkillEditor = null;
+    this.host._characterSkillRemoval = null;
+    this.host._characterSkillRemovalNeedsInitialFocus = false;
     this.host._characterSpecialtySkillKey = null;
     this.host._characterSpecialtyAdding = false;
     this.host._characterSkillReturnFocus = null;

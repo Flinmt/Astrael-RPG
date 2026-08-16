@@ -153,8 +153,8 @@
   color: #c47b71;
 }
 
-.astrael-character-sheet .astrael-character-skill-edit:disabled:hover,
-.astrael-character-sheet .astrael-character-skill-edit:disabled:focus-visible {
+.astrael-character-sheet .astrael-character-skill-remove:disabled:hover,
+.astrael-character-sheet .astrael-character-skill-remove:disabled:focus-visible {
   border-color: #343229;
   color: #5e5a50;
   background: #10120f;
@@ -228,8 +228,7 @@
 
 .astrael-character-sheet .astrael-character-skill-dock-select > span,
 .astrael-character-sheet .astrael-character-skill-dock-name > span,
-.astrael-character-sheet .astrael-character-skill-dock-level > span,
-.astrael-character-sheet .astrael-character-skill-remove-confirmation > span {
+.astrael-character-sheet .astrael-character-skill-dock-level > span {
   color: #958a76;
   font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 8px;
@@ -354,25 +353,9 @@
   background: rgba(112, 66, 60, 0.14);
 }
 
-.astrael-character-sheet .astrael-character-skill-dock-actions button.is-remove {
-  margin-right: auto;
-}
-
 .astrael-character-sheet .astrael-character-skill-dock-actions button:hover,
 .astrael-character-sheet .astrael-character-skill-dock-actions button:focus-visible {
   border-color: var(--astrael-nav-bronze-light);
   color: var(--astrael-character-bone);
   background: #242219;
-}
-
-.astrael-character-sheet .astrael-character-skill-remove-confirmation {
-  display: grid;
-  gap: 4px;
-  text-align: center;
-}
-
-.astrael-character-sheet .astrael-character-skill-remove-confirmation strong {
-  color: #c47b71;
-  font-family: "Cinzel", Georgia, serif;
-  font-size: 12px;
 }
