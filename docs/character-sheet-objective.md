@@ -38,7 +38,7 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 - A imagem escolhida no editor atualiza `actor.img`; o enquadramento é reiniciado quando a origem da imagem muda.
 - O diretório de Atores usa a imagem do token protótipo quando ela é estática e se atualiza após mudanças em `prototypeToken.texture.src` ou `prototypeToken.randomImg`.
 - A visualização completa não usa `ImagePopout`. A ficha entra em um modo temporário de visualizador, independente da aba ativa.
-- Nesse modo, o chrome nativo, navbar e conteúdo comum são ocultados. Uma barra própria exibe o nome e o botão **Voltar à ficha**.
+- Nesse modo, a navbar e o conteúdo comum são ocultados, mas o header padrão do Foundry é mantido com o título. O botão **Voltar à ficha** fica sobreposto sobre a área da imagem.
 - A arte usa `contain` dentro de um palco escuro e emoldurado, mostrando a imagem inteira sem deformação. O botão ou `Escape` retornam à ficha e preservam aba e docks anteriores.
 
 ### Vida e Força de Vontade
