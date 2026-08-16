@@ -2,10 +2,12 @@
   "name": "astrael-rpg",
   "version": "0.1.2",
   "private": true,
+  "type": "module",
   "scripts": {
     "pack:build": "node tools/foundry-pack.cjs pack",
     "pack:unpack": "node tools/foundry-pack.cjs unpack",
-    "validate": "node --check scripts/astrael-rpg.js && node tools/validate-system.cjs"
+    "test": "node --test",
+    "validate": "node --no-warnings --experimental-vm-modules tools/validate-system.cjs && node --test"
   },
   "devDependencies": {
     "classic-level": "^3.0.0"

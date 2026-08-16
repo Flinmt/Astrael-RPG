@@ -11,7 +11,7 @@ Before changing the character sheet or any CSS, read:
 
 Foundry VTT v14 system. `system.json` declares the single esmodule, every CSS file (in load order), languages, and packs. New templates go under `templates/{actor,apps,chat}/` and new CSS under `styles/{foundations,character-sheet,applications,chat,dialogs}/`; **both must be registered in `system.json`** or they will not load and `npm run validate` will not catch it.
 
-All runtime behavior — data models, actor sheet, panels, roll/chat-card logic, and hooks — lives in the single file `scripts/astrael-rpg.js`. There is no bundler and no other script file; it exports `SYSTEM_ID`.
+Runtime behavior is organized as native ES modules under `scripts/`. `scripts/astrael-rpg.js` is the single manifest entry and bootstrap; it exports `SYSTEM_ID`. Keep data models, pure rules, sheets/controllers, applications, chat, and hooks in their respective folders. There is no bundler.
 
 Only the `character` Actor type and `trait` Item type are registered; `npc` and `pdm` types were removed.
 
@@ -24,7 +24,7 @@ Maintain both files in `lang/`. Store reusable SVGs/assets under `assets/`. Trea
 Foundry loads sources directly; npm provides validation and compendium tooling.
 
 - `npm install` installs development dependencies.
-- `npm run validate` runs `node --check` on the script plus `tools/validate-system.cjs`, which verifies: manifest paths exist, en/pt-BR keys match exactly (both directions), every `ASTRAEL.*` key used in JS/templates is defined, Handlebars blocks balance, and CSS braces balance. Run it after touching the script, locales, templates, or CSS. For a pure JSON syntax check also run `python -m json.tool system.json` and the same for changed files in `lang/`.
+- `npm run validate` checks every JavaScript module and local import, runs Node characterization tests, and verifies: manifest paths exist, en/pt-BR keys match exactly (both directions), every `ASTRAEL.*` key used in JS/templates is defined, Handlebars blocks balance, and CSS braces balance. Run it after touching scripts, locales, templates, or CSS. For a pure JSON syntax check also run `python -m json.tool system.json` and the same for changed files in `lang/`.
 - `npm run pack:build` / `npm run pack:unpack` (also `tools/foundry-pack.sh pack|unpack`) rebuild/export the `gm-macros` LevelDB pack from/to `packs/_source/gm-macros/`. Stop Foundry first — LevelDB holds an exclusive lock.
 
 Restart Foundry after `system.json` or data-model changes. Smoke-test the character sheet, dialogs, rolls, chat cards, and both locales when those areas change.

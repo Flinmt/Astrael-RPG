@@ -1,11 +1,15 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const vm = require("node:vm");
 
 const root = path.resolve(__dirname, "..");
 const readJson = (relativePath) => JSON.parse(fs.readFileSync(path.join(root, relativePath), "utf8"));
 const manifest = readJson("system.json");
 const locales = Object.fromEntries(manifest.languages.map(({ lang, path: localePath }) => [lang, readJson(localePath)]));
 const errors = [];
+const listFiles = (directory, extension) => fs.readdirSync(path.join(root, directory), { recursive: true })
+  .filter((entry) => entry.endsWith(extension))
+  .map((entry) => path.join(directory, entry));
 
 for (const relativePath of [...manifest.esmodules, ...manifest.styles, ...manifest.languages.map(({ path: localePath }) => localePath)]) {
   if (!fs.existsSync(path.join(root, relativePath))) errors.push(`Missing manifest path: ${relativePath}`);
@@ -21,13 +25,23 @@ for (const [locale, messages] of otherLocales) {
   if (extra.length) errors.push(`${locale} has extra localization keys: ${extra.join(", ")}`);
 }
 
-const sourceFiles = [
-  "scripts/astrael-rpg.js",
-  ...fs.readdirSync(path.join(root, "templates"), { recursive: true })
-    .filter((entry) => entry.endsWith(".hbs"))
-    .map((entry) => path.join("templates", entry))
-];
+const scriptFiles = listFiles("scripts", ".js");
+const sourceFiles = [...scriptFiles, ...listFiles("templates", ".hbs")];
 const templateFiles = sourceFiles.filter((relativePath) => relativePath.endsWith(".hbs"));
+
+for (const relativePath of scriptFiles) {
+  try {
+    new vm.SourceTextModule(fs.readFileSync(path.join(root, relativePath), "utf8"), { identifier: relativePath });
+  } catch (error) {
+    errors.push(`Invalid JavaScript in ${relativePath}: ${error.message}`);
+  }
+
+  const source = fs.readFileSync(path.join(root, relativePath), "utf8");
+  for (const match of source.matchAll(/(?:import|export)\s+(?:[\s\S]*?\s+from\s+)?["'](\.{1,2}\/[^"']+)["']/g)) {
+    const importedPath = path.resolve(path.dirname(path.join(root, relativePath)), match[1]);
+    if (!fs.existsSync(importedPath)) errors.push(`Missing local import in ${relativePath}: ${match[1]}`);
+  }
+}
 const usedKeys = new Set();
 for (const relativePath of sourceFiles) {
   const source = fs.readFileSync(path.join(root, relativePath), "utf8");
