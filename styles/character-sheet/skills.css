@@ -116,6 +116,7 @@
   font-size: 11px;
   font-weight: 600;
   line-height: 1;
+  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -123,7 +124,13 @@
 .astrael-character-sheet .astrael-character-skill-name:hover,
 .astrael-character-sheet .astrael-character-skill-name:focus-visible {
   color: #f0e5cf;
+  text-decoration: none;
   text-shadow: none;
+}
+
+.astrael-character-sheet .astrael-character-skill-row .astrael-character-skill-name {
+  justify-self: start;
+  max-width: 100%;
 }
 
 .astrael-character-sheet .astrael-character-skill-level {
