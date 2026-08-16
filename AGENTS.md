@@ -1,28 +1,41 @@
 # Repository Guidelines
 
+## Context Docs (read first)
+
+Before changing the character sheet or any CSS, read:
+
+- `docs/character-sheet-objective.md` — product decisions, interaction contracts, and the migration status checklist for the sheet.
+- `docs/sheet-and-css-architecture-spec.md` — binding architecture: CSS is modular by sheet/application/functional region with `.astrael-character-sheet` (or `.astrael-rpg`) selector roots. No Sass, bundler, or `@import`; no duplicate overridden rules.
+
 ## Project Structure & Module Organization
 
-This is a Foundry VTT v14 system. `system.json` declares entry points, compatibility, languages, and packs. Core behavior lives in `scripts/astrael-rpg.js`, presentation in `styles/`, and Handlebars views in `templates/actor/`, `templates/apps/`, and `templates/chat/`. Maintain both files in `lang/`; store reusable SVGs under `assets/`. Treat `packs/gm-macros/` as generated LevelDB data and edit its versioned source under `packs/_source/`.
+Foundry VTT v14 system. `system.json` declares the single esmodule, every CSS file (in load order), languages, and packs. New templates go under `templates/{actor,apps,chat}/` and new CSS under `styles/{foundations,character-sheet,applications,chat,dialogs}/`; **both must be registered in `system.json`** or they will not load and `npm run validate` will not catch it.
+
+All runtime behavior — data models, actor sheet, panels, roll/chat-card logic, and hooks — lives in the single file `scripts/astrael-rpg.js`. There is no bundler and no other script file; it exports `SYSTEM_ID`.
+
+Only the `character` Actor type and `trait` Item type are registered; `npc` and `pdm` types were removed.
+
+Legacy `compact*` names survive only as persisted contracts (`flags.astrael-rpg.compactPortrait`, client settings like `compactAttributesCollapsed`); never rename them without a migration.
+
+Maintain both files in `lang/`. Store reusable SVGs/assets under `assets/`. Treat `packs/gm-macros/` as generated LevelDB data (gitignored); edit its versioned source under `packs/_source/`.
 
 ## Build, Test, and Development Commands
 
-Foundry loads sources directly; npm supports validation and compendium tooling.
+Foundry loads sources directly; npm provides validation and compendium tooling.
 
 - `npm install` installs development dependencies.
-- `npm run validate` checks JavaScript syntax and the system manifest.
-- `npm run pack:build` rebuilds the generated `gm-macros` LevelDB pack from `packs/_source/`; stop Foundry first.
-- `npm run pack:unpack` exports intentional in-Foundry macro changes back to versioned JSON; stop Foundry first.
-- `python -m json.tool system.json >/dev/null` validates the manifest; run the same command for changed files in `lang/`.
+- `npm run validate` runs `node --check` on the script plus `tools/validate-system.cjs`, which verifies: manifest paths exist, en/pt-BR keys match exactly (both directions), every `ASTRAEL.*` key used in JS/templates is defined, Handlebars blocks balance, and CSS braces balance. Run it after touching the script, locales, templates, or CSS. For a pure JSON syntax check also run `python -m json.tool system.json` and the same for changed files in `lang/`.
+- `npm run pack:build` / `npm run pack:unpack` (also `tools/foundry-pack.sh pack|unpack`) rebuild/export the `gm-macros` LevelDB pack from/to `packs/_source/gm-macros/`. Stop Foundry first — LevelDB holds an exclusive lock.
 
-Restart Foundry after manifest or data-model changes. Exercise character and NPC sheets, dialogs, rolls, chat cards, and both locales when those areas change.
+Restart Foundry after `system.json` or data-model changes. Smoke-test the character sheet, dialogs, rolls, chat cards, and both locales when those areas change.
 
 ## Coding Style & Naming Conventions
 
-Use two-space indentation, semicolons, double-quoted strings, `camelCase` functions and variables, and `UPPER_SNAKE_CASE` constants. Use kebab-case for template and asset filenames. Scope CSS selectors beneath system-specific classes. Add user-facing text through `ASTRAEL.*` localization keys instead of embedding labels in templates.
+Two-space indentation, semicolons, double-quoted strings, `camelCase` functions and variables, `UPPER_SNAKE_CASE` constants. Kebab-case names for template, CSS, and asset files. Add user-facing text through `ASTRAEL.*` localization keys in both `lang/` files instead of embedding labels in templates (the validator enforces key parity and usage).
 
 ## Testing Guidelines
 
-No automated test framework or coverage threshold is configured. Every change should pass syntax and JSON validation plus a Foundry v14 smoke test. In pull requests, document the actor type, workflow, and locale tested. Include screenshots for sheet, dialog, chat-card, or styling changes.
+No automated test framework is configured. Every change passes `npm run validate` plus a Foundry v14 smoke test (and `git diff --check`). In pull requests, document the actor type, workflow, and locale tested; include screenshots for sheet, dialog, chat-card, or styling changes.
 
 ## Commit & Pull Request Guidelines
 
