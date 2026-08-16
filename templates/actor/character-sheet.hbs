@@ -362,6 +362,37 @@
               <button type="button" class="is-danger" data-action="confirm-remove-characteristic">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
             </div>
           </section>
+          {{else if characterCharacteristicEditor}}
+          <section class="astrael-character-characteristic-editor {{#if characterCharacteristicEditor.isFlaw}}is-flaw{{else}}is-advantage{{/if}}" role="dialog" aria-modal="true" aria-label="{{#if characterCharacteristicEditor.adding}}{{#if characterCharacteristicEditor.isFlaw}}{{localize 'ASTRAEL.CharacterCharacteristics.AddFlaw'}}{{else}}{{localize 'ASTRAEL.CharacterCharacteristics.AddAdvantage'}}{{/if}}{{else}}{{localize 'ASTRAEL.CharacterSkills.Edit'}}: {{characterCharacteristicEditor.typeLabel}}{{/if}}">
+            <header class="astrael-character-characteristic-editor-header">
+              <div class="astrael-character-characteristic-editor-heading">
+                <span>{{#if characterCharacteristicEditor.adding}}{{#if characterCharacteristicEditor.isFlaw}}{{localize "ASTRAEL.CharacterCharacteristics.AddFlaw"}}{{else}}{{localize "ASTRAEL.CharacterCharacteristics.AddAdvantage"}}{{/if}}{{else}}{{localize "ASTRAEL.CharacterSkills.Edit"}}{{/if}}</span>
+                <strong>{{characterCharacteristicEditor.typeLabel}}</strong>
+              </div>
+            </header>
+            <div class="astrael-character-characteristic-editor-form">
+              <label>
+                <span>{{localize "ASTRAEL.CharacterCharacteristics.Name"}}</span>
+                <input type="text" data-action="characteristic-name" maxlength="120" value="{{characterCharacteristicEditor.name}}" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.NamePlaceholder'}}">
+              </label>
+              <label>
+                <span>{{localize "ASTRAEL.CharacterCharacteristics.Description"}}</span>
+                <textarea data-action="characteristic-description" maxlength="1000" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.DescriptionPlaceholder'}}">{{characterCharacteristicEditor.description}}</textarea>
+              </label>
+              <div class="astrael-character-characteristic-level-editor">
+                <span>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicEditor.level}}</span>
+                <div>
+                  {{#each characterCharacteristicEditor.levels as |level|}}
+                  <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-characteristic-editor-level" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}"></button>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+            <footer class="astrael-character-characteristic-actions">
+              <button type="button" data-action="close-characteristic-editor">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
+              <button type="button" class="is-primary" data-action="save-characteristic">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
+            </footer>
+          </section>
           {{else if characterCharacteristicView}}
           <section class="astrael-character-characteristic-view {{#if characterCharacteristicView.canRoll}}is-advantage{{else}}is-flaw{{/if}}" role="dialog" aria-modal="true" aria-label="{{characterCharacteristicView.typeLabel}}: {{characterCharacteristicView.name}}">
             <header class="astrael-character-characteristic-view-header">
@@ -375,7 +406,7 @@
               </div>
             </header>
             <p class="astrael-character-characteristic-view-description">{{#if characterCharacteristicView.description}}{{characterCharacteristicView.description}}{{else}}{{localize "ASTRAEL.CharacterCharacteristics.NoDescription"}}{{/if}}</p>
-            <footer class="astrael-characteristic-actions">
+            <footer class="astrael-character-characteristic-actions">
               {{#if characterCharacteristicView.canRoll}}
               <button type="button" class="rollable is-roll" data-type="advantage" data-key="{{characterCharacteristicView.index}}"><i class="fas fa-dice" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSkills.Roll"}}</button>
               {{/if}}
@@ -384,37 +415,6 @@
               <button type="button" data-action="edit-characteristic"><i class="fas fa-pen" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSkills.Edit"}}</button>
               <button type="button" class="is-danger" data-action="request-remove-characteristic">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
               {{/if}}
-            </footer>
-          </section>
-          {{else if characterCharacteristicEditor}}
-          <section class="astrael-character-characteristic-editor {{#if characterCharacteristicEditor.isFlaw}}is-flaw{{else}}is-advantage{{/if}}" role="dialog" aria-modal="true" aria-label="{{#if characterCharacteristicEditor.adding}}{{#if characterCharacteristicEditor.isFlaw}}{{localize 'ASTRAEL.CharacterCharacteristics.AddFlaw'}}{{else}}{{localize 'ASTRAEL.CharacterCharacteristics.AddAdvantage'}}{{/if}}{{else}}{{localize 'ASTRAEL.CharacterSkills.Edit'}}: {{characterCharacteristicEditor.typeLabel}}{{/if}}">
-            <header class="astrael-character-characteristic-editor-header">
-              <div class="astrael-character-characteristic-editor-heading">
-                <span>{{#if characterCharacteristicEditor.adding}}{{#if characterCharacteristicEditor.isFlaw}}{{localize "ASTRAEL.CharacterCharacteristics.AddFlaw"}}{{else}}{{localize "ASTRAEL.CharacterCharacteristics.AddAdvantage"}}{{/if}}{{else}}{{localize "ASTRAEL.CharacterSkills.Edit"}}{{/if}}</span>
-                <strong>{{characterCharacteristicEditor.typeLabel}}</strong>
-              </div>
-            </header>
-            <div class="astrael-characteristic-form">
-              <label>
-                <span>{{localize "ASTRAEL.CharacterCharacteristics.Name"}}</span>
-                <input type="text" data-action="characteristic-name" maxlength="120" value="{{characterCharacteristicEditor.name}}" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.NamePlaceholder'}}">
-              </label>
-              <label>
-                <span>{{localize "ASTRAEL.CharacterCharacteristics.Description"}}</span>
-                <textarea data-action="characteristic-description" maxlength="1000" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.DescriptionPlaceholder'}}">{{characterCharacteristicEditor.description}}</textarea>
-              </label>
-              <div class="astrael-characteristic-level-editor">
-                <span>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicEditor.level}}</span>
-                <div>
-                  {{#each characterCharacteristicEditor.levels as |level|}}
-                  <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-characteristic-editor-level" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}"></button>
-                  {{/each}}
-                </div>
-              </div>
-            </div>
-            <footer class="astrael-characteristic-actions">
-              <button type="button" data-action="close-characteristic-editor">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
-              <button type="button" class="is-primary" data-action="save-characteristic">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
             </footer>
           </section>
           {{else}}

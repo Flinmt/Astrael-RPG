@@ -276,12 +276,12 @@ class CharacteristicsController {
     const index = Number(event.currentTarget.dataset.index);
     const level = clampNumber(event.currentTarget.dataset.level, 1, 5);
     if (!Number.isInteger(index)) return;
-    const entry = this.#getList(listId)[index];
-    if (!entry) return;
-    const currentValue = normalizeAdvantageLevel(entry);
-    if (currentValue === level) return;
+    const list = this.#getList(listId);
+    const entry = list[index];
+    if (!entry || normalizeAdvantageLevel(entry) === level) return;
+    list[index] = { ...entry, level };
     this.markerReturnFocus = { listId, index, level };
-    return this.host.actor.update({ [`system.${listId}.${index}.level`]: level });
+    return this.host.actor.update({ [`system.${listId}`]: list });
   }
 
   async #onSave(event) {
