@@ -1,10 +1,15 @@
 /* Character characteristics */
 .astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="advantages"].active {
-  display: block;
+  display: flex;
+  flex-direction: column;
   padding: 0;
   overflow: hidden;
   border: 0;
   background: transparent;
+}
+
+.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="advantages"]::-webkit-scrollbar {
+  display: none;
 }
 
 .application.astrael-rpg.character-sheet[data-active-tab="advantages"] .astrael-character-body {
@@ -16,10 +21,10 @@
   --characteristic-accent-dark: #705737;
   --characteristic-wash: rgba(155, 116, 69, 0.09);
   position: relative;
+  flex: 1;
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   width: 100%;
-  height: 100%;
   min-height: 0;
   padding: 11px 13px 14px;
   overflow: hidden;
@@ -178,77 +183,161 @@
   display: none;
 }
 
-.astrael-character-sheet .astrael-characteristic-card {
+.astrael-character-sheet .astrael-character-characteristic-row {
+  --characteristic-accent: #c6a36f;
+  --characteristic-accent-dark: #705737;
+  --characteristic-wash: rgba(155, 116, 69, 0.09);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto 16px;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 43px;
+  gap: 6px;
+  min-width: 0;
+  min-height: 42px;
   margin: 0;
-  padding: 7px 9px 7px 12px;
+  padding: 7px 8px 7px 11px;
   border: 1px solid #302f29;
   border-left: 2px solid var(--characteristic-accent-dark);
   border-radius: 0;
-  color: #c9c0af;
   background: #151713;
-  box-shadow: none;
-  text-align: left;
   transition: border-color 120ms ease, background-color 120ms ease;
 }
 
-.astrael-character-sheet .astrael-characteristic-card:hover,
-.astrael-character-sheet .astrael-characteristic-card:focus-visible,
-.astrael-character-sheet .astrael-characteristic-card.is-selected {
+.astrael-character-sheet .astrael-character-characteristic-row.is-flaw {
+  --characteristic-accent: #b46f61;
+  --characteristic-accent-dark: #693f37;
+  --characteristic-wash: rgba(139, 72, 61, 0.1);
+}
+
+.astrael-character-sheet .astrael-character-characteristic-row.is-selected {
   border-color: var(--characteristic-accent-dark);
   border-left-color: var(--characteristic-accent);
-  color: #eee2cb;
   background: linear-gradient(90deg, var(--characteristic-wash), transparent 56%), #191b16;
-  outline: 0;
 }
 
-.astrael-character-sheet .astrael-characteristic-card:disabled {
-  cursor: default;
-  opacity: 0.58;
-}
-
-.astrael-character-sheet .astrael-characteristic-name {
+.astrael-character-sheet .astrael-character-characteristic-name {
+  min-width: 0;
   overflow: hidden;
+  color: #c9c0af;
   font-family: "Cinzel", Georgia, serif;
   font-size: 12px;
   font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.astrael-character-sheet .astrael-characteristic-level {
-  display: grid;
-  grid-template-columns: repeat(5, 10px);
-  gap: 4px;
+.astrael-character-sheet .astrael-character-characteristic-row .astrael-character-characteristic-name {
+  justify-self: start;
+  max-width: 100%;
 }
 
-.astrael-character-sheet .astrael-characteristic-level > i {
+.astrael-character-sheet .astrael-character-characteristic-name:hover,
+.astrael-character-sheet .astrael-character-characteristic-name:focus-visible {
+  color: #f0e5cf;
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-level {
+  display: grid;
+  grid-template-columns: repeat(5, 18px);
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: auto;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-level > button {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-level > button::before {
+  content: "";
+  display: block;
+  box-sizing: border-box;
   width: 10px;
   height: 10px;
-  border: 1px solid #514c41;
+  border: 1px solid #5a5447;
   border-radius: 50%;
-  background: #0b0d0b;
-  box-shadow: inset 0 0 0 2px #151713;
+  background: radial-gradient(circle at 38% 32%, #252720, #090b09 72%);
+  box-shadow: inset 0 0 0 2px #0b0d0b;
+  transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease, filter 120ms ease;
 }
 
-.astrael-character-sheet .astrael-characteristic-level > i.is-filled {
+.astrael-character-sheet .astrael-character-characteristic-level > button.is-filled::before {
   border-color: var(--characteristic-accent);
   background: radial-gradient(circle at 38% 32%, var(--characteristic-accent), var(--characteristic-accent-dark) 68%);
-  box-shadow: inset 0 0 0 2px #2b241b;
+  box-shadow:
+    inset 0 0 0 2px #362a1d,
+    0 0 3px color-mix(in srgb, var(--characteristic-accent) 24%, transparent);
 }
 
-.astrael-character-sheet .astrael-characteristic-open {
-  color: var(--characteristic-accent-dark);
-  font-size: 9px;
+.astrael-character-sheet .astrael-character-characteristic-level > button.is-current::before {
+  box-shadow:
+    inset 0 0 0 2px #362a1d,
+    0 0 0 2px rgba(216, 207, 188, 0.62),
+    0 0 5px color-mix(in srgb, var(--characteristic-accent) 30%, transparent);
 }
 
-.astrael-character-sheet .astrael-characteristic-card.is-selected .astrael-characteristic-open {
-  color: var(--characteristic-accent);
+.astrael-character-sheet .astrael-character-characteristic-level > button:hover::before,
+.astrael-character-sheet .astrael-character-characteristic-level > button:focus-visible::before {
+  border-color: #ead1a5;
+  filter: brightness(1.16);
+}
+
+.astrael-character-sheet .astrael-character-characteristic-level > button:disabled {
+  cursor: default;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-level > button:disabled::before {
+  opacity: 0.45;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-open,
+.astrael-character-sheet .astrael-character-characteristic-remove {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #4a4438;
+  border-radius: 50%;
+  color: #9f9684;
+  background: #11130f;
+  box-shadow: none;
+  font-size: 10px;
+  transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-open:hover,
+.astrael-character-sheet .astrael-character-characteristic-open:focus-visible,
+.astrael-character-sheet .astrael-character-characteristic-remove:hover,
+.astrael-character-sheet .astrael-character-characteristic-remove:focus-visible {
+  border-color: var(--characteristic-accent-dark);
+  color: var(--astrael-character-bone);
+  background: #242219;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-remove:disabled {
+  cursor: default;
+  opacity: 0.45;
 }
 
 .astrael-character-sheet .astrael-characteristics-empty {
@@ -261,34 +350,47 @@
   font-size: 10px;
 }
 
-.astrael-character-sheet .astrael-characteristic-dock {
+.astrael-character-sheet .astrael-character-characteristic-view {
+  --characteristic-accent: #c6a36f;
+  --characteristic-accent-dark: #705737;
+  --characteristic-wash: rgba(155, 116, 69, 0.09);
+  flex: 1;
   display: grid;
-  gap: 8px;
-  margin: 10px -13px -14px;
-  padding: 10px 13px 12px;
-  border-top: 1px solid var(--characteristic-accent-dark);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  box-sizing: border-box;
+  min-height: 0;
+  margin: 0;
+  padding: 14px 16px 13px;
+  border: 1px solid #745a37;
   background:
-    linear-gradient(105deg, var(--characteristic-wash), transparent 52%),
-    #111411;
-  box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.3);
+    radial-gradient(circle at 14% 0, rgba(155, 116, 69, 0.15), transparent 34%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
+    #121510;
+  box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(198, 163, 111, 0.06);
   animation: astrael-character-skill-dock-in 150ms ease-out;
 }
 
-.astrael-character-sheet .astrael-characteristic-dock.is-flaw {
+.astrael-character-sheet .astrael-character-characteristic-view.is-flaw {
   --characteristic-accent: #b46f61;
   --characteristic-accent-dark: #693f37;
   --characteristic-wash: rgba(139, 72, 61, 0.1);
 }
 
-.astrael-character-sheet .astrael-characteristic-inspector-head {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 3px 9px;
+.astrael-character-sheet .astrael-character-characteristic-view-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.astrael-character-sheet .astrael-characteristic-inspector-head > span {
-  grid-column: 1 / -1;
+.astrael-character-sheet .astrael-character-characteristic-view-heading {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-view-heading > span {
   color: var(--characteristic-accent);
   font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 9px;
@@ -297,7 +399,7 @@
   text-transform: uppercase;
 }
 
-.astrael-character-sheet .astrael-characteristic-inspector-head strong {
+.astrael-character-sheet .astrael-character-characteristic-view-heading > strong {
   overflow: hidden;
   color: var(--astrael-character-bone);
   font-family: "Cinzel", Georgia, serif;
@@ -306,7 +408,7 @@
   white-space: nowrap;
 }
 
-.astrael-character-sheet .astrael-characteristic-inspector-head em {
+.astrael-character-sheet .astrael-character-characteristic-view-heading > em {
   color: #aea38f;
   font-family: "IBM Plex Mono", Consolas, monospace;
   font-size: 9px;
@@ -314,16 +416,108 @@
   text-transform: uppercase;
 }
 
-.astrael-character-sheet .astrael-characteristic-description {
-  max-height: 70px;
+.astrael-character-sheet .astrael-character-characteristic-view-tools > button {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
+  min-height: 25px;
   margin: 0;
-  padding: 7px 8px;
+  padding: 0;
+  border: 1px solid #4b504a;
+  border-radius: 0;
+  color: #aaa99f;
+  background: #11130f;
+  box-shadow: none;
+  font-size: 9px;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-view-tools > button:hover,
+.astrael-character-sheet .astrael-character-characteristic-view-tools > button:focus-visible {
+  border-color: var(--characteristic-accent-dark);
+  color: var(--astrael-character-bone);
+  background: #242219;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-view-description {
+  margin: 0;
+  min-height: 0;
+  padding: 10px 12px;
   overflow-y: auto;
   border-left: 2px solid var(--characteristic-accent-dark);
   color: #c8c0b1;
   background: #0d0f0c;
   font-size: 11px;
-  line-height: 1.45;
+  line-height: 1.5;
+  scrollbar-width: none;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-view-description::-webkit-scrollbar {
+  display: none;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-editor {
+  --characteristic-accent: #c6a36f;
+  --characteristic-accent-dark: #705737;
+  --characteristic-wash: rgba(155, 116, 69, 0.09);
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  box-sizing: border-box;
+  min-height: 0;
+  margin: 0;
+  padding: 14px 16px 13px;
+  border: 1px solid #745a37;
+  background:
+    radial-gradient(circle at 14% 0, rgba(155, 116, 69, 0.15), transparent 34%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 6px),
+    #121510;
+  box-shadow: 0 -8px 18px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(198, 163, 111, 0.06);
+  animation: astrael-character-skill-dock-in 150ms ease-out;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-editor.is-flaw {
+  --characteristic-accent: #b46f61;
+  --characteristic-accent-dark: #693f37;
+  --characteristic-wash: rgba(139, 72, 61, 0.1);
+}
+
+.astrael-character-sheet .astrael-character-characteristic-editor-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-editor-heading {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-editor-heading > span {
+  color: var(--characteristic-accent);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-editor-heading > strong {
+  overflow: hidden;
+  color: var(--astrael-character-bone);
+  font-family: "Cinzel", Georgia, serif;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-character-sheet .astrael-character-characteristic-editor .astrael-characteristic-form {
+  align-content: start;
+  overflow-y: auto;
+  min-height: 0;
   scrollbar-width: none;
 }
 
@@ -464,22 +658,6 @@
   color: #c47b71;
 }
 
-.astrael-character-sheet .astrael-characteristic-remove {
-  display: grid;
-  gap: 4px;
-}
-
-.astrael-character-sheet .astrael-characteristic-remove strong {
-  color: #c47b71;
-  font-family: "Cinzel", Georgia, serif;
-  font-size: 12px;
-}
-
-.astrael-character-sheet .astrael-characteristic-remove span {
-  color: #9d9483;
-  font-size: 10px;
-}
-
 /* Pointer mode: restore base look once the pointer leaves a focused control. */
 html[data-input="pointer"] .astrael-character-sheet .astrael-characteristic-modes .is-advantage:focus-visible:not(:hover):not(.is-active),
 html[data-input="pointer"] .astrael-character-sheet .astrael-characteristic-modes .is-flaw:focus-visible:not(:hover):not(.is-active) {
@@ -491,5 +669,18 @@ html[data-input="pointer"] .astrael-character-sheet .astrael-characteristic-mode
 html[data-input="pointer"] .astrael-character-sheet .astrael-characteristic-actions button:focus-visible:not(:hover):not(.is-primary):not(.is-roll) {
   border-color: #4a4438;
   color: #c0b5a1;
+  background: #11130f;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-characteristic-open:focus-visible:not(:hover),
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-characteristic-remove:focus-visible:not(:hover) {
+  border-color: #4a4438;
+  color: #9f9684;
+  background: #11130f;
+}
+
+html[data-input="pointer"] .astrael-character-sheet .astrael-character-characteristic-view-tools > button:focus-visible:not(:hover) {
+  border-color: #4b504a;
+  color: #aaa99f;
   background: #11130f;
 }

@@ -18,17 +18,12 @@
   transition: filter 140ms ease;
 }
 
-.astrael-character-sheet.is-dock-focused .astrael-characteristic-dock,
 .astrael-character-sheet.is-dock-focused .astrael-conviction-dock {
   z-index: 50;
   box-shadow:
     0 0 0 100vmax rgba(3, 5, 4, 0.56),
     0 -8px 22px rgba(0, 0, 0, 0.48),
     inset 0 1px 0 rgba(198, 163, 111, 0.08);
-}
-
-.astrael-character-sheet.is-dock-focused .astrael-characteristic-dock {
-  position: relative;
 }
 
 .astrael-character-sheet .astrael-character-skill-editor {

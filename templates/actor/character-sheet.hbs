@@ -351,6 +351,73 @@
           {{/if}}
         </div>
         <div class="tab-panel astrael-character-panel" data-tab="advantages">
+          {{#if characterCharacteristicRemoval}}
+          <section class="astrael-character-removal-confirmation" role="alertdialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.CharacterCharacteristics.RemoveTitle'}}">
+            <span class="astrael-character-removal-confirmation-icon" aria-hidden="true"><i class="fas fa-trash"></i></span>
+            <h2 class="astrael-character-removal-confirmation-title">{{localize "ASTRAEL.CharacterCharacteristics.RemoveTitle"}}</h2>
+            <strong class="astrael-character-removal-confirmation-skill">{{characterCharacteristicRemoval.name}}</strong>
+            <p class="astrael-character-removal-confirmation-hint">{{localize "ASTRAEL.CharacterCharacteristics.RemoveHint"}}</p>
+            <div class="astrael-character-removal-confirmation-actions">
+              <button type="button" data-action="cancel-characteristic-removal">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
+              <button type="button" class="is-danger" data-action="confirm-remove-characteristic">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
+            </div>
+          </section>
+          {{else if characterCharacteristicView}}
+          <section class="astrael-character-characteristic-view {{#if characterCharacteristicView.canRoll}}is-advantage{{else}}is-flaw{{/if}}" role="dialog" aria-modal="true" aria-label="{{characterCharacteristicView.typeLabel}}: {{characterCharacteristicView.name}}">
+            <header class="astrael-character-characteristic-view-header">
+              <div class="astrael-character-characteristic-view-heading">
+                <span>{{characterCharacteristicView.typeLabel}}</span>
+                <strong>{{characterCharacteristicView.name}}</strong>
+                <em>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicView.level}}</em>
+              </div>
+              <div class="astrael-character-characteristic-view-tools">
+                <button type="button" data-action="close-characteristic-view" title="{{localize 'ASTRAEL.CharacterCharacteristics.Close'}}" aria-label="{{localize 'ASTRAEL.CharacterCharacteristics.Close'}}"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+              </div>
+            </header>
+            <p class="astrael-character-characteristic-view-description">{{#if characterCharacteristicView.description}}{{characterCharacteristicView.description}}{{else}}{{localize "ASTRAEL.CharacterCharacteristics.NoDescription"}}{{/if}}</p>
+            <footer class="astrael-characteristic-actions">
+              {{#if characterCharacteristicView.canRoll}}
+              <button type="button" class="rollable is-roll" data-type="advantage" data-key="{{characterCharacteristicView.index}}"><i class="fas fa-dice" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSkills.Roll"}}</button>
+              {{/if}}
+              <button type="button" data-action="close-characteristic-view">{{localize "ASTRAEL.CharacterCharacteristics.Close"}}</button>
+              {{#if characterCharacteristicView.canManage}}
+              <button type="button" data-action="edit-characteristic"><i class="fas fa-pen" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSkills.Edit"}}</button>
+              <button type="button" class="is-danger" data-action="request-remove-characteristic">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
+              {{/if}}
+            </footer>
+          </section>
+          {{else if characterCharacteristicEditor}}
+          <section class="astrael-character-characteristic-editor {{#if characterCharacteristicEditor.isFlaw}}is-flaw{{else}}is-advantage{{/if}}" role="dialog" aria-modal="true" aria-label="{{#if characterCharacteristicEditor.adding}}{{#if characterCharacteristicEditor.isFlaw}}{{localize 'ASTRAEL.CharacterCharacteristics.AddFlaw'}}{{else}}{{localize 'ASTRAEL.CharacterCharacteristics.AddAdvantage'}}{{/if}}{{else}}{{localize 'ASTRAEL.CharacterSkills.Edit'}}: {{characterCharacteristicEditor.typeLabel}}{{/if}}">
+            <header class="astrael-character-characteristic-editor-header">
+              <div class="astrael-character-characteristic-editor-heading">
+                <span>{{#if characterCharacteristicEditor.adding}}{{#if characterCharacteristicEditor.isFlaw}}{{localize "ASTRAEL.CharacterCharacteristics.AddFlaw"}}{{else}}{{localize "ASTRAEL.CharacterCharacteristics.AddAdvantage"}}{{/if}}{{else}}{{localize "ASTRAEL.CharacterSkills.Edit"}}{{/if}}</span>
+                <strong>{{characterCharacteristicEditor.typeLabel}}</strong>
+              </div>
+            </header>
+            <div class="astrael-characteristic-form">
+              <label>
+                <span>{{localize "ASTRAEL.CharacterCharacteristics.Name"}}</span>
+                <input type="text" data-action="characteristic-name" maxlength="120" value="{{characterCharacteristicEditor.name}}" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.NamePlaceholder'}}">
+              </label>
+              <label>
+                <span>{{localize "ASTRAEL.CharacterCharacteristics.Description"}}</span>
+                <textarea data-action="characteristic-description" maxlength="1000" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.DescriptionPlaceholder'}}">{{characterCharacteristicEditor.description}}</textarea>
+              </label>
+              <div class="astrael-characteristic-level-editor">
+                <span>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicEditor.level}}</span>
+                <div>
+                  {{#each characterCharacteristicEditor.levels as |level|}}
+                  <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-characteristic-editor-level" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}"></button>
+                  {{/each}}
+                </div>
+              </div>
+            </div>
+            <footer class="astrael-characteristic-actions">
+              <button type="button" data-action="close-characteristic-editor">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
+              <button type="button" class="is-primary" data-action="save-characteristic">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
+            </footer>
+          </section>
+          {{else}}
           <section class="astrael-characteristics {{#if characterCharacteristics.isFlaw}}is-flaws{{else}}is-advantages{{/if}}">
             <header class="astrael-characteristics-header">
               <div>
@@ -365,23 +432,34 @@
             </header>
 
             <nav class="astrael-characteristic-modes" aria-label="{{localize 'ASTRAEL.Tab.Advantages'}}">
-              <button type="button" class="is-advantage {{#if characterCharacteristics.advantagesActive}}is-active{{/if}}" data-action="set-characteristic-mode" data-list="advantages" {{#if characterCharacteristics.locked}}disabled{{/if}}>
+              <button type="button" class="is-advantage {{#if characterCharacteristics.advantagesActive}}is-active{{/if}}" data-action="set-characteristic-mode" data-list="advantages">
                 <span>{{localize "ASTRAEL.CharacterCharacteristics.Advantages"}}</span><strong>{{characterCharacteristics.advantagesCount}}</strong>
               </button>
-              <button type="button" class="is-flaw {{#if characterCharacteristics.flawsActive}}is-active{{/if}}" data-action="set-characteristic-mode" data-list="flaws" {{#if characterCharacteristics.locked}}disabled{{/if}}>
+              <button type="button" class="is-flaw {{#if characterCharacteristics.flawsActive}}is-active{{/if}}" data-action="set-characteristic-mode" data-list="flaws">
                 <span>{{localize "ASTRAEL.CharacterCharacteristics.Flaws"}}</span><strong>{{characterCharacteristics.flawsCount}}</strong>
               </button>
             </nav>
 
             <div class="astrael-characteristic-list">
               {{#each characterCharacteristics.activeList as |entry|}}
-              <button type="button" class="astrael-characteristic-card {{#if entry.selected}}is-selected{{/if}}" data-action="select-characteristic" data-list="{{entry.listId}}" data-index="{{entry.index}}" {{#if ../characterCharacteristics.locked}}disabled{{/if}}>
-                <span class="astrael-characteristic-name">{{entry.name}}</span>
-                <span class="astrael-characteristic-level" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{entry.level}}">
-                  {{#each entry.levels as |level|}}<i class="{{#if level.filled}}is-filled{{/if}}"></i>{{/each}}
-                </span>
-                <i class="fas fa-chevron-right astrael-characteristic-open" aria-hidden="true"></i>
-              </button>
+              <article class="astrael-character-characteristic-row {{#if entry.selected}}is-selected{{/if}}">
+                {{#if entry.canRoll}}
+                <a class="rollable astrael-character-characteristic-name" href="#" data-type="advantage" data-key="{{entry.index}}" title="{{localize 'ASTRAEL.CharacterSkills.Roll'}}: {{entry.name}}" aria-label="{{localize 'ASTRAEL.CharacterSkills.Roll'}}: {{entry.name}}">{{entry.name}}</a>
+                {{else}}
+                <span class="astrael-character-characteristic-name">{{entry.name}}</span>
+                {{/if}}
+                <div class="astrael-character-characteristic-level" aria-label="{{entry.name}}, {{localize 'ASTRAEL.CharacterAttributes.Level'}} {{entry.level}}">
+                  {{#each entry.levels as |level|}}
+                  <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-characteristic-level" data-list="{{../listId}}" data-index="{{../index}}" data-level="{{level.value}}" title="{{localize 'ASTRAEL.CharacterSkills.LevelHint'}}: {{../name}} {{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}: {{../name}}" {{#unless ../canAdjustLevel}}disabled{{/unless}}></button>
+                  {{/each}}
+                </div>
+                <button type="button" class="astrael-character-characteristic-open" data-action="view-characteristic" data-list="{{entry.listId}}" data-index="{{entry.index}}" title="{{localize 'ASTRAEL.CharacterCharacteristics.View'}}: {{entry.name}}" aria-label="{{localize 'ASTRAEL.CharacterCharacteristics.View'}}: {{entry.name}}"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                {{#if entry.canManage}}
+                <button type="button" class="astrael-character-characteristic-remove" data-action="request-remove-characteristic" data-list="{{entry.listId}}" data-index="{{entry.index}}" title="{{localize 'ASTRAEL.CharacterSkills.Remove'}}" aria-label="{{localize 'ASTRAEL.CharacterSkills.Remove'}}: {{entry.name}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
+                {{else}}
+                <button type="button" class="astrael-character-characteristic-remove" disabled aria-label="{{localize 'ASTRAEL.CharacterSkills.Remove'}}: {{entry.name}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
+                {{/if}}
+              </article>
               {{/each}}
               {{#if characterCharacteristics.empty}}
               <div class="astrael-characteristics-empty">
@@ -389,64 +467,8 @@
               </div>
               {{/if}}
             </div>
-
-            {{#if characterCharacteristicDock}}
-            <section class="astrael-characteristic-dock {{#if characterCharacteristicDock.isFlaw}}is-flaw{{else}}is-advantage{{/if}}" role="dialog" aria-modal="true" aria-label="{{characterCharacteristicDock.typeLabel}}">
-              {{#if characterCharacteristicDock.isRemove}}
-              <div class="astrael-characteristic-remove">
-                <strong>{{localize "ASTRAEL.CharacterCharacteristics.RemoveTitle"}}</strong>
-                <span>{{characterCharacteristicDock.name}}</span>
-              </div>
-              <div class="astrael-characteristic-actions">
-                <button type="button" data-action="back-remove-characteristic">{{localize "ASTRAEL.CharacterSkills.Back"}}</button>
-                <button type="button" class="is-danger" data-action="confirm-remove-characteristic">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
-              </div>
-              {{else}}
-                {{#if characterCharacteristicDock.isEdit}}
-                <div class="astrael-characteristic-form">
-                  <label>
-                    <span>{{localize "ASTRAEL.CharacterCharacteristics.Name"}}</span>
-                    <input type="text" data-action="characteristic-name" maxlength="120" value="{{characterCharacteristicDock.name}}" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.NamePlaceholder'}}">
-                  </label>
-                  <label>
-                    <span>{{localize "ASTRAEL.CharacterCharacteristics.Description"}}</span>
-                    <textarea data-action="characteristic-description" maxlength="1000" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.DescriptionPlaceholder'}}">{{characterCharacteristicDock.description}}</textarea>
-                  </label>
-                  <div class="astrael-characteristic-level-editor">
-                    <span>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicDock.level}}</span>
-                    <div>
-                      {{#each characterCharacteristicDock.levels as |level|}}
-                      <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-characteristic-level" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}"></button>
-                      {{/each}}
-                    </div>
-                  </div>
-                </div>
-                <div class="astrael-characteristic-actions">
-                  <button type="button" data-action="close-characteristic">{{localize "ASTRAEL.CharacterSkills.Cancel"}}</button>
-                  <button type="button" class="is-primary" data-action="save-characteristic">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
-                </div>
-                {{else}}
-                <header class="astrael-characteristic-inspector-head">
-                  <span>{{characterCharacteristicDock.typeLabel}}</span>
-                  <strong>{{characterCharacteristicDock.name}}</strong>
-                  <em>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicDock.level}}</em>
-                </header>
-                <p class="astrael-characteristic-description">{{#if characterCharacteristicDock.description}}{{characterCharacteristicDock.description}}{{else}}{{localize "ASTRAEL.CharacterCharacteristics.NoDescription"}}{{/if}}</p>
-                <div class="astrael-characteristic-actions">
-                  {{#if characterCharacteristicDock.canRoll}}
-                  <button type="button" class="rollable is-roll" data-type="advantage" data-key="{{characterCharacteristicDock.index}}"><i class="fas fa-dice" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSkills.Roll"}}</button>
-                  {{/if}}
-                  <button type="button" data-action="close-characteristic">{{localize "ASTRAEL.CharacterCharacteristics.Close"}}</button>
-                  {{#if characterCharacteristicDock.canManage}}
-                  <button type="button" data-action="edit-characteristic"><i class="fas fa-pen" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSkills.Edit"}}</button>
-                  <button type="button" class="is-danger" data-action="request-remove-characteristic">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
-                  {{/if}}
-                </div>
-                {{/if}}
-              {{/if}}
-            </section>
-            {{/if}}
           </section>
+          {{/if}}
         </div>
         <div class="tab-panel astrael-character-panel" data-tab="convictions">
           <section class="astrael-convictions">

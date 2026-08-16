@@ -150,11 +150,12 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
       && !context.characterSkillRemoval
       && !context.characterSpecialtiesView
       && !context.characterSpecialtyRemoval
-      && !context.characterCharacteristicDock
+      && !context.characterCharacteristicView
+      && !context.characterCharacteristicEditor
+      && !context.characterCharacteristicRemoval
       && !context.characterConvictionDock;
     context.characterDockFocused = Boolean(
-      context.characterCharacteristicDock
-      || context.characterConvictionDock
+      context.characterConvictionDock
     );
     return context;
   }
@@ -238,7 +239,7 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     this.element.addEventListener("keydown", this.#onCharacterSkillEditorKeydown.bind(this));
 
     const activeDock = this.element.querySelector(
-      ".astrael-characteristic-dock, .astrael-conviction-dock"
+      ".astrael-conviction-dock"
     );
     const characterFrame = this.element.querySelector(".astrael-character-frame");
     if (activeDock && characterFrame) {

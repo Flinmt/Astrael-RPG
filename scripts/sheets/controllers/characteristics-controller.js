@@ -10,12 +10,15 @@ class CharacteristicsController {
   constructor(host) {
     this.host = host;
     this.mode = "advantages";
-    this.dock = null;
+    this.view = null;
+    this.editor = null;
+    this.removal = null;
     this.focusTarget = null;
+    this.markerReturnFocus = null;
   }
 
   get hasOpenDock() {
-    return Boolean(this.dock);
+    return Boolean(this.view || this.editor || this.removal);
   }
 
   prepareContext(context) {
@@ -28,11 +31,14 @@ class CharacteristicsController {
         ...prepareAdvantageEntry(entry),
         index,
         listId: this.mode,
+        level: normalizeAdvantageLevel(entry),
         levels: buildLevels(normalizeAdvantageLevel(entry)),
-        selected: this.dock?.listId === this.mode && this.dock.index === index
+        selected: this.view?.listId === this.mode && this.view.index === index,
+        canManage: this.host.actor.isOwner,
+        canAdjustLevel: this.host.actor.isOwner,
+        canRoll: this.mode === "advantages"
       }))
       .sort((left, right) => left.name.localeCompare(right.name, game.i18n.lang));
-    const locked = Boolean(this.dock && this.dock.mode !== "view");
     context.characterCharacteristics = {
       activeList,
       advantagesActive: this.mode === "advantages",
@@ -40,51 +46,72 @@ class CharacteristicsController {
       advantagesCount: lists.advantages.length,
       flawsCount: lists.flaws.length,
       isFlaw: this.mode === "flaws",
-      locked,
-      canManage: this.host.actor.isOwner,
-      canAdd: this.host.actor.isOwner && !locked,
+      canAdd: this.host.actor.isOwner,
       empty: activeList.length === 0
     };
 
-    if (!this.dock) {
-      context.characterCharacteristicDock = null;
-      return;
+    context.characterCharacteristicView = null;
+    context.characterCharacteristicEditor = null;
+    context.characterCharacteristicRemoval = null;
+
+    if (this.view) {
+      const source = lists[this.view.listId]?.[this.view.index];
+      if (!source) this.view = null;
+      else {
+        context.characterCharacteristicView = {
+          listId: this.view.listId,
+          index: this.view.index,
+          name: String(source.name || ""),
+          level: normalizeAdvantageLevel(source),
+          description: String(source.description || source.details || ""),
+          typeLabel: this.#typeLabel(this.view.listId),
+          canManage: this.host.actor.isOwner,
+          canRoll: this.view.listId === "advantages"
+        };
+      }
     }
-    const source = this.dock.adding ? this.dock : lists[this.dock.listId]?.[this.dock.index];
-    if (!source) {
-      this.dock = null;
-      context.characterCharacteristicDock = null;
-      return;
+
+    if (this.editor) {
+      context.characterCharacteristicEditor = {
+        adding: this.editor.adding,
+        listId: this.editor.listId,
+        index: this.editor.index,
+        name: this.editor.name,
+        description: this.editor.description,
+        level: normalizeAdvantageLevel(this.editor),
+        levels: buildLevels(normalizeAdvantageLevel(this.editor)),
+        isFlaw: this.editor.listId === "flaws",
+        typeLabel: this.#typeLabel(this.editor.listId)
+      };
     }
-    const level = normalizeAdvantageLevel(this.dock.mode === "edit" ? this.dock : source);
-    context.characterCharacteristicDock = {
-      ...this.dock,
-      name: this.dock.mode === "edit" ? this.dock.name : String(source.name || ""),
-      description: this.dock.mode === "edit" ? this.dock.description : String(source.description || source.details || ""),
-      level,
-      levels: buildLevels(level),
-      isView: this.dock.mode === "view",
-      isEdit: this.dock.mode === "edit",
-      isRemove: this.dock.mode === "remove",
-      isFlaw: this.dock.listId === "flaws",
-      canManage: this.host.actor.isOwner,
-      canRoll: this.dock.listId === "advantages" && this.dock.mode === "view",
-      typeLabel: game.i18n.localize(this.dock.listId === "flaws"
-        ? "ASTRAEL.CharacterCharacteristics.Flaw"
-        : "ASTRAEL.CharacterCharacteristics.Advantage")
-    };
+
+    if (this.removal) {
+      const source = lists[this.removal.listId]?.[this.removal.index];
+      if (!source) this.removal = null;
+      else {
+        context.characterCharacteristicRemoval = {
+          listId: this.removal.listId,
+          index: this.removal.index,
+          name: String(source.name || ""),
+          typeLabel: this.#typeLabel(this.removal.listId)
+        };
+      }
+    }
   }
 
   activateListeners(root) {
     const actions = {
       "set-characteristic-mode": this.#onSetMode,
       "add-characteristic": this.#onAdd,
-      "select-characteristic": this.#onSelect,
+      "view-characteristic": this.#onView,
       "edit-characteristic": this.#onEdit,
       "set-characteristic-level": this.#onSetLevel,
+      "set-characteristic-editor-level": this.#onSetEditorLevel,
       "save-characteristic": this.#onSave,
-      "close-characteristic": this.#onClose,
+      "close-characteristic-view": this.#onCloseView,
+      "close-characteristic-editor": this.#onCloseEditor,
       "request-remove-characteristic": this.#onRequestRemove,
+      "cancel-characteristic-removal": this.#onBackRemove,
       "back-remove-characteristic": this.#onBackRemove,
       "confirm-remove-characteristic": this.#onConfirmRemove
     };
@@ -96,34 +123,63 @@ class CharacteristicsController {
   }
 
   restoreFocus(root) {
-    if (!this.focusTarget) return false;
-    const selector = this.focusTarget === "name"
-      ? "[data-action='characteristic-name']"
-      : this.focusTarget === "add"
-        ? "[data-action='add-characteristic']"
-        : `[data-action='select-characteristic'][data-list='${this.mode}'][data-index='${this.focusTarget}']`;
+    if (!this.focusTarget && !this.markerReturnFocus) return false;
+    let selector = null;
+    if (this.markerReturnFocus) {
+      const { listId, index, level } = this.markerReturnFocus;
+      this.markerReturnFocus = null;
+      selector = `[data-action='set-characteristic-level'][data-list='${listId}'][data-index='${index}'][data-level='${level}']`;
+    } else if (typeof this.focusTarget === "object") {
+      const { listId, index } = this.focusTarget;
+      selector = `[data-action='view-characteristic'][data-list='${listId}'][data-index='${index}']`;
+    } else if (this.focusTarget === "name") {
+      selector = "[data-action='characteristic-name']";
+    } else if (this.focusTarget === "add") {
+      selector = "[data-action='add-characteristic']";
+    } else if (this.focusTarget === "view") {
+      selector = "[data-action='close-characteristic-view']";
+    } else if (this.focusTarget === "cancel") {
+      selector = "[data-action='cancel-characteristic-removal']";
+    }
     this.focusTarget = null;
     root.querySelector(selector)?.focus();
     return true;
   }
 
   handleEscape(event) {
-    if (!this.dock) return false;
-    event?.preventDefault();
-    event?.stopPropagation();
-    if (this.dock.mode === "remove") this.dock.mode = "view";
-    else {
-      const dock = this.dock;
-      this.dock = null;
-      this.focusTarget = dock.adding ? "add" : String(dock.index);
+    if (this.removal) {
+      event?.preventDefault();
+      event?.stopPropagation();
+      this.#onBackRemove();
+      return true;
     }
-    this.host.render({ force: true });
-    return true;
+    if (this.editor) {
+      event?.preventDefault();
+      event?.stopPropagation();
+      this.#onCloseEditor();
+      return true;
+    }
+    if (this.view) {
+      event?.preventDefault();
+      event?.stopPropagation();
+      this.#onCloseView();
+      return true;
+    }
+    return false;
   }
 
   close() {
-    this.dock = null;
+    this.view = null;
+    this.editor = null;
+    this.removal = null;
     this.focusTarget = null;
+    this.markerReturnFocus = null;
+  }
+
+  #typeLabel(listId) {
+    return game.i18n.localize(listId === "flaws"
+      ? "ASTRAEL.CharacterCharacteristics.Flaw"
+      : "ASTRAEL.CharacterCharacteristics.Advantage");
   }
 
   #getList(listId) {
@@ -146,48 +202,49 @@ class CharacteristicsController {
     this.host._characterSkillMarkerReturnFocus = null;
   }
 
+  #openFeature() {
+    this.host.featureCoordinator.open(this);
+    this.#clearSkillEditors();
+    this.markerReturnFocus = null;
+  }
+
   #onSetMode(event) {
     event.preventDefault();
-    if (this.dock && this.dock.mode !== "view") return;
+    if (this.hasOpenDock) return;
     this.mode = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
-    this.dock = null;
     return this.host.render({ force: true });
   }
 
   #onAdd(event) {
     event.preventDefault();
-    if (!this.host.actor.isOwner || (this.dock && this.dock.mode !== "view")) return;
-    this.host.featureCoordinator.open(this);
-    this.#clearSkillEditors();
-    this.dock = { mode: "edit", adding: true, listId: this.mode, index: -1, name: "", description: "", level: 1 };
+    if (!this.host.actor.isOwner || this.hasOpenDock) return;
+    this.#openFeature();
+    this.editor = { adding: true, listId: this.mode, index: -1, name: "", description: "", level: 1 };
     this.focusTarget = "name";
     return this.host.render({ force: true });
   }
 
-  #onSelect(event) {
+  #onView(event) {
     event.preventDefault();
-    if (this.dock && this.dock.mode !== "view") return;
-    this.host.featureCoordinator.open(this);
-    this.#clearSkillEditors();
+    if (this.hasOpenDock) return;
     const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
     const index = Number(event.currentTarget.dataset.index);
     if (!Number.isInteger(index) || !this.#getList(listId)[index]) return;
-    const closing = this.dock?.mode === "view" && this.dock.listId === listId && this.dock.index === index;
-    this.dock = closing ? null : { mode: "view", adding: false, listId, index };
-    this.focusTarget = closing ? null : String(index);
+    this.#openFeature();
+    this.view = { listId, index };
+    this.focusTarget = "view";
     return this.host.render({ force: true });
   }
 
   #onEdit(event) {
     event.preventDefault();
-    if (!this.host.actor.isOwner || this.dock?.mode !== "view") return;
-    const entry = this.#getList(this.dock.listId)[this.dock.index];
+    if (!this.host.actor.isOwner || !this.view) return;
+    const entry = this.#getList(this.view.listId)[this.view.index];
     if (!entry) return;
-    this.dock = {
-      mode: "edit",
+    this.editor = {
       adding: false,
-      listId: this.dock.listId,
-      index: this.dock.index,
+      listId: this.view.listId,
+      index: this.view.index,
       name: String(entry.name || ""),
       description: String(entry.description || entry.details || ""),
       level: normalizeAdvantageLevel(entry)
@@ -197,82 +254,123 @@ class CharacteristicsController {
   }
 
   #syncDraft() {
-    if (this.dock?.mode !== "edit") return;
+    if (!this.editor) return;
     const name = this.host.element.querySelector("[data-action='characteristic-name']");
     const description = this.host.element.querySelector("[data-action='characteristic-description']");
-    if (name) this.dock.name = name.value;
-    if (description) this.dock.description = description.value;
+    if (name) this.editor.name = name.value;
+    if (description) this.editor.description = description.value;
+  }
+
+  #onSetEditorLevel(event) {
+    event.preventDefault();
+    if (!this.editor) return;
+    this.#syncDraft();
+    this.editor.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
+    return this.host.render({ force: true });
   }
 
   #onSetLevel(event) {
     event.preventDefault();
-    if (this.dock?.mode !== "edit") return;
-    this.#syncDraft();
-    this.dock.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
-    return this.host.render({ force: true });
+    if (!this.host.actor.isOwner || this.hasOpenDock) return;
+    const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
+    const index = Number(event.currentTarget.dataset.index);
+    const level = clampNumber(event.currentTarget.dataset.level, 1, 5);
+    if (!Number.isInteger(index)) return;
+    const entry = this.#getList(listId)[index];
+    if (!entry) return;
+    const currentValue = normalizeAdvantageLevel(entry);
+    if (currentValue === level) return;
+    this.markerReturnFocus = { listId, index, level };
+    return this.host.actor.update({ [`system.${listId}.${index}.level`]: level });
   }
 
   async #onSave(event) {
     event.preventDefault();
-    if (!this.host.actor.isOwner || this.dock?.mode !== "edit") return;
+    if (!this.host.actor.isOwner || !this.editor) return;
     this.#syncDraft();
-    const dock = this.dock;
-    const name = dock.name.trim();
+    const editor = this.editor;
+    const name = editor.name.trim();
     if (!name) {
       ui.notifications.warn(game.i18n.localize("ASTRAEL.CharacterCharacteristics.NameRequired"));
       this.host.element.querySelector("[data-action='characteristic-name']")?.focus();
       return;
     }
-    const list = this.#getList(dock.listId);
+    const list = this.#getList(editor.listId);
     const entry = {
-      ...(dock.adding ? {} : list[dock.index]),
+      ...(editor.adding ? {} : list[editor.index]),
       name,
-      description: dock.description.trim(),
-      level: clampNumber(dock.level, 1, 5),
+      description: editor.description.trim(),
+      level: clampNumber(editor.level, 1, 5),
       editing: false
     };
-    let index = dock.index;
-    if (dock.adding) {
+    let index = editor.index;
+    if (editor.adding) {
       list.push(entry);
       index = list.length - 1;
     } else if (list[index]) list[index] = entry;
     else return;
-    this.dock = { mode: "view", adding: false, listId: dock.listId, index };
-    this.focusTarget = String(index);
-    return this.host.actor.update({ [`system.${dock.listId}`]: list });
+    this.editor = null;
+    this.view = { listId: editor.listId, index };
+    this.focusTarget = "view";
+    return this.host.actor.update({ [`system.${editor.listId}`]: list });
   }
 
-  #onClose(event) {
+  #onCloseView(event) {
     event?.preventDefault();
-    if (!this.dock) return;
-    const dock = this.dock;
-    this.dock = null;
-    this.focusTarget = dock.adding ? "add" : String(dock.index);
+    if (!this.view) return;
+    const target = this.view;
+    this.view = null;
+    this.focusTarget = { listId: target.listId, index: target.index };
+    return this.host.render({ force: true });
+  }
+
+  #onCloseEditor(event) {
+    event?.preventDefault();
+    if (!this.editor) return;
+    if (this.editor.adding) {
+      this.editor = null;
+      this.focusTarget = "add";
+    } else {
+      this.editor = null;
+      this.focusTarget = "view";
+    }
     return this.host.render({ force: true });
   }
 
   #onRequestRemove(event) {
     event.preventDefault();
-    if (!this.host.actor.isOwner || this.dock?.mode !== "view") return;
-    this.dock.mode = "remove";
+    if (!this.host.actor.isOwner) return;
+    let listId = this.view?.listId;
+    let index = this.view?.index;
+    if (event.currentTarget.dataset.list !== undefined) {
+      listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
+      index = Number(event.currentTarget.dataset.index);
+    }
+    if (!listId || !Number.isInteger(index) || !this.#getList(listId)[index]) return;
+    this.#openFeature();
+    this.removal = { listId, index };
+    this.focusTarget = "cancel";
     return this.host.render({ force: true });
   }
 
   #onBackRemove(event) {
     event?.preventDefault();
-    if (this.dock?.mode !== "remove") return;
-    this.dock.mode = "view";
+    if (!this.removal) return;
+    const target = this.removal;
+    this.removal = null;
+    this.focusTarget = this.view ? "view" : { listId: target.listId, index: target.index };
     return this.host.render({ force: true });
   }
 
   async #onConfirmRemove(event) {
     event.preventDefault();
-    if (!this.host.actor.isOwner || this.dock?.mode !== "remove") return;
-    const { listId, index } = this.dock;
+    if (!this.host.actor.isOwner || !this.removal) return;
+    const { listId, index } = this.removal;
     const list = this.#getList(listId);
     if (!list[index]) return;
     list.splice(index, 1);
-    this.dock = null;
+    this.removal = null;
+    this.view = null;
     this.focusTarget = "add";
     return this.host.actor.update({ [`system.${listId}`]: list });
   }
