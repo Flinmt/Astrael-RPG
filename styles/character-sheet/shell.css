@@ -19,9 +19,6 @@
 .application.astrael-rpg.character-sheet .window-header {
   width: calc(100% - var(--astrael-character-nav-gutter));
   margin-left: var(--astrael-character-nav-gutter);
-  border: 1px solid var(--astrael-line);
-  border-bottom: 0;
-  background: #0b0c0d;
 }
 
 .application.astrael-rpg.character-sheet .window-content {
@@ -590,4 +587,3 @@
 .astrael-character-sheet .astrael-character-header.is-collapsed .astrael-character-resource-title {
   font-size: 7px;
 }
-

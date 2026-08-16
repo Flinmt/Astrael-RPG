@@ -1,10 +1,108 @@
 /* Character character sheet: industrial occult game UI */
 .application.astrael-rpg.character-sheet .window-header {
-  border-color: #342f27;
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 6px 4px 10px;
+  overflow: hidden;
+  border: 1px solid #3d372e;
+  border-bottom: 1px solid #5d4a32;
+  border-radius: 0;
   color: var(--astrael-character-bone);
   background:
-    linear-gradient(90deg, rgba(155, 116, 69, 0.09), transparent 28%),
-    #0c0e0d;
+    linear-gradient(90deg, rgba(155, 116, 69, 0.14), transparent 34%),
+    linear-gradient(180deg, #171915, #0c0e0d);
+  box-shadow:
+    inset 0 1px rgba(216, 207, 188, 0.05),
+    inset 0 -1px rgba(0, 0, 0, 0.65);
+}
+
+.application.astrael-rpg.character-sheet .window-header::after {
+  position: absolute;
+  right: 44px;
+  bottom: -1px;
+  width: 76px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--astrael-nav-bronze-light));
+  content: "";
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.application.astrael-rpg.character-sheet .window-title {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #d8cfbc;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px #000;
+  white-space: nowrap;
+}
+
+.application.astrael-rpg.character-sheet .window-title::before {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border: 1px solid var(--astrael-nav-bronze-light);
+  background: #1d1b15;
+  content: "";
+  opacity: 0.8;
+  transform: rotate(45deg);
+}
+
+.application.astrael-rpg.character-sheet .window-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.application.astrael-rpg.character-sheet .window-header .header-control,
+.application.astrael-rpg.character-sheet .window-header .window-control {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  min-width: 23px;
+  min-height: 23px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0;
+  color: #aaa18f;
+  background: transparent;
+  box-shadow: none;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.application.astrael-rpg.character-sheet .window-header .header-control:hover,
+.application.astrael-rpg.character-sheet .window-header .header-control:focus-visible,
+.application.astrael-rpg.character-sheet .window-header .window-control:hover,
+.application.astrael-rpg.character-sheet .window-header .window-control:focus-visible {
+  border-color: #6f5738;
+  color: #eadcc3;
+  background: rgba(155, 116, 69, 0.14);
+  outline: 0;
+}
+
+.application.astrael-rpg.character-sheet .window-header [data-action="close"]:hover,
+.application.astrael-rpg.character-sheet .window-header [data-action="close"]:focus-visible,
+.application.astrael-rpg.character-sheet .window-header .close:hover,
+.application.astrael-rpg.character-sheet .window-header .close:focus-visible {
+  border-color: #75453e;
+  color: #d88b7e;
+  background: rgba(112, 66, 60, 0.18);
 }
 
 .astrael-character-sheet .astrael-character-frame {
@@ -240,4 +338,3 @@
   border-bottom-color: rgba(155, 116, 69, 0.38);
   color: var(--astrael-character-bone);
 }
-
