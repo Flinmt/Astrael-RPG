@@ -1,4 +1,4 @@
-<form class="{{cssClass}} astrael-character-sheet {{#if characterPortraitViewer}}is-portrait-viewer{{/if}} {{#if characterDockFocused}}is-dock-focused{{/if}}" autocomplete="off">
+<form class="{{cssClass}} astrael-character-sheet {{#if characterPortraitViewer}}is-portrait-viewer{{/if}}" autocomplete="off">
   <main class="astrael-character-shell">
     {{#if characterPortraitViewer}}
     <section class="astrael-character-portrait-viewer" aria-label="{{localize 'ASTRAEL.CharacterPortrait.FullImage'}}">
@@ -451,32 +451,7 @@
           {{/if}}
         </div>
         <div class="tab-panel astrael-character-panel" data-tab="convictions">
-          <section class="astrael-convictions">
-            <header class="astrael-convictions-header">
-              <div><span aria-hidden="true"></span><h2 class="astrael-character-section-title">{{localize "ASTRAEL.Convictions.Title"}}</h2></div>
-              <span>{{characterConvictionView.completed}}/3 {{localize "ASTRAEL.Convictions.Defined"}}</span>
-            </header>
-            <div class="astrael-conviction-list">
-              {{#each characterConvictions as |conviction|}}
-              <article class="astrael-conviction-card {{conviction.fractureClass}} {{#if conviction.filled}}is-filled{{else}}is-empty{{/if}} {{#if conviction.selected}}is-selected{{/if}}">
-                <header class="astrael-conviction-card-pillar"><i class="fas fa-landmark" aria-hidden="true"></i><span><small>{{localize "ASTRAEL.Convictions.Pillar"}}</small><strong>{{conviction.pillarNameLabel}}</strong></span></header>
-                <button type="button" class="astrael-conviction-card-main" data-action="inspect-conviction" data-index="{{conviction.index}}" aria-expanded="{{#if conviction.selected}}true{{else}}false{{/if}}">
-                  <span class="astrael-conviction-card-emblem"><i class="fas fa-feather-pointed" aria-hidden="true"></i><i class="astrael-conviction-crack" aria-hidden="true"></i></span>
-                  <span class="astrael-conviction-card-copy"><strong>{{conviction.nameLabel}}</strong><span>{{conviction.descriptionLabel}}</span></span>
-                </button>
-                <div class="astrael-conviction-fractures" aria-label="{{localize 'ASTRAEL.Convictions.Fractures'}} {{conviction.fractures}}/2">
-                  <span>{{localize "ASTRAEL.Convictions.Fractures"}} <strong>{{conviction.fractures}}/2</strong></span>
-                  {{#each conviction.fractureBoxes as |fracture|}}
-                  <button type="button" class="astrael-conviction-fracture {{#if fracture.filled}}is-filled{{/if}}" data-conviction-index="{{conviction.index}}" data-value="{{fracture.value}}" title="{{localize 'ASTRAEL.Convictions.FracturesHint'}}" aria-label="{{localize 'ASTRAEL.Convictions.SetFractures'}} {{fracture.value}}" aria-pressed="{{#if fracture.filled}}true{{else}}false{{/if}}" {{#unless @root.characterConvictionView.canEdit}}disabled{{/unless}}>
-                    <i class="fas fa-diamond" aria-hidden="true"></i>
-                  </button>
-                  {{/each}}
-                </div>
-              </article>
-              {{/each}}
-            </div>
-
-            {{#if characterConvictionDock}}
+          {{#if characterConvictionDock}}
             <section class="astrael-conviction-dock {{#if characterConvictionDock.isEdit}}is-edit{{else}}is-view{{/if}}" role="dialog" aria-modal="true" aria-label="{{localize 'ASTRAEL.Convictions.Inspection'}}: {{characterConvictionDock.nameLabel}}">
               {{#if characterConvictionDock.isEdit}}
               <header class="astrael-conviction-editor-head">
@@ -516,8 +491,33 @@
               <footer class="astrael-conviction-actions"><button type="button" data-action="cancel-conviction">{{localize "ASTRAEL.CharacterCharacteristics.Close"}}</button></footer>
               {{/if}}
             </section>
-            {{/if}}
+          {{else}}
+          <section class="astrael-convictions">
+            <header class="astrael-convictions-header">
+              <div><span aria-hidden="true"></span><h2 class="astrael-character-section-title">{{localize "ASTRAEL.Convictions.Title"}}</h2></div>
+              <span>{{characterConvictionView.completed}}/3 {{localize "ASTRAEL.Convictions.Defined"}}</span>
+            </header>
+            <div class="astrael-conviction-list">
+              {{#each characterConvictions as |conviction|}}
+              <article class="astrael-conviction-card {{conviction.fractureClass}} {{#if conviction.filled}}is-filled{{else}}is-empty{{/if}} {{#if conviction.selected}}is-selected{{/if}}">
+                <header class="astrael-conviction-card-pillar"><i class="fas fa-landmark" aria-hidden="true"></i><span><small>{{localize "ASTRAEL.Convictions.Pillar"}}</small><strong>{{conviction.pillarNameLabel}}</strong></span></header>
+                <button type="button" class="astrael-conviction-card-main" data-action="inspect-conviction" data-index="{{conviction.index}}" aria-expanded="{{#if conviction.selected}}true{{else}}false{{/if}}">
+                  <span class="astrael-conviction-card-emblem"><i class="fas fa-feather-pointed" aria-hidden="true"></i><i class="astrael-conviction-crack" aria-hidden="true"></i></span>
+                  <span class="astrael-conviction-card-copy"><strong>{{conviction.nameLabel}}</strong><span>{{conviction.descriptionLabel}}</span></span>
+                </button>
+                <div class="astrael-conviction-fractures" aria-label="{{localize 'ASTRAEL.Convictions.Fractures'}} {{conviction.fractures}}/2">
+                  <span>{{localize "ASTRAEL.Convictions.Fractures"}} <strong>{{conviction.fractures}}/2</strong></span>
+                  {{#each conviction.fractureBoxes as |fracture|}}
+                  <button type="button" class="astrael-conviction-fracture {{#if fracture.filled}}is-filled{{/if}}" data-conviction-index="{{conviction.index}}" data-value="{{fracture.value}}" title="{{localize 'ASTRAEL.Convictions.FracturesHint'}}" aria-label="{{localize 'ASTRAEL.Convictions.SetFractures'}} {{fracture.value}}" aria-pressed="{{#if fracture.filled}}true{{else}}false{{/if}}" {{#unless @root.characterConvictionView.canEdit}}disabled{{/unless}}>
+                    <i class="fas fa-diamond" aria-hidden="true"></i>
+                  </button>
+                  {{/each}}
+                </div>
+              </article>
+              {{/each}}
+            </div>
           </section>
+          {{/if}}
         </div>
         <div class="tab-panel astrael-character-panel" data-tab="virtues">
           <h2>{{localize "ASTRAEL.Tab.Virtues"}}</h2>

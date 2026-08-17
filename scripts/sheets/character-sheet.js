@@ -153,9 +153,6 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
       && !context.characterCharacteristicEditor
       && !context.characterCharacteristicRemoval
       && !context.characterConvictionDock;
-    context.characterDockFocused = Boolean(
-      context.characterConvictionDock
-    );
     return context;
   }
 
@@ -236,23 +233,6 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
     this.element.querySelector("[data-action='cancel-specialty-removal']")?.addEventListener("click", this.#onCancelCharacterSpecialtyRemoval.bind(this));
     this.element.querySelector("[data-action='confirm-specialty-removal']")?.addEventListener("click", this.#onConfirmCharacterSpecialtyRemoval.bind(this));
     this.element.addEventListener("keydown", this.#onCharacterSkillEditorKeydown.bind(this));
-
-    const activeDock = this.element.querySelector(
-      ".astrael-conviction-dock"
-    );
-    const characterFrame = this.element.querySelector(".astrael-character-frame");
-    if (activeDock && characterFrame) {
-      let branch = activeDock;
-      while (branch.parentElement && branch !== characterFrame) {
-        const parent = branch.parentElement;
-        for (const sibling of parent.children) {
-          const keepConvictionTitle = activeDock.classList.contains("astrael-conviction-dock")
-            && sibling.classList.contains("astrael-convictions-header");
-          if (sibling !== branch && !keepConvictionTitle) sibling.inert = true;
-        }
-        branch = parent;
-      }
-    }
 
     if (context.characterPortraitViewer) {
       this.element.querySelector("[data-action='close-character-portrait-viewer']")?.focus();

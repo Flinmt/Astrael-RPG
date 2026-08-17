@@ -90,7 +90,7 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 - Cada coluna é composta por três zonas conectadas: demonstrativo do Pilar no topo, corpo clicável e flexível da Convicção no centro e controles de Fratura na base; estados vazios mantêm a mesma altura e orientam o preenchimento.
 - A metáfora de sustentação permanece em ícones, linhas e fissuras ornamentais, sem determinar a estrutura ou reduzir o espaço de conteúdo.
 - Os marcadores de Fratura podem ser alterados diretamente na visão geral. Clicar em 1 ou 2 define esse valor; clicar novamente no valor ativo retorna a 0.
-- Clicar no corpo de uma coluna abre diretamente o editor para proprietários; usuários somente leitura recebem o inspetor. O painel sobrepõe a lista e ocupa toda a área abaixo do título da aba, usando o mesmo estado de foco modal dos demais docks.
+- Clicar no corpo de uma coluna abre diretamente o editor para proprietários; usuários somente leitura recebem o inspetor. Assim como nas demais abas, o editor ou inspetor substitui o conteúdo inteiro da aba; cancelar, salvar ou `Escape` devolve a visão das três colunas.
 - Proprietários editam os quatro campos textuais e as Fraturas em um único rascunho local, com indicação de alterações pendentes e **Salvar** inativo até que algo mude. **Salvar** confirma todo o rascunho; **Cancelar** ou `Escape` o descarta e retorna à visão das três colunas. Na visão geral, Fraturas permanecem um controle rápido com persistência imediata.
 - Usuários sem propriedade podem navegar e inspecionar, mas não alterar campos nem Fraturas.
 - A arte é construída em CSS e Font Awesome, sem imagens rasterizadas, e respeita a preferência de movimento reduzido.
