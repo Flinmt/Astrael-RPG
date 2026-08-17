@@ -150,7 +150,6 @@ class AstraelCharacterSheet extends AstraelBaseActorSheet {
       && !context.characterSkillRemoval
       && !context.characterSpecialtiesView
       && !context.characterSpecialtyRemoval
-      && !context.characterCharacteristicView
       && !context.characterCharacteristicEditor
       && !context.characterCharacteristicRemoval
       && !context.characterConvictionDock;

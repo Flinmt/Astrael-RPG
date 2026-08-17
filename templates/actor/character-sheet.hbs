@@ -393,30 +393,6 @@
               <button type="button" class="is-primary" data-action="save-characteristic">{{localize "ASTRAEL.CharacterSkills.Save"}}</button>
             </footer>
           </section>
-          {{else if characterCharacteristicView}}
-          <section class="astrael-character-characteristic-view {{#if characterCharacteristicView.canRoll}}is-advantage{{else}}is-flaw{{/if}}" role="dialog" aria-modal="true" aria-label="{{characterCharacteristicView.typeLabel}}: {{characterCharacteristicView.name}}">
-            <header class="astrael-character-characteristic-view-header">
-              <div class="astrael-character-characteristic-view-heading">
-                <span>{{characterCharacteristicView.typeLabel}}</span>
-                <strong>{{characterCharacteristicView.name}}</strong>
-                <em>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicView.level}}</em>
-              </div>
-              <div class="astrael-character-characteristic-view-tools">
-                <button type="button" data-action="close-characteristic-view" title="{{localize 'ASTRAEL.CharacterCharacteristics.Close'}}" aria-label="{{localize 'ASTRAEL.CharacterCharacteristics.Close'}}"><i class="fas fa-xmark" aria-hidden="true"></i></button>
-              </div>
-            </header>
-            <p class="astrael-character-characteristic-view-description">{{#if characterCharacteristicView.description}}{{characterCharacteristicView.description}}{{else}}{{localize "ASTRAEL.CharacterCharacteristics.NoDescription"}}{{/if}}</p>
-            <footer class="astrael-character-characteristic-actions">
-              {{#if characterCharacteristicView.canRoll}}
-              <button type="button" class="rollable is-roll" data-type="advantage" data-key="{{characterCharacteristicView.index}}"><i class="fas fa-dice" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSkills.Roll"}}</button>
-              {{/if}}
-              <button type="button" data-action="close-characteristic-view">{{localize "ASTRAEL.CharacterCharacteristics.Close"}}</button>
-              {{#if characterCharacteristicView.canManage}}
-              <button type="button" data-action="edit-characteristic"><i class="fas fa-pen" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterSkills.Edit"}}</button>
-              <button type="button" class="is-danger" data-action="request-remove-characteristic">{{localize "ASTRAEL.CharacterSkills.Remove"}}</button>
-              {{/if}}
-            </footer>
-          </section>
           {{else}}
           <section class="astrael-characteristics {{#if characterCharacteristics.isFlaw}}is-flaws{{else}}is-advantages{{/if}}">
             <header class="astrael-characteristics-header">
@@ -442,7 +418,7 @@
 
             <div class="astrael-characteristic-list">
               {{#each characterCharacteristics.activeList as |entry|}}
-              <article class="astrael-character-characteristic-row {{#if entry.selected}}is-selected{{/if}}">
+              <article class="astrael-character-characteristic-row">
                 {{#if entry.canRoll}}
                 <a class="rollable astrael-character-characteristic-name" href="#" data-type="advantage" data-key="{{entry.index}}" title="{{localize 'ASTRAEL.CharacterSkills.Roll'}}: {{entry.name}}" aria-label="{{localize 'ASTRAEL.CharacterSkills.Roll'}}: {{entry.name}}">{{entry.name}}</a>
                 {{else}}
@@ -453,7 +429,11 @@
                   <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-characteristic-level" data-list="{{../listId}}" data-index="{{../index}}" data-level="{{level.value}}" title="{{localize 'ASTRAEL.CharacterSkills.LevelHint'}}: {{../name}} {{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}: {{../name}}" {{#unless ../canAdjustLevel}}disabled{{/unless}}></button>
                   {{/each}}
                 </div>
-                <button type="button" class="astrael-character-characteristic-open" data-action="view-characteristic" data-list="{{entry.listId}}" data-index="{{entry.index}}" title="{{localize 'ASTRAEL.CharacterCharacteristics.View'}}: {{entry.name}}" aria-label="{{localize 'ASTRAEL.CharacterCharacteristics.View'}}: {{entry.name}}"><i class="fas fa-eye" aria-hidden="true"></i></button>
+                {{#if entry.canManage}}
+                <button type="button" class="astrael-character-characteristic-open" data-action="edit-characteristic" data-list="{{entry.listId}}" data-index="{{entry.index}}" title="{{localize 'ASTRAEL.CharacterSkills.Edit'}}: {{entry.name}}" aria-label="{{localize 'ASTRAEL.CharacterSkills.Edit'}}: {{entry.name}}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                {{else}}
+                <button type="button" class="astrael-character-characteristic-open" disabled aria-label="{{localize 'ASTRAEL.CharacterSkills.Edit'}}: {{entry.name}}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+                {{/if}}
                 {{#if entry.canManage}}
                 <button type="button" class="astrael-character-characteristic-remove" data-action="request-remove-characteristic" data-list="{{entry.listId}}" data-index="{{entry.index}}" title="{{localize 'ASTRAEL.CharacterSkills.Remove'}}" aria-label="{{localize 'ASTRAEL.CharacterSkills.Remove'}}: {{entry.name}}"><i class="fas fa-trash" aria-hidden="true"></i></button>
                 {{else}}

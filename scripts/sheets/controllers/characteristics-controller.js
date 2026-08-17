@@ -10,7 +10,6 @@ class CharacteristicsController {
   constructor(host) {
     this.host = host;
     this.mode = "advantages";
-    this.view = null;
     this.editor = null;
     this.removal = null;
     this.focusTarget = null;
@@ -18,7 +17,7 @@ class CharacteristicsController {
   }
 
   get hasOpenDock() {
-    return Boolean(this.view || this.editor || this.removal);
+    return Boolean(this.editor || this.removal);
   }
 
   prepareContext(context) {
@@ -33,7 +32,6 @@ class CharacteristicsController {
         listId: this.mode,
         level: normalizeAdvantageLevel(entry),
         levels: buildLevels(normalizeAdvantageLevel(entry)),
-        selected: this.view?.listId === this.mode && this.view.index === index,
         canManage: this.host.actor.isOwner,
         canAdjustLevel: this.host.actor.isOwner,
         canRoll: this.mode === "advantages"
@@ -50,26 +48,8 @@ class CharacteristicsController {
       empty: activeList.length === 0
     };
 
-    context.characterCharacteristicView = null;
     context.characterCharacteristicEditor = null;
     context.characterCharacteristicRemoval = null;
-
-    if (this.view) {
-      const source = lists[this.view.listId]?.[this.view.index];
-      if (!source) this.view = null;
-      else {
-        context.characterCharacteristicView = {
-          listId: this.view.listId,
-          index: this.view.index,
-          name: String(source.name || ""),
-          level: normalizeAdvantageLevel(source),
-          description: String(source.description || source.details || ""),
-          typeLabel: this.#typeLabel(this.view.listId),
-          canManage: this.host.actor.isOwner,
-          canRoll: this.view.listId === "advantages"
-        };
-      }
-    }
 
     if (this.editor) {
       context.characterCharacteristicEditor = {
@@ -103,12 +83,10 @@ class CharacteristicsController {
     const actions = {
       "set-characteristic-mode": this.#onSetMode,
       "add-characteristic": this.#onAdd,
-      "view-characteristic": this.#onView,
       "edit-characteristic": this.#onEdit,
       "set-characteristic-level": this.#onSetLevel,
       "set-characteristic-editor-level": this.#onSetEditorLevel,
       "save-characteristic": this.#onSave,
-      "close-characteristic-view": this.#onCloseView,
       "close-characteristic-editor": this.#onCloseEditor,
       "request-remove-characteristic": this.#onRequestRemove,
       "cancel-characteristic-removal": this.#onBackRemove,
@@ -131,13 +109,11 @@ class CharacteristicsController {
       selector = `[data-action='set-characteristic-level'][data-list='${listId}'][data-index='${index}'][data-level='${level}']`;
     } else if (typeof this.focusTarget === "object") {
       const { listId, index } = this.focusTarget;
-      selector = `[data-action='view-characteristic'][data-list='${listId}'][data-index='${index}']`;
+      selector = `[data-action='edit-characteristic'][data-list='${listId}'][data-index='${index}']`;
     } else if (this.focusTarget === "name") {
       selector = "[data-action='characteristic-name']";
     } else if (this.focusTarget === "add") {
       selector = "[data-action='add-characteristic']";
-    } else if (this.focusTarget === "view") {
-      selector = "[data-action='close-characteristic-view']";
     } else if (this.focusTarget === "cancel") {
       selector = "[data-action='cancel-characteristic-removal']";
     }
@@ -159,17 +135,10 @@ class CharacteristicsController {
       this.#onCloseEditor();
       return true;
     }
-    if (this.view) {
-      event?.preventDefault();
-      event?.stopPropagation();
-      this.#onCloseView();
-      return true;
-    }
     return false;
   }
 
   close() {
-    this.view = null;
     this.editor = null;
     this.removal = null;
     this.focusTarget = null;
@@ -224,27 +193,18 @@ class CharacteristicsController {
     return this.host.render({ force: true });
   }
 
-  #onView(event) {
-    event.preventDefault();
-    if (this.hasOpenDock) return;
-    const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
-    const index = Number(event.currentTarget.dataset.index);
-    if (!Number.isInteger(index) || !this.#getList(listId)[index]) return;
-    this.#openFeature();
-    this.view = { listId, index };
-    this.focusTarget = "view";
-    return this.host.render({ force: true });
-  }
-
   #onEdit(event) {
     event.preventDefault();
-    if (!this.host.actor.isOwner || !this.view) return;
-    const entry = this.#getList(this.view.listId)[this.view.index];
+    if (!this.host.actor.isOwner || this.hasOpenDock) return;
+    const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
+    const index = Number(event.currentTarget.dataset.index);
+    const entry = this.#getList(listId)[index];
     if (!entry) return;
+    this.#openFeature();
     this.editor = {
       adding: false,
-      listId: this.view.listId,
-      index: this.view.index,
+      listId,
+      index,
       name: String(entry.name || ""),
       description: String(entry.description || entry.details || ""),
       level: normalizeAdvantageLevel(entry)
@@ -310,18 +270,8 @@ class CharacteristicsController {
     } else if (list[index]) list[index] = entry;
     else return;
     this.editor = null;
-    this.view = { listId: editor.listId, index };
-    this.focusTarget = "view";
+    this.focusTarget = { listId: editor.listId, index };
     return this.host.actor.update({ [`system.${editor.listId}`]: list });
-  }
-
-  #onCloseView(event) {
-    event?.preventDefault();
-    if (!this.view) return;
-    const target = this.view;
-    this.view = null;
-    this.focusTarget = { listId: target.listId, index: target.index };
-    return this.host.render({ force: true });
   }
 
   #onCloseEditor(event) {
@@ -331,8 +281,9 @@ class CharacteristicsController {
       this.editor = null;
       this.focusTarget = "add";
     } else {
+      const target = this.editor;
       this.editor = null;
-      this.focusTarget = "view";
+      this.focusTarget = { listId: target.listId, index: target.index };
     }
     return this.host.render({ force: true });
   }
@@ -340,13 +291,9 @@ class CharacteristicsController {
   #onRequestRemove(event) {
     event.preventDefault();
     if (!this.host.actor.isOwner) return;
-    let listId = this.view?.listId;
-    let index = this.view?.index;
-    if (event.currentTarget.dataset.list !== undefined) {
-      listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
-      index = Number(event.currentTarget.dataset.index);
-    }
-    if (!listId || !Number.isInteger(index) || !this.#getList(listId)[index]) return;
+    const listId = event.currentTarget.dataset.list === "flaws" ? "flaws" : "advantages";
+    const index = Number(event.currentTarget.dataset.index);
+    if (!Number.isInteger(index) || !this.#getList(listId)[index]) return;
     this.#openFeature();
     this.removal = { listId, index };
     this.focusTarget = "cancel";
@@ -358,7 +305,7 @@ class CharacteristicsController {
     if (!this.removal) return;
     const target = this.removal;
     this.removal = null;
-    this.focusTarget = this.view ? "view" : { listId: target.listId, index: target.index };
+    this.focusTarget = { listId: target.listId, index: target.index };
     return this.host.render({ force: true });
   }
 
@@ -370,7 +317,6 @@ class CharacteristicsController {
     if (!list[index]) return;
     list.splice(index, 1);
     this.removal = null;
-    this.view = null;
     this.focusTarget = "add";
     return this.host.actor.update({ [`system.${listId}`]: list });
   }
