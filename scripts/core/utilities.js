@@ -192,9 +192,9 @@ function normalizeStrangerMark(source = {}) {
 
 function normalizeVisibleTabs(source = {}) {
   return {
-    virtues: source.virtues === true,
-    hemomancy: source.hemomancy === true,
-    strangerMark: source.strangerMark === true
+    virtues: source.virtues !== false,
+    hemomancy: source.hemomancy !== false,
+    strangerMark: source.strangerMark !== false
   };
 }
 

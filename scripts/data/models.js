@@ -103,9 +103,9 @@ class AstraelCharacterData extends TypeDataModel {
       }),
       sheetSettings: new SchemaField({
         visibleTabs: new SchemaField({
-          virtues: new BooleanField({ required: true, initial: false }),
-          hemomancy: new BooleanField({ required: true, initial: false }),
-          strangerMark: new BooleanField({ required: true, initial: false })
+          virtues: new BooleanField({ required: true, initial: true }),
+          hemomancy: new BooleanField({ required: true, initial: true }),
+          strangerMark: new BooleanField({ required: true, initial: true })
         })
       }),
       advantages: new ArrayField(new ObjectField(), { required: true, initial: () => [] }),

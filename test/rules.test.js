@@ -56,9 +56,14 @@ test("convictions keep the fixed persisted contract", () => {
 
 test("legacy presentation values remain normalized", () => {
   assert.equal(normalizeAdvantageLevel({ level: "-IV" }), 4);
-  assert.deepEqual(normalizeVisibleTabs({ virtues: true, hemomancy: 1 }), {
+  assert.deepEqual(normalizeVisibleTabs({ virtues: true, hemomancy: false }), {
     virtues: true,
     hemomancy: false,
-    strangerMark: false
+    strangerMark: true
+  });
+  assert.deepEqual(normalizeVisibleTabs({}), {
+    virtues: true,
+    hemomancy: true,
+    strangerMark: true
   });
 });
