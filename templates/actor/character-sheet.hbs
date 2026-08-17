@@ -380,7 +380,7 @@
                 <textarea data-action="characteristic-description" maxlength="1000" placeholder="{{localize 'ASTRAEL.CharacterCharacteristics.DescriptionPlaceholder'}}">{{characterCharacteristicEditor.description}}</textarea>
               </label>
               <div class="astrael-character-characteristic-level-editor">
-                <span>{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicEditor.level}}</span>
+                <span class="astrael-character-characteristic-level-editor-value">{{localize "ASTRAEL.CharacterAttributes.Level"}} {{characterCharacteristicEditor.level}}</span>
                 <div>
                   {{#each characterCharacteristicEditor.levels as |level|}}
                   <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-action="set-characteristic-editor-level" data-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.CharacterAttributes.Level'}} {{level.value}}"></button>

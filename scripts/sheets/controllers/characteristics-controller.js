@@ -226,7 +226,16 @@ class CharacteristicsController {
     if (!this.editor) return;
     this.#syncDraft();
     this.editor.level = clampNumber(event.currentTarget.dataset.level, 1, 5);
-    return this.host.render({ force: true });
+    const levelEditor = event.currentTarget.closest(".astrael-character-characteristic-level-editor");
+    if (!levelEditor) return;
+    const level = this.editor.level;
+    levelEditor.querySelectorAll("[data-action='set-characteristic-editor-level']").forEach((dot) => {
+      const dotLevel = clampNumber(dot.dataset.level, 1, 5);
+      dot.classList.toggle("is-filled", dotLevel <= level);
+      dot.classList.toggle("is-current", dotLevel === level);
+    });
+    const value = levelEditor.querySelector(".astrael-character-characteristic-level-editor-value");
+    if (value) value.textContent = `${game.i18n.localize("ASTRAEL.CharacterAttributes.Level")} ${level}`;
   }
 
   #onSetLevel(event) {
