@@ -96,6 +96,17 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 - A arte é construída em CSS e Font Awesome, sem imagens rasterizadas, e respeita a preferência de movimento reduzido.
 - O contrato persistido é `system.convictions[3]`, com cada entrada no formato `{ name, description, fractures, pillar: { name, description } }`.
 
+### Ascensão e experiência
+
+- A aba preserva Ambição e Desejo no topo, seguidos pelo título Ascensão, o resumo de XP e o histórico.
+- XP Total é a soma dos registros válidos do histórico; XP Atual é XP Total menos XP Gasto.
+- Apenas XP Gasto pode ser alterado pelo proprietário e permanece limitado entre zero e o Total.
+- Cada registro armazena uma quantidade inteira positiva e uma descrição obrigatória em `system.xp.history`.
+- A macro **Distribuir XP** abre uma aplicação exclusiva do Mestre com seleção por cartões de personagem, busca por personagem ou jogador e concessão simultânea para qualquer combinação de destinatários.
+- Mestres também acessam essa mesma aplicação pelo botão **Distribuir XP** no rodapé do diretório de Atores; jogadores não recebem esse controle.
+- Cada concessão exige quantidade positiva e descrição, cria um identificador compartilhado nos históricos individuais e registra no mundo os destinatários, Mestre responsável e data da distribuição.
+- O histórico geral fica disponível nessa aplicação apenas para o Mestre. A exclusão é permanente e remove o evento completo tanto do histórico global quanto de todas as fichas que receberam aquela concessão; jogadores continuam vendo somente os registros da própria ficha.
+
 ## Estado da migração
 
 1. Base, dimensões e navegação: **concluídas**.
@@ -103,11 +114,12 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 3. Estatísticas, perícias e especialidades: **concluídas**.
 4. Características — Vantagens e Desvantagens: **concluídas**.
 5. Convicções: **concluídas**.
-6. Virtudes: **pendente**.
-7. Hemomancia: **pendente**.
-8. Marca do Estranho: **pendente**.
-9. Configurações — estrutura visual e controle das dicas de Vida e Vontade: **concluídas**; novas preferências podem ser adicionadas por seção.
-10. Paridade funcional, ficha de NPC e criador de NPC: **pendentes**.
+6. Ascensão — Ambição, Desejo, resumo, histórico e distribuição de XP pelo Mestre: **concluída**.
+7. Virtudes: **pendente**.
+8. Hemomancia: **pendente**.
+9. Marca do Estranho: **pendente**.
+10. Configurações — estrutura visual e controle das dicas de Vida e Vontade: **concluídas**; novas preferências podem ser adicionadas por seção.
+11. Paridade funcional, ficha de NPC e criador de NPC: **pendentes**.
 
 ## Critérios permanentes de implementação
 

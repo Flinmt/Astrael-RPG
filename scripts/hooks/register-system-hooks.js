@@ -2,8 +2,10 @@ import { SYSTEM_ID } from "../core/constants.js";
 import { applyTokenPortraitsToActorDirectory } from "../core/utilities.js";
 import { getRollValues } from "../rules/dice.js";
 import { showRerollDialog } from "../chat/dice-pool.js";
+import { openExperienceDistributor } from "../applications/xp-distributor.js";
 import { AstraelCharacterData, AstraelTraitData, removeDeprecatedActorTypes } from "../data/models.js";
 import { AstraelCharacterSheet } from "../sheets/character-sheet.js";
+import { addExperienceDistributorToActorDirectory } from "./actor-directory.js";
 
 const FOCUS_NAVIGATION_KEYS = ["Tab", "Enter", " ", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
 
@@ -47,10 +49,18 @@ function registerSystemHooks() {
       type: Boolean,
       default: false
     });
+
+    game.settings.register(SYSTEM_ID, "xpDistributionHistory", {
+      scope: "world",
+      config: false,
+      type: Object,
+      default: { version: 1, events: [] }
+    });
   
   });
   
   Hooks.on("renderApplicationV2", applyTokenPortraitsToActorDirectory);
+  Hooks.on("renderApplicationV2", addExperienceDistributorToActorDirectory);
   
   Hooks.on("updateActor", (actor, changes) => {
     const tokenImageChanged = foundry.utils.hasProperty(changes, "prototypeToken.texture.src")
@@ -65,64 +75,7 @@ function registerSystemHooks() {
   
     game.astrael = {
       ...(game.astrael || {}),
-      distributeXP() {
-        const actors = game.actors?.filter(a => a.type === "character" && a.hasPlayerOwner) || [];
-        if (!actors.length) {
-          ui.notifications.warn("Nenhuma ficha de personagem encontrada.");
-          return;
-        }
-  
-        const optionsHtml = actors.map(a =>
-          `<option value="${a.id}">${a.name}</option>`
-        ).join("");
-  
-        const content = `
-          <form class="astrael-dialog-form">
-            <div class="form-group">
-              <label>Personagem</label>
-              <select name="target">
-                <option value="all">Todos os Personagens</option>
-                ${optionsHtml}
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Valor de XP</label>
-              <input type="number" name="xp-value" value="0" step="1">
-            </div>
-          </form>
-        `;
-  
-        return new Dialog({
-          title: "Distribuir XP",
-          content,
-          buttons: {
-            distribute: {
-              label: "Distribuir",
-              callback: async (html) => {
-                const value = Math.floor(Number(html.find("[name='xp-value']").val())) || 0;
-                if (value === 0) {
-                  ui.notifications.warn("Informe um valor de XP diferente de zero.");
-                  return false;
-                }
-                const target = html.find("[name='target']").val();
-                const list = target === "all" ? actors : [game.actors.get(target)].filter(Boolean);
-                if (!list.length) {
-                  ui.notifications.warn("Nenhum personagem válido selecionado.");
-                  return false;
-                }
-                for (const actor of list) {
-                  const total = Math.max(0, (actor.system?.xp?.total || 0) + value);
-                  await actor.update({ "system.xp.total": total });
-                }
-                const sign = value > 0 ? "+" : "";
-                ui.notifications.info(`XP ${sign}${value} para ${list.length} personagem(ns).`);
-              }
-            }
-          },
-          default: "distribute",
-          render: () => {}
-        }, { classes: ["astrael-dialog"] }).render(true);
-      }
+      distributeXP: openExperienceDistributor
     };
   
     document.addEventListener("pointerdown", () => {

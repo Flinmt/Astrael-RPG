@@ -44,6 +44,15 @@ function convictionField() {
   });
 }
 
+function experienceEntryField() {
+  return new SchemaField({
+    amount: new NumberField({ required: true, integer: true, min: 1, initial: 1 }),
+    description: stringField(),
+    distributionId: stringField(),
+    awardedAt: new NumberField({ required: true, integer: true, min: 0, initial: 0 })
+  });
+}
+
 function createEmptyConviction() {
   return {
     name: "",
@@ -99,7 +108,8 @@ class AstraelCharacterData extends TypeDataModel {
       xp: new SchemaField({
         total: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
         current: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
-        spent: new NumberField({ required: true, integer: true, min: 0, initial: 0 })
+        spent: new NumberField({ required: true, integer: true, min: 0, initial: 0 }),
+        history: new ArrayField(experienceEntryField(), { required: true, initial: () => [] })
       }),
       sheetSettings: new SchemaField({
         visibleTabs: new SchemaField({

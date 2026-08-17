@@ -9,6 +9,13 @@ import {
   normalizeVisibleTabs
 } from "../scripts/core/utilities.js";
 import { classifyDie, prepareDicePoolResults, summarizeDicePool } from "../scripts/rules/dice.js";
+import {
+  appendExperienceEntry,
+  calculateExperience,
+  normalizeExperienceHistory,
+  normalizeExperienceLedger,
+  removeExperienceDistribution
+} from "../scripts/rules/experience.js";
 import { normalizeDamage, normalizeResource } from "../scripts/rules/resources.js";
 
 test("dice pools preserve success and critical-pair behavior", () => {
@@ -65,5 +72,93 @@ test("legacy presentation values remain normalized", () => {
     virtues: true,
     hemomancy: true,
     strangerMark: true
+  });
+});
+
+test("experience totals are derived exclusively from valid history entries", () => {
+  const experience = calculateExperience({
+    total: 99,
+    current: 99,
+    spent: 3,
+    history: [
+      { amount: 4, description: "Session one" },
+      { amount: "6", description: "  Milestone  " },
+      { amount: -2, description: "Invalid correction" },
+      { amount: 5, description: "" }
+    ]
+  });
+
+  assert.deepEqual(experience, {
+    history: [
+      { amount: 4, description: "Session one", distributionId: "", awardedAt: 0 },
+      { amount: 6, description: "Milestone", distributionId: "", awardedAt: 0 }
+    ],
+    total: 10,
+    spent: 3,
+    current: 7
+  });
+});
+
+test("experience spent is clamped to the history total", () => {
+  assert.deepEqual(calculateExperience({ spent: 8, history: [] }), {
+    history: [],
+    total: 0,
+    spent: 0,
+    current: 0
+  });
+  assert.equal(calculateExperience({ spent: 20, history: [{ amount: 5, description: "Award" }] }).spent, 5);
+  assert.deepEqual(normalizeExperienceHistory(null), []);
+});
+
+test("experience awards append a normalized history entry", () => {
+  assert.deepEqual(appendExperienceEntry(
+    [{ amount: 2, description: "Opening" }],
+    { amount: "3.9", description: "  Chapter complete  " }
+  ), [
+    { amount: 2, description: "Opening", distributionId: "", awardedAt: 0 },
+    { amount: 3, description: "Chapter complete", distributionId: "", awardedAt: 0 }
+  ]);
+  assert.deepEqual(appendExperienceEntry([], { amount: 0, description: "Invalid" }), []);
+});
+
+test("experience distributions preserve shared event metadata", () => {
+  const history = appendExperienceEntry([], {
+    amount: 7,
+    description: "  Story conclusion  ",
+    distributionId: "award-1",
+    awardedAt: 1720000000000
+  });
+  assert.deepEqual(history, [{
+    amount: 7,
+    description: "Story conclusion",
+    distributionId: "award-1",
+    awardedAt: 1720000000000
+  }]);
+  assert.deepEqual(removeExperienceDistribution(history, "award-1"), []);
+});
+
+test("experience ledger keeps only complete distribution events", () => {
+  assert.deepEqual(normalizeExperienceLedger({ events: [{
+    id: "award-1",
+    amount: "5.9",
+    description: "  Discovery  ",
+    recipients: [{ actorId: "actor-1", name: "  Junior  " }, { actorId: "", name: "Invalid" }],
+    createdAt: "1720000000000",
+    createdBy: { id: "gm-1", name: "Narrator" }
+  }, {
+    id: "invalid",
+    amount: 0,
+    description: "Ignored",
+    recipients: []
+  }] }), {
+    version: 1,
+    events: [{
+      id: "award-1",
+      amount: 5,
+      description: "Discovery",
+      recipients: [{ actorId: "actor-1", name: "Junior" }],
+      createdAt: 1720000000000,
+      createdBy: { id: "gm-1", name: "Narrator" }
+    }]
   });
 });

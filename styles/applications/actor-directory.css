@@ -1,0 +1,26 @@
+/* Actor directory actions */
+.actors-sidebar .directory-footer .astrael-actor-directory-xp-button,
+#actors .directory-footer .astrael-actor-directory-xp-button {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  color: inherit;
+}
+
+.actors-sidebar .directory-footer .astrael-actor-directory-xp-button i,
+#actors .directory-footer .astrael-actor-directory-xp-button i {
+  color: var(--color-warm-1, #c6a36f);
+  transition: color 120ms ease;
+}
+
+.actors-sidebar .directory-footer .astrael-actor-directory-xp-button:hover i,
+.actors-sidebar .directory-footer .astrael-actor-directory-xp-button:focus-visible i,
+#actors .directory-footer .astrael-actor-directory-xp-button:hover i,
+#actors .directory-footer .astrael-actor-directory-xp-button:focus-visible i {
+  color: var(--color-warm-2, #d8cfbc);
+}
+
+.actors-sidebar .astrael-actor-directory-xp-footer,
+#actors .astrael-actor-directory-xp-footer {
+  flex: 0 0 auto;
+}

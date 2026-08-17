@@ -1,0 +1,250 @@
+/* GM experience distribution */
+.application.astrael-rpg.xp-distributor {
+  --xp-bronze: #9b7445;
+  --xp-bronze-light: #c6a36f;
+  --xp-bone: #d8cfbc;
+  --xp-muted: #8f8778;
+  --xp-oxidized: #52757b;
+  min-width: 620px;
+  min-height: 520px;
+  overflow: hidden;
+  border: 1px solid #3d372e;
+  border-radius: 0;
+  background: #0a0d0b;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.68), inset 0 0 0 1px rgba(198, 163, 111, 0.08);
+}
+
+.application.astrael-rpg.xp-distributor .window-header {
+  min-height: 36px;
+  padding: 5px 8px 5px 12px;
+  border: 0;
+  border-bottom: 1px solid #5d4a32;
+  border-radius: 0;
+  color: var(--xp-bone);
+  background: linear-gradient(90deg, rgba(155, 116, 69, 0.15), transparent 42%), linear-gradient(180deg, #171915, #0c0e0d);
+}
+
+.application.astrael-rpg.xp-distributor .window-title {
+  color: var(--xp-bone);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.application.astrael-rpg.xp-distributor .window-content {
+  padding: 0;
+  overflow: hidden;
+  color: var(--xp-bone);
+  background: radial-gradient(circle at 15% 0, rgba(155, 116, 69, 0.1), transparent 36%), #10130f;
+}
+
+.astrael-xp-app {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  font-family: "IBM Plex Mono", Consolas, monospace;
+}
+
+.astrael-xp-app button,
+.astrael-xp-app input,
+.astrael-xp-app textarea {
+  border-radius: 0;
+  font-family: inherit;
+}
+
+.astrael-xp-app-hero {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 70px;
+  padding: 11px 18px;
+  border-bottom: 1px solid #36342c;
+  background: linear-gradient(105deg, rgba(155, 116, 69, 0.14), transparent 60%);
+}
+
+.astrael-xp-app-emblem {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #705737;
+  color: var(--xp-bronze-light);
+  background: radial-gradient(circle at 40% 35%, #29251b, #0d0f0c 72%);
+  box-shadow: inset 0 0 0 2px #090a09;
+  transform: rotate(45deg);
+}
+
+.astrael-xp-app-emblem i { transform: rotate(-45deg); }
+.astrael-xp-app-hero > span:last-child { display: grid; gap: 3px; }
+.astrael-xp-app-hero strong { font-family: "Cinzel", Georgia, serif; font-size: 14px; letter-spacing: 0.1em; text-transform: uppercase; }
+.astrael-xp-app-hero small { color: var(--xp-muted); font-size: 9px; line-height: 1.45; }
+
+.astrael-xp-app-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0 18px;
+  border-bottom: 1px solid #40392f;
+  background: #0c0f0c;
+}
+
+.astrael-xp-app-tabs button {
+  min-height: 39px;
+  margin: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: #777064;
+  background: transparent;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.astrael-xp-app-tabs button:hover,
+.astrael-xp-app-tabs button.is-active {
+  border-bottom-color: var(--xp-bronze-light);
+  color: var(--xp-bone);
+  background: rgba(155, 116, 69, 0.08);
+}
+
+.astrael-xp-grant-view {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 248px;
+  gap: 12px;
+  min-height: 0;
+  padding: 14px;
+  overflow: hidden;
+}
+
+.astrael-xp-roster,
+.astrael-xp-history-view {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.astrael-xp-history-view { grid-template-rows: auto minmax(0, 1fr); padding: 14px; }
+.astrael-xp-section-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 35px; border-bottom: 1px solid #4a4134; }
+.astrael-xp-section-header > span:first-child { display: grid; gap: 2px; }
+.astrael-xp-section-header strong { color: var(--xp-bronze-light); font-family: "Cinzel", Georgia, serif; font-size: 11px; letter-spacing: 0.09em; text-transform: uppercase; }
+.astrael-xp-section-header small { color: var(--xp-muted); font-size: 8px; }
+.astrael-xp-roster-actions { display: flex; gap: 5px; }
+.astrael-xp-roster-actions button { min-height: 25px; margin: 0; padding: 0 8px; border: 1px solid #48443b; color: #a9a08f; background: #131510; font-size: 8px; }
+.astrael-xp-roster-actions button:hover { border-color: #80643e; color: var(--xp-bone); }
+
+.astrael-xp-search {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  min-height: 34px;
+  border: 1px solid #3d392f;
+  color: #786e5e;
+  background: #0b0e0c;
+}
+
+.astrael-xp-search:focus-within { border-color: #705737; }
+.astrael-xp-search i { text-align: center; font-size: 9px; }
+.astrael-xp-search input { height: 32px; margin: 0; padding: 0 8px 0 0; border: 0; color: var(--xp-bone); background: transparent; box-shadow: none; font-size: 10px; outline: 0; }
+.astrael-xp-search input::placeholder { color: #676156; }
+
+.astrael-xp-target-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 7px;
+  min-height: 0;
+  padding-right: 3px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #5d4a32 transparent;
+}
+
+.astrael-xp-target-card {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  min-height: 58px;
+  margin: 0;
+  padding: 5px;
+  border: 1px solid #39382f;
+  color: #a9a08f;
+  background: #0d100c;
+  text-align: left;
+}
+
+.astrael-xp-target-card:hover { border-color: #705737; color: var(--xp-bone); background: #171914; }
+.astrael-xp-target-card.is-selected { border-color: var(--xp-bronze-light); color: var(--xp-bone); background: linear-gradient(100deg, rgba(155, 116, 69, 0.2), rgba(155, 116, 69, 0.04)); box-shadow: inset 3px 0 var(--xp-bronze-light); }
+.astrael-xp-target-portrait { position: relative; width: 46px; height: 46px; overflow: hidden; border: 1px solid #4a4134; background: #090b09; }
+.astrael-xp-target-portrait img { width: 100%; height: 100%; border: 0; object-fit: cover; }
+.astrael-xp-target-portrait i { position: absolute; right: 2px; bottom: 2px; display: none; place-items: center; width: 16px; height: 16px; color: #10130f; background: var(--xp-bronze-light); font-size: 8px; }
+.astrael-xp-target-card.is-selected .astrael-xp-target-portrait i { display: grid; }
+.astrael-xp-target-copy { display: grid; gap: 4px; min-width: 0; }
+.astrael-xp-target-copy strong,
+.astrael-xp-target-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.astrael-xp-target-copy strong { font-family: "Cinzel", Georgia, serif; font-size: 10px; letter-spacing: 0.04em; }
+.astrael-xp-target-copy small { color: var(--xp-muted); font-size: 8px; }
+
+.astrael-xp-award-panel {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 12px;
+  min-height: 0;
+  padding: 13px;
+  border: 1px solid #4a4134;
+  background: linear-gradient(155deg, rgba(155, 116, 69, 0.11), transparent 50%), #0d100c;
+  box-shadow: inset 3px 0 #5f472d;
+}
+
+.astrael-xp-award-panel > header { display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #3d392f; }
+.astrael-xp-award-panel > header > i { color: var(--xp-bronze-light); text-align: center; }
+.astrael-xp-award-panel > header span { display: grid; gap: 2px; }
+.astrael-xp-award-panel > header strong { color: var(--xp-bone); font-family: "Cinzel", Georgia, serif; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; }
+.astrael-xp-award-panel > header small { color: var(--xp-muted); font-size: 8px; line-height: 1.35; }
+.astrael-xp-field { display: grid; align-content: start; gap: 6px; }
+.astrael-xp-field > span { color: #9d9483; font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
+.astrael-xp-field input,
+.astrael-xp-field textarea { width: 100%; margin: 0; border: 1px solid #45433a; color: var(--xp-bone); background: #090c0a; box-shadow: none; outline: 0; }
+.astrael-xp-field input:focus,
+.astrael-xp-field textarea:focus { border-color: var(--xp-bronze-light); }
+.astrael-xp-amount-field input { height: 48px; color: var(--xp-bronze-light); font-family: "Cinzel", Georgia, serif; font-size: 25px; font-weight: 700; text-align: center; }
+.astrael-xp-description-field { min-height: 0; }
+.astrael-xp-description-field textarea { height: 100%; min-height: 112px; padding: 9px; font-size: 10px; line-height: 1.5; resize: none; }
+.astrael-xp-description-field textarea::placeholder { color: #666156; }
+.astrael-xp-distribute { min-height: 38px; margin: 0; border: 1px solid #80643e; color: #eadcc3; background: linear-gradient(180deg, rgba(155, 116, 69, 0.26), rgba(155, 116, 69, 0.09)), #171914; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.astrael-xp-distribute:hover:not(:disabled) { border-color: var(--xp-bronze-light); color: #fff2d9; }
+
+.astrael-xp-event-list { display: grid; align-content: start; gap: 8px; min-height: 0; padding-right: 3px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #5d4a32 transparent; }
+.astrael-xp-event { position: relative; display: grid; grid-template-columns: 65px minmax(0, 1fr) 30px; gap: 12px; min-height: 92px; padding: 11px; border: 1px solid #3d392f; background: #0d100c; box-shadow: inset 3px 0 #5f472d; }
+.astrael-xp-event.is-confirming { grid-template-columns: 65px minmax(0, 1fr); border-color: #78504a; box-shadow: inset 3px 0 #965247; }
+.astrael-xp-event-amount { display: grid; place-content: center; height: 62px; border: 1px solid #705737; color: var(--xp-bronze-light); background: #12140f; font-family: "Cinzel", Georgia, serif; font-size: 20px; font-weight: 700; text-align: center; }
+.astrael-xp-event-amount small { color: var(--xp-muted); font-family: "IBM Plex Mono", Consolas, monospace; font-size: 7px; letter-spacing: 0.1em; }
+.astrael-xp-event-content { display: grid; align-content: center; gap: 6px; min-width: 0; }
+.astrael-xp-event-content > strong { color: var(--xp-bone); font-family: "Cinzel", Georgia, serif; font-size: 11px; line-height: 1.35; }
+.astrael-xp-event-meta { display: flex; flex-wrap: wrap; gap: 6px 15px; color: var(--xp-muted); font-size: 8px; }
+.astrael-xp-event-meta span { display: inline-flex; align-items: center; gap: 5px; }
+.astrael-xp-event-meta i { color: var(--xp-oxidized); }
+.astrael-xp-recipient-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.astrael-xp-recipient-chips span { padding: 3px 6px; border: 1px solid #48443b; color: #aaa191; background: #11140f; font-size: 8px; }
+.astrael-xp-delete { align-self: start; width: 28px; min-height: 28px; margin: 0; padding: 0; border: 1px solid #48443b; color: #857d70; background: #11130f; font-size: 9px; }
+.astrael-xp-delete:hover { border-color: #965247; color: #d99588; }
+.astrael-xp-delete-confirmation { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 9px; border: 1px solid #633f3a; color: #c9988e; background: rgba(109, 45, 37, 0.16); font-size: 8px; }
+.astrael-xp-delete-confirmation > span { display: flex; gap: 6px; }
+.astrael-xp-delete-confirmation button { min-height: 27px; margin: 0; padding: 0 9px; border: 1px solid #4c4740; color: #aaa191; background: #11130f; font-size: 8px; }
+.astrael-xp-delete-confirmation button.is-danger { border-color: #875047; color: #e0a297; background: #261512; }
+.astrael-xp-empty-state,
+.astrael-xp-filter-empty { display: grid; place-items: center; min-height: 140px; margin: 0; border: 1px dashed #48443b; color: var(--xp-muted); font-size: 9px; text-align: center; }
+.astrael-xp-filter-empty[hidden],
+.astrael-xp-target-card[hidden] { display: none; }
+
+@media (max-width: 680px) {
+  .astrael-xp-grant-view { grid-template-columns: minmax(0, 1fr); overflow-y: auto; }
+  .astrael-xp-award-panel { min-height: 330px; }
+  .astrael-xp-target-grid { max-height: 260px; }
+}

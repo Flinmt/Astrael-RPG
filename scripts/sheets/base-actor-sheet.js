@@ -29,6 +29,7 @@ import { createDicePoolMessage } from "../chat/dice-pool.js";
 import { updateActorSheet } from "../data/models.js";
 import { AstraelSpecialtiesPanel } from "../applications/specialties-panel.js";
 import { AstraelStrangerMarksPanel } from "../applications/stranger-marks-panel.js";
+import { AscensionController } from "./controllers/ascension-controller.js";
 import { CharacteristicsController } from "./controllers/characteristics-controller.js";
 import { ConvictionsController } from "./controllers/convictions-controller.js";
 import { CharacterSheetFeatureCoordinator } from "./controllers/feature-coordinator.js";
@@ -67,9 +68,11 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   get featureCoordinator() {
     if (!this._featureCoordinator) {
+      this._ascensionController = new AscensionController(this);
       this._characteristicsController = new CharacteristicsController(this);
       this._convictionsController = new ConvictionsController(this);
       this._featureCoordinator = new CharacterSheetFeatureCoordinator([
+        this._ascensionController,
         this._characteristicsController,
         this._convictionsController
       ]);
@@ -264,9 +267,6 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       ...spec,
       skillLabel: LOCALIZE_SKILL[spec.skill] ? game.i18n.localize(LOCALIZE_SKILL[spec.skill]) : spec.skill || ""
     }));
-    context.system.xp ??= { total: 0, current: 0, spent: 0 };
-    context.system.xp.total = Math.max(0, context.system.xp.total || 0);
-    context.system.xp.current = Math.max(0, context.system.xp.total - (context.system.xp.spent || 0));
     context.cssClass = this.isEditable ? "editable" : "locked";
 
     return context;

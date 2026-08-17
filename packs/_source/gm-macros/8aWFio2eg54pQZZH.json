@@ -4,7 +4,7 @@
   "type": "script",
   "command": "game.astrael?.distributeXP?.()",
   "scope": "global",
-  "img": "systems/astrael-rpg/assets/icons/xp-up.svg",
+  "img": "icons/svg/upgrade.svg",
   "_id": "8aWFio2eg54pQZZH",
   "author": "DtJJf1FcF367HFh2",
   "folder": null,

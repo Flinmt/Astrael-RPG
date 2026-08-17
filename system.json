@@ -27,13 +27,16 @@
     "styles/character-sheet/docks.css",
     "styles/character-sheet/characteristics.css",
     "styles/character-sheet/convictions.css",
+    "styles/character-sheet/ascension.css",
     "styles/character-sheet/portrait.css",
     "styles/character-sheet/settings.css",
+    "styles/applications/actor-directory.css",
     "styles/applications/portrait-editor.css",
     "styles/character-sheet/stats.css",
     "styles/applications/panels.css",
     "styles/chat/dice-pool-card.css",
-    "styles/dialogs/dice-pool.css"
+    "styles/dialogs/dice-pool.css",
+    "styles/dialogs/xp-distribution.css"
   ],
   "languages": [
     {

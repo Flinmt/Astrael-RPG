@@ -3,6 +3,7 @@ const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character
 const CHARACTER_PORTRAIT_EDITOR_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/character-portrait-editor.hbs`;
 const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
 const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
+const XP_DISTRIBUTOR_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/xp-distributor.hbs`;
 const DICE_POOL_CHAT_TEMPLATE = `systems/${SYSTEM_ID}/templates/chat/dice-pool-card.hbs`;
 const RESOURCE_MINIMUMS = { health: 4, willpower: 2 };
 const CONVICTION_CARD_COUNT = 3;
@@ -56,5 +57,6 @@ export {
   SPECIALTIES_PANEL_TEMPLATE,
   STRANGER_MARK_OPTIONS,
   STRANGER_MARKS_PANEL_TEMPLATE,
-  SYSTEM_ID
+  SYSTEM_ID,
+  XP_DISTRIBUTOR_TEMPLATE
 };

@@ -1,0 +1,141 @@
+<section class="astrael-xp-app">
+  <header class="astrael-xp-app-hero">
+    <span class="astrael-xp-app-emblem"><i class="fa-solid fa-star" aria-hidden="true"></i></span>
+    <span>
+      <strong>{{localize "ASTRAEL.Experience.DistributeTitle"}}</strong>
+      <small>{{localize "ASTRAEL.Experience.DistributeHint"}}</small>
+    </span>
+  </header>
+
+  <nav class="astrael-xp-app-tabs" aria-label="{{localize "ASTRAEL.Experience.DistributeTitle"}}">
+    <button type="button" class="{{#if grantActive}}is-active{{/if}}" data-action="switch-xp-tab" data-tab="grant">
+      <i class="fa-solid fa-hand-holding-star" aria-hidden="true"></i>
+      {{localize "ASTRAEL.Experience.GrantTab"}}
+    </button>
+    <button type="button" class="{{#if historyActive}}is-active{{/if}}" data-action="switch-xp-tab" data-tab="history">
+      <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+      {{localize "ASTRAEL.Experience.GeneralHistoryTab"}}
+    </button>
+  </nav>
+
+  {{#if grantActive}}
+    <div class="astrael-xp-grant-view">
+      <section class="astrael-xp-roster" aria-labelledby="astrael-xp-roster-title">
+        <header class="astrael-xp-section-header">
+          <span>
+            <strong id="astrael-xp-roster-title">{{localize "ASTRAEL.Experience.Recipients"}}</strong>
+            <small>{{localize "ASTRAEL.Experience.SelectedCount" selected=selectedCount total=totalActors}}</small>
+          </span>
+          <span class="astrael-xp-roster-actions">
+            <button type="button" data-action="select-all-xp-targets">{{localize "ASTRAEL.Experience.SelectAll"}}</button>
+            <button type="button" data-action="clear-xp-targets">{{localize "ASTRAEL.Experience.ClearSelection"}}</button>
+          </span>
+        </header>
+
+        <label class="astrael-xp-search">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input type="search" value="{{search}}" data-action="search-xp-targets" placeholder="{{localize "ASTRAEL.Experience.SearchCharacters"}}">
+        </label>
+
+        {{#if hasActors}}
+          <div class="astrael-xp-target-grid">
+            {{#each actors as |actor|}}
+              <button
+                type="button"
+                class="astrael-xp-target-card {{#if actor.selected}}is-selected{{/if}}"
+                data-action="toggle-xp-target"
+                data-xp-target-card
+                data-actor-id="{{actor.id}}"
+                data-search-text="{{actor.searchText}}"
+                aria-pressed="{{actor.selected}}"
+              >
+                <span class="astrael-xp-target-portrait">
+                  <img src="{{actor.img}}" alt="">
+                  <i class="fa-solid fa-check" aria-hidden="true"></i>
+                </span>
+                <span class="astrael-xp-target-copy">
+                  <strong>{{actor.name}}</strong>
+                  <small>{{#if actor.owners}}{{actor.owners}}{{else}}{{localize "ASTRAEL.Experience.NoPlayerOwner"}}{{/if}}</small>
+                </span>
+              </button>
+            {{/each}}
+          </div>
+          <p class="astrael-xp-filter-empty" data-xp-filter-empty hidden>{{localize "ASTRAEL.Experience.NoMatchingCharacters"}}</p>
+        {{else}}
+          <p class="astrael-xp-empty-state">{{localize "ASTRAEL.Experience.NoEligibleActors"}}</p>
+        {{/if}}
+      </section>
+
+      <aside class="astrael-xp-award-panel">
+        <header>
+          <i class="fa-solid fa-gem" aria-hidden="true"></i>
+          <span>
+            <strong>{{localize "ASTRAEL.Experience.AwardPanelTitle"}}</strong>
+            <small>{{localize "ASTRAEL.Experience.AwardPanelHint"}}</small>
+          </span>
+        </header>
+
+        <label class="astrael-xp-field astrael-xp-amount-field">
+          <span>{{localize "ASTRAEL.Experience.Amount"}}</span>
+          <input type="number" min="1" step="1" value="{{amount}}" data-action="xp-distribution-amount">
+        </label>
+
+        <label class="astrael-xp-field astrael-xp-description-field">
+          <span>{{localize "ASTRAEL.Experience.Description"}}</span>
+          <textarea rows="7" data-action="xp-distribution-description" placeholder="{{localize "ASTRAEL.Experience.DescriptionPlaceholder"}}">{{description}}</textarea>
+        </label>
+
+        <button type="button" class="astrael-xp-distribute" data-action="distribute-xp" {{#if busy}}disabled{{/if}} {{#unless hasActors}}disabled{{/unless}}>
+          <i class="fa-solid fa-star" aria-hidden="true"></i>
+          {{localize "ASTRAEL.Experience.Distribute"}}
+        </button>
+      </aside>
+    </div>
+  {{/if}}
+
+  {{#if historyActive}}
+    <section class="astrael-xp-history-view">
+      <header class="astrael-xp-section-header">
+        <span>
+          <strong>{{localize "ASTRAEL.Experience.GeneralHistory"}}</strong>
+          <small>{{localize "ASTRAEL.Experience.GeneralHistoryHint"}}</small>
+        </span>
+      </header>
+
+      {{#if hasEvents}}
+        <div class="astrael-xp-event-list">
+          {{#each events as |event|}}
+            <article class="astrael-xp-event {{#if event.confirmingDeletion}}is-confirming{{/if}}">
+              <span class="astrael-xp-event-amount">+{{event.amount}}<small>XP</small></span>
+              <div class="astrael-xp-event-content">
+                <strong>{{event.description}}</strong>
+                <span class="astrael-xp-event-meta">
+                  <span><i class="fa-solid fa-user-shield" aria-hidden="true"></i>{{localize "ASTRAEL.Experience.DistributedBy" name=event.createdBy.name}}</span>
+                  <span><i class="fa-regular fa-clock" aria-hidden="true"></i>{{event.formattedDate}}</span>
+                </span>
+                <div class="astrael-xp-recipient-chips" aria-label="{{localize "ASTRAEL.Experience.Recipients"}}">
+                  {{#each event.recipients as |recipient|}}<span>{{recipient.name}}</span>{{/each}}
+                </div>
+              </div>
+              {{#if event.confirmingDeletion}}
+                <div class="astrael-xp-delete-confirmation">
+                  <strong>{{localize "ASTRAEL.Experience.DeleteWarning"}}</strong>
+                  <span>
+                    <button type="button" data-action="cancel-delete-xp-event" data-event-id="{{event.id}}">{{localize "ASTRAEL.Experience.Cancel"}}</button>
+                    <button type="button" class="is-danger" data-action="confirm-delete-xp-event" data-event-id="{{event.id}}" {{#if ../busy}}disabled{{/if}}>{{localize "ASTRAEL.Experience.DeletePermanently"}}</button>
+                  </span>
+                </div>
+              {{else}}
+                <button type="button" class="astrael-xp-delete" data-action="request-delete-xp-event" data-event-id="{{event.id}}" title="{{localize "ASTRAEL.Experience.DeleteDistribution"}}" aria-label="{{localize "ASTRAEL.Experience.DeleteDistribution"}}">
+                  <i class="fa-solid fa-trash-can" aria-hidden="true"></i>
+                </button>
+              {{/if}}
+            </article>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="astrael-xp-empty-state">{{localize "ASTRAEL.Experience.NoDistributions"}}</p>
+      {{/if}}
+    </section>
+  {{/if}}
+</section>

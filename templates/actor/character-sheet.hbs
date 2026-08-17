@@ -532,13 +532,64 @@
           <h2>{{localize "ASTRAEL.Tab.StrangerMark"}}</h2>
         </div>
         <div class="tab-panel astrael-character-panel" data-tab="ascension">
-          <section class="astrael-characteristics is-advantages">
-            <header class="astrael-characteristics-header">
+          <section class="astrael-ascension">
+            <div class="astrael-ascension-details">
+              <label class="astrael-ascension-goal is-ambition">
+                <span><i class="fas fa-crown" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterDetails.Ambition"}}</span>
+                <input name="system.details.ambition" type="text" value="{{system.details.ambition}}" placeholder="{{localize 'ASTRAEL.CharacterDetails.AmbitionPlaceholder'}}">
+              </label>
+              <label class="astrael-ascension-goal is-desire">
+                <span><i class="fas fa-compass" aria-hidden="true"></i>{{localize "ASTRAEL.CharacterDetails.Desire"}}</span>
+                <input name="system.details.desire" type="text" value="{{system.details.desire}}" placeholder="{{localize 'ASTRAEL.CharacterDetails.DesirePlaceholder'}}">
+              </label>
+            </div>
+            <header class="astrael-ascension-header">
               <div>
                 <span aria-hidden="true"></span>
                 <h2 class="astrael-character-section-title">{{localize "ASTRAEL.Tab.Ascension"}}</h2>
               </div>
             </header>
+            <section class="astrael-ascension-summary" aria-label="{{localize 'ASTRAEL.Experience.Summary'}}">
+              <article class="is-current">
+                <span>{{localize "ASTRAEL.Experience.Current"}}</span>
+                <strong>{{characterExperience.current}}</strong>
+              </article>
+              <article class="is-spent">
+                <label for="xp-spent-{{actor.id}}">{{localize "ASTRAEL.Experience.Spent"}}</label>
+                {{#if characterExperience.canEditSpent}}
+                <div class="astrael-ascension-spent-control">
+                  <i class="fas fa-coins" aria-hidden="true"></i>
+                  <input id="xp-spent-{{actor.id}}" type="number" min="0" max="{{characterExperience.total}}" step="1" value="{{characterExperience.spent}}" data-action="set-xp-spent">
+                </div>
+                {{else}}
+                <strong>{{characterExperience.spent}}</strong>
+                {{/if}}
+              </article>
+              <article class="is-total">
+                <span>{{localize "ASTRAEL.Experience.Total"}}</span>
+                <strong>{{characterExperience.total}}</strong>
+              </article>
+            </section>
+            <section class="astrael-ascension-history" aria-label="{{localize 'ASTRAEL.Experience.History'}}">
+              <header>
+                <i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+                <h3>{{localize "ASTRAEL.Experience.History"}}</h3>
+              </header>
+              <div class="astrael-ascension-history-list">
+                {{#each characterExperience.entries as |entry|}}
+                <article class="astrael-ascension-history-entry">
+                  <strong>+{{entry.amount}} XP</strong>
+                  <span>{{entry.description}}</span>
+                </article>
+                {{/each}}
+                {{#unless characterExperience.entries.length}}
+                <div class="astrael-ascension-history-empty">
+                  <i class="fas fa-scroll" aria-hidden="true"></i>
+                  <span>{{localize "ASTRAEL.Experience.EmptyHistory"}}</span>
+                </div>
+                {{/unless}}
+              </div>
+            </section>
           </section>
         </div>
         <div class="tab-panel astrael-character-panel" data-tab="settings">

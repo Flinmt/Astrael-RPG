@@ -1,6 +1,5 @@
 /* Character characteristics */
-.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="advantages"].active,
-.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="ascension"].active {
+.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="advantages"].active {
   display: flex;
   flex-direction: column;
   padding: 0;
@@ -9,13 +8,11 @@
   background: transparent;
 }
 
-.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="advantages"]::-webkit-scrollbar,
-.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="ascension"]::-webkit-scrollbar {
+.astrael-character-sheet .astrael-character-body .tab-panel.astrael-character-panel[data-tab="advantages"]::-webkit-scrollbar {
   display: none;
 }
 
-.application.astrael-rpg.character-sheet[data-active-tab="advantages"] .astrael-character-body,
-.application.astrael-rpg.character-sheet[data-active-tab="ascension"] .astrael-character-body {
+.application.astrael-rpg.character-sheet[data-active-tab="advantages"] .astrael-character-body {
   padding: 0;
 }
 
