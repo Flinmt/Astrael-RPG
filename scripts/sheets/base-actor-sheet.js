@@ -17,7 +17,6 @@ import {
   normalizeStrangerMark,
   normalizeStrangerMarkAbility,
   normalizeVirtue,
-  normalizeVisibleTabs,
   prepareAdvantageEntry,
   prepareCharacterPortraitPresentation,
   toRoman,
@@ -36,6 +35,7 @@ import { CharacterSheetFeatureCoordinator } from "./controllers/feature-coordina
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const { ActorSheetV2 } = foundry.applications.sheets;
+const CHARACTER_TAB_IDS = new Set(["attributes", "advantages", "convictions", "ascension", "settings"]);
 
 class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static LAYOUT_OPTIONS = {
@@ -132,9 +132,7 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       }
     }
     if (Object.keys(resourceUpdate).length) await this.actor.update(resourceUpdate);
-    context.system.sheetSettings ??= {};
-    context.system.sheetSettings.visibleTabs = normalizeVisibleTabs(context.system.sheetSettings.visibleTabs);
-    if (this.actor.type === "character" && this.#isCharacterTabHidden(this._activeTab, context.system.sheetSettings.visibleTabs)) {
+    if (this.actor.type === "character" && this._activeTab && !CHARACTER_TAB_IDS.has(this._activeTab)) {
       this._activeTab = "attributes";
     }
     context.system.resources.health.activeRoman = toRoman(context.system.resources.health.active);
@@ -399,10 +397,6 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.element.querySelectorAll("[data-action='delete-virtue-perk']").forEach((button) => {
       button.addEventListener("click", this.#onDeleteVirtuePerk.bind(this));
     });
-    this.element.querySelectorAll("[data-action='toggle-character-tab']").forEach((button) => {
-      button.addEventListener("click", this.#onToggleCharacterTab.bind(this));
-    });
-
     this.element.querySelectorAll("[data-action='open-stranger-mark-picker']").forEach((btn) => {
       btn.addEventListener("click", this.#onOpenStrangerMarkPicker.bind(this));
     });
@@ -921,34 +915,9 @@ class AstraelBaseActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     this.#activateTab(event.currentTarget.dataset.tab);
   }
 
-  #isCharacterTabHidden(tabId, visibleTabs = this.#getCharacterVisibleTabs()) {
-    if (this.actor.type !== "character") return false;
-    if (tabId === "virtues") return !visibleTabs.virtues;
-    if (tabId === "hemomancy") return !visibleTabs.hemomancy;
-    if (tabId === "stranger-mark") return !visibleTabs.strangerMark;
-    return false;
-  }
-
-  #getCharacterVisibleTabs() {
-    const actorData = this.actor.toObject();
-    return normalizeVisibleTabs(actorData.system?.sheetSettings?.visibleTabs);
-  }
-
-  async #onToggleCharacterTab(event) {
-    event.preventDefault();
-    const key = event.currentTarget.dataset.key;
-    if (!['virtues', 'hemomancy', 'strangerMark'].includes(key)) return;
-
-    const checked = event.currentTarget.dataset.visible !== "true";
-    const tabId = key === "strangerMark" ? "stranger-mark" : key;
-    if (!checked && this._activeTab === tabId) this._activeTab = "attributes";
-
-    return this.actor.update({ [`system.sheetSettings.visibleTabs.${key}`]: checked });
-  }
-
   #activateTab(tabId) {
     if (!tabId) return;
-    if (this.#isCharacterTabHidden(tabId)) tabId = "attributes";
+    if (this.actor.type === "character" && !CHARACTER_TAB_IDS.has(tabId)) tabId = "attributes";
     this._activeTab = tabId;
     this.element.dataset.activeTab = tabId;
 

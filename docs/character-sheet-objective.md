@@ -21,6 +21,8 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 - Janela fixa de **560 × 720 px**, sem redimensionamento manual.
 - Navbar flutuante fora da lateral esquerda, vertical, transparente e sem trilho conectando a aba ativa à ficha.
 - Botões circulares com ícones, acabamento escuro e bronze; apenas o estado ativo recebe destaque.
+- Estatísticas, Características, Convicções e Ascensão permanecem agrupadas no topo da navbar; Configuração fica ancorada na base.
+- Virtudes, Hemomancia e Marcas do Estranho foram removidas da navegação atual sem apagar seus dados persistidos.
 - O antigo controle de recolher o header foi removido. O header permanece visível em todas as abas.
 - Conteúdo interno usa uma escala ligeiramente maior que a proposta inicial, priorizando leitura sem abandonar a densidade.
 - O rótulo da primeira aba é **Estatísticas** em português e **Stats** em inglês; o identificador técnico continua `attributes`.
@@ -115,11 +117,8 @@ A nova ficha é uma apresentação densa, pensada como uma interface de videogam
 4. Características — Vantagens e Desvantagens: **concluídas**.
 5. Convicções: **concluídas**.
 6. Ascensão — Ambição, Desejo, resumo, histórico e distribuição de XP pelo Mestre: **concluída**.
-7. Virtudes: **pendente**.
-8. Hemomancia: **pendente**.
-9. Marca do Estranho: **pendente**.
-10. Configurações — estrutura visual e controle das dicas de Vida e Vontade: **concluídas**; novas preferências podem ser adicionadas por seção.
-11. Paridade funcional, ficha de NPC e criador de NPC: **pendentes**.
+7. Configurações — estrutura visual e controle das dicas de Vida e Vontade: **concluídas**; novas preferências podem ser adicionadas por seção.
+8. Paridade funcional, ficha de NPC e criador de NPC: **pendentes**.
 
 ## Critérios permanentes de implementação
 

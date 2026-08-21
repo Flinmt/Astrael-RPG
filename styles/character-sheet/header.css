@@ -223,7 +223,7 @@
   justify-content: flex-start;
   z-index: 20;
   top: 8px;
-  bottom: auto;
+  bottom: 8px;
   left: -50px;
   width: 38px;
   padding: 0;
@@ -239,9 +239,10 @@
 }
 
 .astrael-character-sheet .astrael-character-tab-list {
+  position: relative;
   display: flex;
   width: 38px;
-  height: auto;
+  height: 100%;
   flex-direction: column;
   align-items: center;
   gap: 10px;
@@ -281,6 +282,14 @@
   cursor: pointer;
   transform: none !important;
   transition: border-color 120ms ease, color 120ms ease, background-color 120ms ease;
+}
+
+.astrael-character-sheet .astrael-character-tabs .astrael-character-tab[data-tab="settings"] {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0 !important;
 }
 
 .astrael-character-sheet .astrael-character-tabs .astrael-character-tab::before {
@@ -536,4 +545,3 @@
   font-size: 10px;
   line-height: 1;
 }
-

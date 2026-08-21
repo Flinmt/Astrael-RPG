@@ -190,14 +190,6 @@ function normalizeStrangerMark(source = {}) {
   };
 }
 
-function normalizeVisibleTabs(source = {}) {
-  return {
-    virtues: source.virtues !== false,
-    hemomancy: source.hemomancy !== false,
-    strangerMark: source.strangerMark !== false
-  };
-}
-
 function normalizeConviction(source = {}) {
   const sourcePillar = source.pillar ?? {};
   return {
@@ -240,7 +232,6 @@ export {
   normalizeStrangerMarkAbility,
   normalizeVirtue,
   normalizeVirtuePerk,
-  normalizeVisibleTabs,
   prepareAdvantageEntry,
   prepareCharacterPortraitPresentation,
   toRoman,

@@ -5,8 +5,7 @@ import {
   buildFractureBoxes,
   normalizeAdvantageLevel,
   normalizeConviction,
-  normalizeConvictionList,
-  normalizeVisibleTabs
+  normalizeConvictionList
 } from "../scripts/core/utilities.js";
 import { classifyDie, prepareDicePoolResults, summarizeDicePool } from "../scripts/rules/dice.js";
 import {
@@ -61,18 +60,8 @@ test("convictions keep the fixed persisted contract", () => {
   ]);
 });
 
-test("legacy presentation values remain normalized", () => {
+test("legacy advantage levels remain normalized", () => {
   assert.equal(normalizeAdvantageLevel({ level: "-IV" }), 4);
-  assert.deepEqual(normalizeVisibleTabs({ virtues: true, hemomancy: false }), {
-    virtues: true,
-    hemomancy: false,
-    strangerMark: true
-  });
-  assert.deepEqual(normalizeVisibleTabs({}), {
-    virtues: true,
-    hemomancy: true,
-    strangerMark: true
-  });
 });
 
 test("experience totals are derived exclusively from valid history entries", () => {
