@@ -3,6 +3,7 @@ const CHARACTER_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/actor/character
 const CHARACTER_PORTRAIT_EDITOR_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/character-portrait-editor.hbs`;
 const WEAPON_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/item/weapon-sheet.hbs`;
 const ITEM_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/item/item-sheet.hbs`;
+const TRAIT_SHEET_TEMPLATE = `systems/${SYSTEM_ID}/templates/item/trait-sheet.hbs`;
 const SPECIALTIES_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/specialties-panel.hbs`;
 const STRANGER_MARKS_PANEL_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/stranger-marks-panel.hbs`;
 const XP_DISTRIBUTOR_TEMPLATE = `systems/${SYSTEM_ID}/templates/apps/xp-distributor.hbs`;
@@ -61,6 +62,7 @@ export {
   STRANGER_MARK_OPTIONS,
   STRANGER_MARKS_PANEL_TEMPLATE,
   SYSTEM_ID,
+  TRAIT_SHEET_TEMPLATE,
   WEAPON_SHEET_TEMPLATE,
   XP_DISTRIBUTOR_TEMPLATE
 };

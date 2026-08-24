@@ -165,13 +165,11 @@ test("weapon catalogs expose the initial official characteristics", () => {
   assert.equal(getWeaponCatalogEntry(MAJOR_WEAPON_TRAITS, "assassinate")?.id, "assassinate");
 });
 
-test("weapon validation requires official characteristics and roll configuration", () => {
+test("weapon validation requires damage and official characteristics", () => {
   assert.deepEqual(validateWeaponData({
     damage: 1,
     minorTrait: "concealed",
-    majorTrait: "assassinate",
-    rollAttribute: "dexterity",
-    rollSkill: "melee"
+    majorTrait: "assassinate"
   }), {
     complete: true,
     invalidFields: []
@@ -180,19 +178,9 @@ test("weapon validation requires official characteristics and roll configuration
   assert.deepEqual(validateWeaponData({
     damage: 0,
     minorTrait: "unknown",
-    majorTrait: "",
-    rollAttribute: "unknown",
-    rollSkill: ""
+    majorTrait: ""
   }), {
     complete: false,
-    invalidFields: ["damage", "minorTrait", "majorTrait", "rollAttribute", "rollSkill"]
+    invalidFields: ["damage", "minorTrait", "majorTrait"]
   });
-
-  assert.deepEqual(validateWeaponData({
-    damage: 1,
-    minorTrait: "concealed",
-    majorTrait: "assassinate",
-    rollAttribute: "melee",
-    rollSkill: "dexterity"
-  }).invalidFields, ["rollAttribute", "rollSkill"]);
 });

@@ -1,0 +1,104 @@
+.astrael-rpg .astrael-trait-sheet {
+  --astrael-trait-accent: var(--astrael-bronze-light);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.astrael-rpg .astrael-trait-sheet.is-flaw {
+  --astrael-trait-accent: #b46f61;
+}
+
+.astrael-rpg .astrael-trait-profile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 1px;
+  margin: 12px 17px 0;
+  border: 1px solid #4b4234;
+  background: #4b4234;
+}
+
+.astrael-rpg .astrael-trait-category,
+.astrael-rpg .astrael-trait-level {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--astrael-trait-accent) 8%, transparent), transparent 58%), #10120f;
+}
+
+.astrael-rpg .astrael-trait-category > strong {
+  color: var(--astrael-trait-accent);
+  font-family: var(--astrael-font-display);
+  font-size: 13px;
+}
+
+.astrael-rpg .astrael-trait-category-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.astrael-rpg .astrael-trait-category-options button {
+  min-width: 0;
+  min-height: 28px;
+  padding: 4px 6px;
+  border: 1px solid #4b4234;
+  border-radius: 0;
+  color: #aaa18f;
+  background: #151713;
+  font-family: var(--astrael-font-technical);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .astrael-trait-category-options button.is-selected {
+  border-color: var(--astrael-trait-accent);
+  color: var(--astrael-trait-accent);
+  background: color-mix(in srgb, var(--astrael-trait-accent) 14%, #151713);
+}
+
+.astrael-rpg .astrael-trait-category-options button:focus-visible,
+.astrael-rpg .astrael-trait-level-markers button:focus-visible {
+  outline: 1px solid var(--astrael-trait-accent);
+  outline-offset: 2px;
+}
+
+.astrael-rpg .astrael-trait-level-markers {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.astrael-rpg .astrael-trait-level-markers :is(button, span) {
+  display: block;
+  width: 100%;
+  height: 10px;
+  min-height: 10px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #665f51;
+  border-radius: 0;
+  background: #141510;
+  box-shadow: none;
+}
+
+.astrael-rpg .astrael-trait-level-markers .is-filled {
+  border-color: var(--astrael-trait-accent);
+  background: color-mix(in srgb, var(--astrael-trait-accent) 60%, #151713);
+}
+
+.astrael-rpg .astrael-trait-level-markers .is-current {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--astrael-trait-accent) 55%, transparent);
+}
+
+.astrael-rpg .astrael-trait-level-markers button:hover {
+  border-color: var(--astrael-trait-accent);
+  background: color-mix(in srgb, var(--astrael-trait-accent) 28%, #151713);
+}
+
+@media (max-width: 420px) {
+  .astrael-rpg .astrael-trait-profile {
+    grid-template-columns: 1fr;
+  }
+}

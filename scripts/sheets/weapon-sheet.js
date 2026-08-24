@@ -1,10 +1,4 @@
-import {
-  ATTRIBUTE_KEYS,
-  LOCALIZE_ATTR,
-  LOCALIZE_SKILL,
-  SKILL_KEYS,
-  WEAPON_SHEET_TEMPLATE
-} from "../core/constants.js";
+import { WEAPON_SHEET_TEMPLATE } from "../core/constants.js";
 import {
   MAJOR_WEAPON_TRAITS,
   MINOR_WEAPON_TRAITS,
@@ -43,9 +37,7 @@ function createWeaponDraft(item) {
       description: String(system.description || ""),
       damage: system.damage ?? 1,
       minorTrait: String(system.minorTrait || "").trim(),
-      majorTrait: String(system.majorTrait || "").trim(),
-      rollAttribute: String(system.rollAttribute || "").trim(),
-      rollSkill: String(system.rollSkill || "").trim()
+      majorTrait: String(system.majorTrait || "").trim()
     }
   };
 }
@@ -100,35 +92,6 @@ function prepareWeaponProperty(key, selectedId, invalid) {
   };
 }
 
-function prepareWeaponRollOption(key, localizationKey, selectedId) {
-  return {
-    key,
-    label: game.i18n.localize(localizationKey),
-    selected: key === selectedId
-  };
-}
-
-function prepareWeaponRollField(keys, localizationKeys, selectedId, invalid) {
-  const normalizedId = String(selectedId || "").trim();
-  const configured = keys.includes(normalizedId);
-  const valueLabel = configured
-    ? game.i18n.localize(localizationKeys[normalizedId])
-    : normalizedId
-      ? game.i18n.format("ASTRAEL.Weapon.UnknownOption", { id: normalizedId })
-      : game.i18n.localize("ASTRAEL.Weapon.NotConfigured");
-
-  return {
-    value: normalizedId,
-    valueLabel,
-    invalid,
-    empty: !normalizedId,
-    unknown: normalizedId && !configured
-      ? { key: normalizedId, label: valueLabel }
-      : null,
-    options: keys.map((key) => prepareWeaponRollOption(key, localizationKeys[key], normalizedId))
-  };
-}
-
 class AstraelWeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   static DEFAULT_OPTIONS = {
     tag: "form",
@@ -174,9 +137,7 @@ class AstraelWeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     context.editing = editing;
     context.weaponValidation = {
       ...validation,
-      damageInvalid: invalidFields.has("damage"),
-      rollAttributeInvalid: invalidFields.has("rollAttribute"),
-      rollSkillInvalid: invalidFields.has("rollSkill")
+      damageInvalid: invalidFields.has("damage")
     };
     context.enrichedDescription = await foundry.applications.ux.TextEditor.enrichHTML(weapon.system.description, {
       relativeTo: this.item,
@@ -188,20 +149,6 @@ class AstraelWeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       weapon.system[key],
       invalidFields.has(key)
     ));
-    context.weaponRoll = {
-      attribute: prepareWeaponRollField(
-        ATTRIBUTE_KEYS,
-        LOCALIZE_ATTR,
-        weapon.system.rollAttribute,
-        invalidFields.has("rollAttribute")
-      ),
-      skill: prepareWeaponRollField(
-        SKILL_KEYS,
-        LOCALIZE_SKILL,
-        weapon.system.rollSkill,
-        invalidFields.has("rollSkill")
-      )
-    };
     return context;
   }
 
@@ -263,8 +210,6 @@ class AstraelWeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     if (field === "name") this._weaponDraft.name = value;
     else if (field === "damage") this._weaponDraft.system.damage = value;
     else if (field === "description") this._weaponDraft.system.description = value;
-    else if (field === "rollAttribute") this._weaponDraft.system.rollAttribute = value;
-    else if (field === "rollSkill") this._weaponDraft.system.rollSkill = value;
   }
 
   #onDraftInput(event) {

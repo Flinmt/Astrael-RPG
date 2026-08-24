@@ -1,0 +1,89 @@
+<div class="astrael-item-sheet astrael-trait-sheet {{#if trait.isFlaw}}is-flaw{{else}}is-advantage{{/if}} {{#if editing}}is-editing{{else}}is-viewing{{/if}}">
+  <header class="astrael-item-header">
+    {{#if editing}}
+    <button type="button" class="astrael-item-image" data-action="change-trait-image" aria-label="{{localize 'ASTRAEL.Trait.ChangeImage'}}" title="{{localize 'ASTRAEL.Trait.ChangeImage'}}">
+      <img src="{{trait.img}}" alt="{{trait.name}}">
+      <span><i class="fas fa-image" aria-hidden="true"></i></span>
+    </button>
+    <input type="hidden" name="img" value="{{trait.img}}" data-trait-image-input>
+    {{else}}
+    <div class="astrael-item-image">
+      <img src="{{trait.img}}" alt="{{trait.name}}">
+    </div>
+    {{/if}}
+
+    <div class="astrael-item-identity">
+      <p class="astrael-ui-kicker">{{localize "ASTRAEL.Trait.Kicker"}}</p>
+      {{#if editing}}
+      <label class="astrael-ui-field astrael-item-name">
+        <span class="astrael-ui-label">{{localize "ASTRAEL.Trait.Name"}}</span>
+        <input class="astrael-ui-title" type="text" name="name" value="{{trait.name}}" data-trait-draft-field="name">
+      </label>
+      {{else}}
+      <div class="astrael-item-name astrael-item-name-display">
+        <span class="astrael-ui-label">{{localize "ASTRAEL.Trait.Name"}}</span>
+        <h1 class="astrael-ui-title">{{trait.name}}</h1>
+      </div>
+      {{/if}}
+    </div>
+  </header>
+
+  <section class="astrael-trait-profile" aria-label="{{localize 'ASTRAEL.Trait.Profile'}}">
+    <div class="astrael-trait-category">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Trait.Category"}}</span>
+      {{#if editing}}
+      <input type="hidden" name="system.category" value="{{system.category}}">
+      <div class="astrael-trait-category-options" role="radiogroup" aria-label="{{localize 'ASTRAEL.Trait.Category'}}">
+        <button type="button" class="{{#unless trait.isFlaw}}is-selected{{/unless}}" data-trait-category="advantage" role="radio" aria-checked="{{#unless trait.isFlaw}}true{{else}}false{{/unless}}">{{localize "ASTRAEL.Trait.Advantage"}}</button>
+        <button type="button" class="{{#if trait.isFlaw}}is-selected{{/if}}" data-trait-category="flaw" role="radio" aria-checked="{{#if trait.isFlaw}}true{{else}}false{{/if}}">{{localize "ASTRAEL.Trait.Flaw"}}</button>
+      </div>
+      {{else}}
+      <strong>{{#if trait.isFlaw}}{{localize "ASTRAEL.Trait.Flaw"}}{{else}}{{localize "ASTRAEL.Trait.Advantage"}}{{/if}}</strong>
+      {{/if}}
+    </div>
+
+    <div class="astrael-trait-level" aria-label="{{localize 'ASTRAEL.Trait.Level'}} {{system.level}}">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Trait.Level"}}</span>
+      {{#if editing}}<input type="hidden" name="system.level" value="{{system.level}}">{{/if}}
+      <div class="astrael-trait-level-markers">
+        {{#each trait.levels as |level|}}
+        {{#if ../editing}}
+        <button type="button" class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" data-trait-level="{{level.value}}" aria-label="{{localize 'ASTRAEL.Trait.Level'}} {{level.value}}" aria-pressed="{{#if level.current}}true{{else}}false{{/if}}"></button>
+        {{else}}
+        <span class="{{#if level.filled}}is-filled{{/if}} {{#if level.current}}is-current{{/if}}" aria-hidden="true"></span>
+        {{/if}}
+        {{/each}}
+      </div>
+    </div>
+  </section>
+
+  <main class="astrael-item-body">
+    <section class="astrael-item-details" aria-labelledby="astrael-trait-description-title-{{item.id}}">
+      <h2 class="astrael-ui-section-title" id="astrael-trait-description-title-{{item.id}}">{{localize "ASTRAEL.Trait.Description"}}</h2>
+      {{#if editing}}
+      <div class="astrael-item-description-editor">
+        <prose-mirror class="astrael-item-prosemirror" name="system.description" value="{{system.description}}" data-document-uuid="{{item.uuid}}">{{{enrichedDescription}}}</prose-mirror>
+      </div>
+      {{else}}
+      <article class="astrael-ui-panel astrael-item-description-view">
+        {{#if system.description}}
+        {{{enrichedDescription}}}
+        {{else}}
+        <p class="is-empty">{{localize "ASTRAEL.Trait.NoDescription"}}</p>
+        {{/if}}
+      </article>
+      {{/if}}
+    </section>
+  </main>
+
+  {{#if canEdit}}
+  <footer class="astrael-ui-actions astrael-item-actions">
+    {{#if editing}}
+    <button type="button" class="is-secondary" data-action="cancel-trait-edit"><i class="fas fa-xmark" aria-hidden="true"></i><span>{{localize "ASTRAEL.Trait.Cancel"}}</span></button>
+    <button type="button" data-action="save-trait"><i class="fas fa-floppy-disk" aria-hidden="true"></i><span>{{localize "ASTRAEL.Trait.Save"}}</span></button>
+    {{else}}
+    <button type="button" data-action="edit-trait"><i class="fas fa-pen" aria-hidden="true"></i><span>{{localize "ASTRAEL.Trait.Edit"}}</span></button>
+    {{/if}}
+  </footer>
+  {{/if}}
+</div>

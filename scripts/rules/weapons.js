@@ -1,5 +1,3 @@
-import { ATTRIBUTE_KEYS, SKILL_KEYS } from "../core/constants.js";
-
 const MINOR_WEAPON_TRAITS = Object.freeze([
   Object.freeze({
     id: "concealed",
@@ -30,8 +28,6 @@ function validateWeaponData(source = {}) {
   if (!Number.isInteger(damage) || damage < 1) invalidFields.push("damage");
   if (!getWeaponCatalogEntry(MINOR_WEAPON_TRAITS, source.minorTrait)) invalidFields.push("minorTrait");
   if (!getWeaponCatalogEntry(MAJOR_WEAPON_TRAITS, source.majorTrait)) invalidFields.push("majorTrait");
-  if (!ATTRIBUTE_KEYS.includes(String(source.rollAttribute || "").trim())) invalidFields.push("rollAttribute");
-  if (!SKILL_KEYS.includes(String(source.rollSkill || "").trim())) invalidFields.push("rollSkill");
 
   return {
     complete: invalidFields.length === 0,

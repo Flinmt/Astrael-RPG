@@ -36,6 +36,7 @@
     "styles/applications/portrait-editor.css",
     "styles/applications/weapon-sheet.css",
     "styles/applications/item-sheet.css",
+    "styles/applications/trait-sheet.css",
     "styles/character-sheet/stats.css",
     "styles/applications/panels.css",
     "styles/chat/dice-pool-card.css",

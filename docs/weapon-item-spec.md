@@ -19,8 +19,6 @@ Além dos campos nativos do documento `Item`, como `name` e `img`, uma Arma poss
 | `damage` | número | sim | Valor inteiro e fixo, com mínimo de `1`. Não aceita fórmula. |
 | `minorTrait` | identificador | sim | Exatamente uma opção do catálogo oficial de Características Menores. |
 | `majorTrait` | identificador | sim | Exatamente uma opção do catálogo oficial de Características Maiores. |
-| `rollAttribute` | identificador | sim | Exatamente um dos atributos oficiais do sistema usado na rolagem padrão. |
-| `rollSkill` | identificador | sim | Exatamente uma das perícias oficiais do sistema usada na rolagem padrão. |
 
 Estrutura conceitual:
 
@@ -29,18 +27,15 @@ Estrutura conceitual:
   description: "",
   damage: 1,
   minorTrait: "",
-  majorTrait: "",
-  rollAttribute: "",
-  rollSkill: ""
+  majorTrait: ""
 }
 ```
 
-`minorTrait`, `majorTrait`, `rollAttribute` e `rollSkill` armazenam identificadores técnicos estáveis, nunca os nomes apresentados ao usuário. Seus nomes e suas descrições são resolvidos pelos catálogos e pelas localizações do sistema.
+`minorTrait` e `majorTrait` armazenam identificadores técnicos estáveis, nunca os nomes apresentados ao usuário. Seus nomes e suas descrições são resolvidos pelos catálogos e pelas localizações do sistema.
 
-Uma Arma recém-criada pode manter temporariamente o valor vazio nesses quatro seletores durante sua configuração. O estado vazio representa uma Arma incompleta, deve receber indicação visual clara na ficha de Item e não pode ser tratado como uma opção oficial nem receber uma escolha implícita.
+Uma Arma recém-criada pode manter temporariamente o valor vazio nesses dois seletores durante sua configuração. O estado vazio representa uma Arma incompleta, deve receber indicação visual clara na ficha de Item e não pode ser tratado como uma opção oficial nem receber uma escolha implícita.
 
-`rollAttribute` e `rollSkill` definem apenas a combinação padrão da parada de dados. A Arma não executa a rolagem de forma independente nesta etapa; o futuro Inventário deve resolver os níveis correspondentes a partir do Actor que utiliza a Arma.
-Qualquer Atributo oficial pode ser combinado com qualquer Perícia oficial; a ficha não aplica perfis fechados nem escolhe valores implicitamente.
+A Arma não define a parada de dados nem executa rolagens. A ficha de Personagem definirá esse fluxo quando o uso de Armas for integrado a ela.
 
 ## 3. Limites da primeira versão
 
@@ -51,8 +46,8 @@ A estrutura da Arma não contém:
 - mais de uma Característica Menor ou Maior;
 - quantidade, estado equipado ou outro estado do futuro Inventário;
 - campos que indiquem se uma Característica está ativa;
-- cópias dos nomes ou descrições das opções dos catálogos.
-- execução da rolagem de ataque diretamente pela ficha da Arma.
+- cópias dos nomes ou descrições das opções dos catálogos;
+- parada de dados, Atributo ou Perícia para rolagens.
 
 Estados pertencentes à futura experiência de Inventário devem ser especificados separadamente antes de serem adicionados ao schema.
 
@@ -105,8 +100,6 @@ Quando esta especificação for implementada, o sistema deve garantir que:
 - `damage` seja inteiro e nunca menor que `1`;
 - `minorTrait` corresponda a uma entrada do catálogo de Características Menores;
 - `majorTrait` corresponda a uma entrada do catálogo de Características Maiores;
-- `rollAttribute` corresponda a um atributo oficial do sistema;
-- `rollSkill` corresponda a uma perícia oficial do sistema;
 - uma opção de categoria incorreta não possa ocupar outro campo;
 - identificadores desconhecidos sejam apresentados como dados inválidos, sem substituição silenciosa;
 - a interface exponha os nomes e as descrições localizados, preservando apenas os identificadores nos dados persistidos.
@@ -116,21 +109,18 @@ Quando esta especificação for implementada, o sistema deve garantir que:
 - O documento define uma única estrutura persistida para Armas.
 - Dano é fixo, inteiro e possui mínimo `1`.
 - Característica Menor e Característica Maior são singulares e obrigatórias.
-- Atributo e Perícia da rolagem padrão são singulares, obrigatórios e armazenados por identificadores técnicos.
 - `Oculta` e `Assassinar` constam como as primeiras Características oficiais.
 - As duas Características permanecem descritivas e não introduzem automação antecipada.
 - Característica Mágica e estados de Inventário permanecem fora do escopo.
 
 ## 7. Apresentação na ficha de Item
 
-A ficha apresenta uma única página. Logo abaixo do cabeçalho existe um painel hierárquico de **Perfil de combate**; a descrição da Arma permanece visível abaixo desse painel.
+A ficha apresenta uma única página. Logo abaixo do cabeçalho existe um painel de **Perfil de combate**; a descrição da Arma permanece visível abaixo desse painel.
 
-No Perfil de combate, **Menor** e **Maior** dividem igualmente o painel superior, com acentos visuais oxidado e bronze respectivamente. A **Rolagem padrão** ocupa um painel separado logo abaixo e apresenta a combinação **Atributo + Perícia**.
+No Perfil de combate, **Menor** e **Maior** dividem igualmente o painel, com acentos visuais oxidado e bronze respectivamente.
 
 Cada propriedade é exibida como uma etiqueta informativa cuja definição localizada aparece ao passar o mouse ou ao receber foco. Durante a edição, a etiqueta recebe um controle `×`. Removê-la limpa apenas o valor no rascunho e coloca em seu lugar um campo de pesquisa com a lista de opções oficiais da categoria. Escolher uma opção recria a etiqueta; somente salvar a Arma persiste as mudanças.
 
 Uma propriedade vazia, desconhecida ou sem opções oficiais continua visível como pendência. A interface não cria valores provisórios nem substitui silenciosamente identificadores inválidos. Na visualização, o nome de cada característica permanece centralizado e sua definição completa aparece somente por hover ou foco.
-
-Durante a edição, a região de Rolagem padrão oferece seletores independentes com todos os Atributos e Perícias oficiais. Na visualização, apresenta a combinação localizada no formato **Atributo + Perícia**. Valores vazios ou desconhecidos mantêm a Arma incompleta e permanecem visíveis até serem corrigidos.
 
 A descrição usa o editor ProseMirror nativo do Foundry durante a edição. Na visualização, o HTML persistido é enriquecido pelo Foundry para apresentar formatação, links de documentos e demais recursos suportados pelo editor.

@@ -111,44 +111,6 @@
       {{/each}}
     </div>
 
-    <div class="astrael-weapon-combat-roll">
-      <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.DefaultRoll"}}</span>
-      {{#if editing}}
-      <div class="astrael-weapon-roll-fields">
-        <label class="astrael-ui-field {{#if weaponRoll.attribute.invalid}}is-invalid{{/if}}">
-          <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.RollAttribute"}}</span>
-          <select name="system.rollAttribute" data-weapon-draft-field="rollAttribute" aria-invalid="{{weaponRoll.attribute.invalid}}">
-            <option value="" disabled {{#if weaponRoll.attribute.empty}}selected{{/if}}>{{localize "ASTRAEL.Weapon.SelectAttribute"}}</option>
-            {{#if weaponRoll.attribute.unknown}}
-            <option value="{{weaponRoll.attribute.unknown.key}}" selected>{{weaponRoll.attribute.unknown.label}}</option>
-            {{/if}}
-            {{#each weaponRoll.attribute.options as |option|}}
-            <option value="{{option.key}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>
-            {{/each}}
-          </select>
-        </label>
-        <span class="astrael-weapon-roll-plus" aria-hidden="true">+</span>
-        <label class="astrael-ui-field {{#if weaponRoll.skill.invalid}}is-invalid{{/if}}">
-          <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.RollSkill"}}</span>
-          <select name="system.rollSkill" data-weapon-draft-field="rollSkill" aria-invalid="{{weaponRoll.skill.invalid}}">
-            <option value="" disabled {{#if weaponRoll.skill.empty}}selected{{/if}}>{{localize "ASTRAEL.Weapon.SelectSkill"}}</option>
-            {{#if weaponRoll.skill.unknown}}
-            <option value="{{weaponRoll.skill.unknown.key}}" selected>{{weaponRoll.skill.unknown.label}}</option>
-            {{/if}}
-            {{#each weaponRoll.skill.options as |option|}}
-            <option value="{{option.key}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>
-            {{/each}}
-          </select>
-        </label>
-      </div>
-      {{else}}
-      <div class="astrael-weapon-roll-summary {{#if weaponRoll.attribute.invalid}}is-invalid{{/if}} {{#if weaponRoll.skill.invalid}}is-invalid{{/if}}">
-        <strong>{{weaponRoll.attribute.valueLabel}}</strong>
-        <span aria-hidden="true">+</span>
-        <strong>{{weaponRoll.skill.valueLabel}}</strong>
-      </div>
-      {{/if}}
-    </div>
   </section>
 
   <main class="astrael-weapon-body">

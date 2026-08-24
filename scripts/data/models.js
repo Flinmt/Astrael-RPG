@@ -156,8 +156,16 @@ class AstraelTraitData extends TypeDataModel {
   static defineSchema() {
     return {
       description: stringField(),
-      value: new NumberField({ required: true, integer: true, initial: 0 })
+      category: stringField("advantage"),
+      level: new NumberField({ required: true, integer: true, min: 1, max: 5, initial: 1 })
     };
+  }
+
+  static migrateData(source) {
+    source.category = source.category === "flaw" ? "flaw" : "advantage";
+    source.level = clampNumber(source.level ?? source.value ?? 1, 1, 5);
+    delete source.value;
+    return super.migrateData(source);
   }
 }
 
@@ -167,9 +175,7 @@ class AstraelWeaponData extends TypeDataModel {
       description: stringField(),
       damage: new NumberField({ required: true, integer: true, min: 1, initial: 1 }),
       minorTrait: stringField(),
-      majorTrait: stringField(),
-      rollAttribute: stringField(),
-      rollSkill: stringField()
+      majorTrait: stringField()
     };
   }
 }
