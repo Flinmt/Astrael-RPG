@@ -18,7 +18,9 @@
   ],
   "styles": [
     "styles/foundations/tokens.css",
+    "styles/foundations/typography.css",
     "styles/foundations/controls.css",
+    "styles/foundations/surfaces.css",
     "styles/character-sheet/shell.css",
     "styles/character-sheet/header.css",
     "styles/character-sheet/attributes.css",
@@ -32,6 +34,7 @@
     "styles/character-sheet/settings.css",
     "styles/applications/actor-directory.css",
     "styles/applications/portrait-editor.css",
+    "styles/applications/weapon-sheet.css",
     "styles/character-sheet/stats.css",
     "styles/applications/panels.css",
     "styles/chat/dice-pool-card.css",
@@ -68,7 +71,8 @@
       "character": {}
     },
     "Item": {
-      "trait": {}
+      "trait": {},
+      "weapon": {}
     }
   }
 }

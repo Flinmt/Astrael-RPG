@@ -3,8 +3,9 @@ import { applyTokenPortraitsToActorDirectory } from "../core/utilities.js";
 import { getRollValues } from "../rules/dice.js";
 import { showRerollDialog } from "../chat/dice-pool.js";
 import { openExperienceDistributor } from "../applications/xp-distributor.js";
-import { AstraelCharacterData, AstraelTraitData, removeDeprecatedActorTypes } from "../data/models.js";
+import { AstraelCharacterData, AstraelTraitData, AstraelWeaponData, removeDeprecatedActorTypes } from "../data/models.js";
 import { AstraelCharacterSheet } from "../sheets/character-sheet.js";
+import { AstraelWeaponSheet } from "../sheets/weapon-sheet.js";
 import { addExperienceDistributorToActorDirectory } from "./actor-directory.js";
 
 const FOCUS_NAVIGATION_KEYS = ["Tab", "Enter", " ", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
@@ -16,6 +17,7 @@ function registerSystemHooks() {
     removeDeprecatedActorTypes();
     CONFIG.Actor.dataModels.character = AstraelCharacterData;
     CONFIG.Item.dataModels.trait = AstraelTraitData;
+    CONFIG.Item.dataModels.weapon = AstraelWeaponData;
   
     foundry.applications.apps.DocumentSheetConfig.registerSheet(
       Actor,
@@ -25,6 +27,17 @@ function registerSystemHooks() {
         types: ["character"],
         makeDefault: true,
         label: game.i18n.localize("ASTRAEL.Sheet.Character")
+      }
+    );
+
+    foundry.applications.apps.DocumentSheetConfig.registerSheet(
+      Item,
+      SYSTEM_ID,
+      AstraelWeaponSheet,
+      {
+        types: ["weapon"],
+        makeDefault: true,
+        label: game.i18n.localize("ASTRAEL.Sheet.Weapon")
       }
     );
   

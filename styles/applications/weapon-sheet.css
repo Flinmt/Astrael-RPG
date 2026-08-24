@@ -1,0 +1,813 @@
+.application.astrael-rpg.weapon-sheet {
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.application.astrael-rpg.weapon-sheet .window-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 6px 4px 10px;
+  overflow: hidden;
+  border: 1px solid #3d372e;
+  border-bottom: 1px solid #5d4a32;
+  border-radius: 0;
+  color: var(--astrael-bone);
+  background:
+    linear-gradient(90deg, rgba(155, 116, 69, 0.14), transparent 34%),
+    linear-gradient(180deg, #171915, #0c0e0d);
+  box-shadow:
+    inset 0 1px rgba(216, 207, 188, 0.05),
+    inset 0 -1px rgba(0, 0, 0, 0.65);
+}
+
+.application.astrael-rpg.weapon-sheet .window-header::after {
+  position: absolute;
+  right: 44px;
+  bottom: -1px;
+  width: 76px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--astrael-bronze-light));
+  content: "";
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.application.astrael-rpg.weapon-sheet .window-title {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--astrael-bone);
+  font-family: var(--astrael-font-technical);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px #000;
+  white-space: nowrap;
+}
+
+.application.astrael-rpg.weapon-sheet .window-title::before {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border: 1px solid var(--astrael-bronze-light);
+  background: #1d1b15;
+  content: "";
+  opacity: 0.8;
+  transform: rotate(45deg);
+}
+
+.application.astrael-rpg.weapon-sheet .window-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.application.astrael-rpg.weapon-sheet .window-header .header-control,
+.application.astrael-rpg.weapon-sheet .window-header .window-control {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  min-width: 23px;
+  min-height: 23px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0;
+  color: #aaa18f;
+  background: transparent;
+  box-shadow: none;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.application.astrael-rpg.weapon-sheet .window-header .header-control:hover,
+.application.astrael-rpg.weapon-sheet .window-header .header-control:focus-visible,
+.application.astrael-rpg.weapon-sheet .window-header .window-control:hover,
+.application.astrael-rpg.weapon-sheet .window-header .window-control:focus-visible {
+  border-color: #6f5738;
+  color: #eadcc3;
+  background: rgba(155, 116, 69, 0.14);
+  outline: 0;
+}
+
+.application.astrael-rpg.weapon-sheet .window-header [data-action="close"]:hover,
+.application.astrael-rpg.weapon-sheet .window-header [data-action="close"]:focus-visible,
+.application.astrael-rpg.weapon-sheet .window-header .close:hover,
+.application.astrael-rpg.weapon-sheet .window-header .close:focus-visible {
+  border-color: #75453e;
+  color: #d88b7e;
+  background: rgba(112, 66, 60, 0.18);
+}
+
+.application.astrael-rpg.weapon-sheet .window-content {
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.astrael-rpg .astrael-weapon-sheet {
+  z-index: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 4%, rgba(155, 116, 69, 0.08), transparent 24%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 5px),
+    var(--astrael-surface-shell);
+}
+
+.astrael-rpg .astrael-weapon-sheet > * {
+  position: relative;
+  z-index: 1;
+}
+
+.astrael-rpg .astrael-weapon-header {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 76px;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px 17px 15px;
+  border-bottom: 1px solid #554631;
+  background:
+    linear-gradient(105deg, rgba(155, 116, 69, 0.12), transparent 34%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.01) 0 1px, transparent 1px 8px),
+    linear-gradient(180deg, #1b1e1a, #10120f);
+  box-shadow:
+    inset 0 1px rgba(216, 207, 188, 0.05),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.18);
+}
+
+.astrael-rpg .astrael-weapon-header::after {
+  content: "";
+  position: absolute;
+  right: 16px;
+  bottom: -1px;
+  width: 62px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--astrael-bronze-light), transparent);
+  pointer-events: none;
+}
+
+.astrael-rpg .astrael-weapon-image {
+  position: relative;
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin: 0;
+  padding: 4px;
+  overflow: hidden;
+  border: 1px solid #554a38;
+  border-radius: 0;
+  color: var(--astrael-bronze-light);
+  background: #171914;
+  box-shadow:
+    inset 0 0 0 2px #090a09,
+    0 2px 8px rgba(0, 0, 0, 0.34);
+}
+
+.astrael-rpg .astrael-weapon-image::before,
+.astrael-rpg .astrael-weapon-image::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
+
+.astrael-rpg .astrael-weapon-image::before {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid var(--astrael-bronze-light);
+  border-left: 2px solid var(--astrael-bronze-light);
+}
+
+.astrael-rpg .astrael-weapon-image::after {
+  right: -1px;
+  bottom: -1px;
+  border-right: 2px solid var(--astrael-bronze-dark);
+  border-bottom: 2px solid var(--astrael-bronze-dark);
+}
+
+.astrael-rpg .astrael-weapon-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: contain;
+  object-position: center;
+}
+
+.astrael-rpg .astrael-weapon-image > span {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--astrael-bronze);
+  background: rgba(8, 10, 8, 0.9);
+  font-size: 9px;
+}
+
+.astrael-rpg .astrael-weapon-image:hover:not(:disabled),
+.astrael-rpg .astrael-weapon-image:focus-visible {
+  border-color: var(--astrael-bronze-light);
+  outline: 1px solid rgba(198, 163, 111, 0.4);
+  outline-offset: 2px;
+}
+
+.astrael-rpg .astrael-weapon-identity {
+  display: grid;
+  gap: 15px;
+  min-width: 0;
+}
+
+.astrael-rpg .astrael-weapon-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.astrael-rpg .astrael-weapon-meta .astrael-ui-kicker {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-rpg .astrael-weapon-meta .astrael-ui-status {
+  flex: 0 0 auto;
+}
+
+.astrael-rpg .astrael-weapon-name {
+  position: relative;
+  padding-top: 10px;
+  border-bottom: 1px solid #4b4438;
+}
+
+.astrael-rpg .astrael-weapon-name::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  width: 32px;
+  border-bottom: 1px solid var(--astrael-bronze);
+}
+
+.astrael-rpg .astrael-weapon-name .astrael-ui-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.astrael-rpg .astrael-weapon-name input {
+  height: 30px;
+  padding: 2px 7px;
+  border: 1px solid rgba(168, 111, 63, 0.58);
+  border-left: 2px solid var(--astrael-bronze-light);
+  color: var(--astrael-bone);
+  background:
+    linear-gradient(90deg, rgba(168, 111, 63, 0.08), transparent 42%),
+    #141b1e;
+  box-shadow: none;
+  font-size: 15px;
+}
+
+.astrael-rpg .astrael-weapon-name input:focus {
+  border-color: var(--astrael-bronze-light);
+  outline: none;
+  box-shadow: none;
+}
+
+.astrael-rpg .astrael-weapon-name-display {
+  min-height: 43px;
+}
+
+.astrael-rpg .astrael-weapon-name-display h1 {
+  min-width: 0;
+  margin: 0;
+  padding: 4px 0 3px;
+  overflow: hidden;
+  color: var(--astrael-bone);
+  font-size: 17px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-rpg .astrael-weapon-damage {
+  align-content: center;
+  gap: 5px;
+  min-height: 88px;
+  padding: 8px;
+  border: 1px solid #39372f;
+  border-left: 3px solid var(--astrael-bronze);
+  background:
+    linear-gradient(110deg, rgba(216, 207, 188, 0.025), transparent 55%),
+    #151713;
+  text-align: center;
+}
+
+.astrael-rpg .astrael-weapon-damage input {
+  height: 48px;
+  padding: 0;
+  border: 0;
+  color: var(--astrael-bronze-light);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--astrael-font-display);
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.astrael-rpg .astrael-weapon-damage > strong {
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  color: var(--astrael-bronze-light);
+  font-family: var(--astrael-font-display);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.astrael-rpg .astrael-weapon-damage.is-invalid {
+  border-color: var(--astrael-red-bright);
+}
+
+.astrael-rpg .astrael-weapon-damage small {
+  color: #d49a93;
+  font-size: 7px;
+  line-height: 1.2;
+}
+
+.astrael-rpg .astrael-weapon-body {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 17px;
+  min-height: 0;
+  padding: 16px 17px 18px;
+  overflow: hidden;
+}
+
+.astrael-rpg .astrael-weapon-combat-profile {
+  position: relative;
+  z-index: 5;
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 10px;
+  min-width: 0;
+  margin: 10px 17px 0;
+}
+
+.astrael-rpg .astrael-weapon-combat-roll {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 11px;
+  border: 1px solid #4b4234;
+  background:
+    linear-gradient(135deg, rgba(155, 116, 69, 0.08), transparent 52%),
+    #0f120f;
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.18);
+}
+
+.astrael-rpg .astrael-weapon-roll-fields,
+.astrael-rpg .astrael-weapon-roll-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.astrael-rpg .astrael-weapon-roll-fields .astrael-ui-field {
+  gap: 3px;
+}
+
+.astrael-rpg .astrael-weapon-roll-fields select {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 3px 24px 3px 7px;
+  color: var(--astrael-bone);
+  background-color: #131510;
+  font-family: var(--astrael-font-ui);
+  font-size: 9px;
+}
+
+.astrael-rpg .astrael-weapon-roll-plus,
+.astrael-rpg .astrael-weapon-roll-summary > span {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  justify-self: center;
+  border: 1px solid #5b4930;
+  color: transparent;
+  background: #151713;
+  font-family: var(--astrael-font-display);
+  font-size: 0;
+  transform: rotate(45deg);
+}
+
+.astrael-rpg .astrael-weapon-roll-plus::before,
+.astrael-rpg .astrael-weapon-roll-summary > span::before {
+  color: var(--astrael-bronze-light);
+  font-size: 10px;
+  content: "+";
+  transform: rotate(-45deg);
+}
+
+.astrael-rpg .astrael-weapon-roll-summary > strong {
+  min-width: 0;
+  overflow: hidden;
+  padding: 5px 8px;
+  border-bottom: 1px solid #5b4930;
+  color: #d8cfbe;
+  font-family: var(--astrael-font-display);
+  font-size: 10px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-rpg .astrael-weapon-roll-summary.is-invalid > strong {
+  border-color: var(--astrael-red-bright);
+  color: #d49a93;
+}
+
+.astrael-rpg .astrael-weapon-traits {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+  border: 1px solid #4b4234;
+  background: #0f120f;
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.18);
+}
+
+.astrael-rpg .astrael-weapon-trait {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  min-height: 48px;
+  padding: 8px 10px;
+  border-left: 2px solid var(--astrael-property-accent);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--astrael-property-accent) 7%, transparent), transparent 55%);
+}
+
+.astrael-rpg .astrael-weapon-trait + .astrael-weapon-trait {
+  border-left-width: 1px;
+  border-left-color: #4b4234;
+  box-shadow: inset 2px 0 color-mix(in srgb, var(--astrael-property-accent) 72%, transparent);
+}
+
+.astrael-rpg .astrael-weapon-trait.is-invalid {
+  box-shadow: inset 2px 0 rgba(162, 68, 62, 0.82);
+}
+
+.astrael-rpg .astrael-weapon-trait.is-invalid .astrael-weapon-trait-heading > :is(span, strong) {
+  color: #d49a93;
+}
+
+.astrael-rpg .astrael-weapon-trait-heading {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 48px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.astrael-rpg .astrael-weapon-trait-heading > span {
+  color: var(--astrael-property-accent);
+  font-family: var(--astrael-font-technical);
+  font-size: 6.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .astrael-weapon-trait-heading > strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--astrael-bone);
+  font-family: var(--astrael-font-display);
+  font-size: 11.5px;
+  letter-spacing: 0.025em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-rpg .astrael-weapon-trait-heading:focus-visible {
+  outline: 1px solid var(--astrael-property-accent);
+  outline-offset: 3px;
+}
+
+.astrael-rpg .astrael-weapon-trait-heading > button {
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  min-width: 17px;
+  min-height: 17px;
+  margin: 0 -3px 0 1px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #81796c;
+  background: transparent;
+  box-shadow: none;
+  font-size: 8px;
+  justify-self: end;
+}
+
+.astrael-rpg .astrael-weapon-trait-heading > button:hover,
+.astrael-rpg .astrael-weapon-trait-heading > button:focus-visible {
+  color: #d8aaa3;
+  background: rgba(112, 66, 60, 0.22);
+  outline: 1px solid rgba(162, 68, 62, 0.45);
+}
+
+.astrael-rpg .astrael-weapon-trait-heading > i {
+  color: #d49a93;
+  font-size: 8px;
+  justify-self: end;
+}
+
+.astrael-rpg .astrael-weapon-property-selector {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.astrael-rpg .astrael-weapon-property-selector > label {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.astrael-rpg .astrael-weapon-property-selector > label > span:first-child {
+  color: var(--astrael-property-accent);
+  font-family: var(--astrael-font-technical);
+  font-size: 6.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .astrael-weapon-property-search {
+  display: block;
+  align-items: center;
+  min-width: 0;
+  border: 1px solid #5c4932;
+  border-left: 2px solid var(--astrael-property-accent);
+  background: #131510;
+}
+
+.astrael-rpg .astrael-weapon-property-search > input {
+  width: 100%;
+  height: 25px;
+  min-width: 0;
+  padding: 3px 5px;
+  border: 0;
+  color: var(--astrael-bone);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--astrael-font-ui);
+  font-size: 9px;
+}
+
+.astrael-rpg .astrael-weapon-property-search:focus-within {
+  border-color: var(--astrael-property-accent);
+  outline: 1px solid rgba(198, 163, 111, 0.28);
+  outline-offset: 1px;
+}
+
+.astrael-rpg .astrael-weapon-trait.is-invalid .astrael-weapon-property-search {
+  border-color: rgba(162, 68, 62, 0.82);
+}
+
+.astrael-rpg .astrael-weapon-property-search > input:focus {
+  outline: 0;
+}
+
+.astrael-rpg .astrael-weapon-property-suggestions {
+  position: absolute;
+  z-index: 35;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  width: max(100%, 260px);
+  max-height: 230px;
+  overflow-y: auto;
+  border: 1px solid #4d4233;
+  border-top: 2px solid var(--astrael-property-accent);
+  background: #0d100d;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.58);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.astrael-rpg .astrael-weapon-property-selector:focus-within .astrael-weapon-property-suggestions {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.astrael-rpg .astrael-weapon-trait:last-child .astrael-weapon-property-suggestions,
+.astrael-rpg .astrael-weapon-trait:last-child .astrael-ui-property-tooltip {
+  right: 0;
+  left: auto;
+}
+
+.astrael-rpg .astrael-weapon-property-suggestions > button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: 0;
+  border-bottom: 1px solid #292a24;
+  border-radius: 0;
+  color: #aaa18f;
+  background: #11130f;
+  box-shadow: none;
+  text-align: left;
+}
+
+.astrael-rpg .astrael-weapon-property-suggestions > button:hover,
+.astrael-rpg .astrael-weapon-property-suggestions > button:focus-visible {
+  color: var(--astrael-bone);
+  background: rgba(155, 116, 69, 0.13);
+  outline: 0;
+}
+
+.astrael-rpg .astrael-weapon-property-suggestions > button > strong {
+  color: inherit;
+  font-family: var(--astrael-font-display);
+  font-size: 10px;
+}
+
+.astrael-rpg .astrael-weapon-property-suggestions > button > small {
+  color: #898173;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.astrael-rpg .astrael-weapon-property-suggestions > p {
+  margin: 0;
+  padding: 11px;
+  color: #81796c;
+  font-size: 9px;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.astrael-rpg .astrael-weapon-details {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 11px;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.astrael-rpg .astrael-weapon-trait.is-minor {
+  --astrael-property-accent: var(--astrael-oxidized);
+}
+
+.astrael-rpg .astrael-weapon-trait.is-major {
+  --astrael-property-accent: var(--astrael-bronze-light);
+}
+
+.astrael-rpg .astrael-weapon-description-editor,
+.astrael-rpg .astrael-weapon-prosemirror {
+  height: 100%;
+  min-height: 0;
+}
+
+.astrael-rpg .astrael-weapon-description-editor {
+  overflow: hidden;
+}
+
+.astrael-rpg .astrael-weapon-prosemirror {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #4d4233;
+  border-left: 2px solid var(--astrael-bronze-dark);
+  color: #c9c0af;
+  background:
+    linear-gradient(135deg, rgba(155, 116, 69, 0.06), transparent 46%),
+    #151713;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.astrael-rpg .astrael-weapon-prosemirror .editor-content {
+  flex: 1;
+  min-height: 0;
+  padding: 10px 12px;
+  overflow-y: auto;
+}
+
+.astrael-rpg .astrael-weapon-prosemirror:focus-within {
+  border-color: var(--astrael-bronze-light);
+  outline: 1px solid rgba(198, 163, 111, 0.24);
+  outline-offset: 1px;
+}
+
+.astrael-rpg .astrael-weapon-description-view {
+  position: relative;
+  min-height: 0;
+  padding: 15px 16px;
+  overflow-y: auto;
+  border-left: 2px solid var(--astrael-bronze-dark);
+  background:
+    linear-gradient(135deg, rgba(155, 116, 69, 0.06), transparent 46%),
+    #151713;
+  scrollbar-width: thin;
+  scrollbar-color: var(--astrael-bronze-dark) transparent;
+}
+
+.astrael-rpg .astrael-weapon-description-view::after {
+  position: absolute;
+  top: 13px;
+  right: 14px;
+  width: 34px;
+  border-top: 1px solid var(--astrael-bronze-dark);
+  content: "";
+}
+
+.astrael-rpg .astrael-weapon-description-view > :first-child {
+  margin-top: 15px;
+}
+
+.astrael-rpg .astrael-weapon-description-view :is(p, ul, ol, blockquote) {
+  color: #c9c0af;
+  font-size: 11.5px;
+  line-height: 1.7;
+}
+
+.astrael-rpg .astrael-weapon-description-view p.is-empty {
+  margin: 15px 0 0;
+  color: #756f63;
+  font-style: italic;
+}
+
+.astrael-rpg .astrael-weapon-actions {
+  min-height: 54px;
+  padding: 10px 17px;
+  border-top: 1px solid var(--astrael-bronze-dark);
+  background: rgba(8, 10, 8, 0.86);
+}
+
+.astrael-rpg .astrael-weapon-actions button {
+  min-width: 124px;
+}
+
+.astrael-rpg .astrael-weapon-actions button.is-secondary {
+  border-color: #4a4438;
+  color: #aaa18f;
+  background: #11130f;
+}
+
+.astrael-rpg .astrael-weapon-actions button.is-secondary:hover,
+.astrael-rpg .astrael-weapon-actions button.is-secondary:focus-visible {
+  border-color: #75453e;
+  color: #d8aaa3;
+  background: rgba(112, 66, 60, 0.18);
+}
+
+.astrael-rpg .astrael-weapon-sheet :disabled {
+  cursor: default;
+}
+
+.astrael-rpg .astrael-weapon-sheet input:disabled,
+.astrael-rpg .astrael-weapon-sheet select:disabled {
+  opacity: 0.78;
+}

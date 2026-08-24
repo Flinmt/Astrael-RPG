@@ -2,7 +2,7 @@
 
 **Status:** aprovada para implementação  
 **Escopo:** nomenclatura das fichas, relação entre apresentações e organização modular dos estilos  
-**Referência funcional:** `docs/character-sheet-objective.md`
+**Referências:** `docs/character-sheet-objective.md` e `docs/visual-design-system.md`
 
 ## 1. Propósito
 
@@ -53,6 +53,7 @@ styles/
     tokens.css
     typography.css
     controls.css
+    surfaces.css
     accessibility.css
 
   character-sheet/
@@ -83,6 +84,7 @@ Arquivos para Convicções, Virtudes, Hemomancia e Marca do Estranho devem ser a
 ### 3.3 Responsabilidade dos diretórios
 
 - `foundations/` contém tokens, tipografia, controles básicos e regras transversais. Não deve conhecer a estrutura interna de uma ficha.
+- `foundations/surfaces.css` contém somente molduras, painéis e estados visuais reutilizáveis sob `.astrael-rpg`; estruturas exclusivas continuam no CSS consumidor.
 - `character-sheet/` contém somente a ficha padrão de Personagem.
 - `applications/` contém janelas auxiliares baseadas em `ApplicationV2`.
 - `chat/` contém cartões e elementos renderizados no chat.
@@ -135,6 +137,7 @@ Estilos fundamentais compartilhados podem usar `.astrael-rpg` como raiz.
 - Cores, tipografia, espaçamentos e medidas reutilizadas devem ser propriedades customizadas em `foundations/tokens.css`.
 - Tokens específicos de uma apresentação podem ser declarados em sua raiz, mas não devem vazar para outras fichas.
 - Valores repetidos não devem ser transformados em tokens quando não representam uma decisão de design reutilizável.
+- A ficha de Personagem é a referência visual consolidada. Novas primitivas são adotadas gradualmente e não exigem refatorar seus estilos existentes.
 
 ## 5. Estratégia de migração
 

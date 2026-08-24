@@ -16,6 +16,13 @@ import {
   removeExperienceDistribution
 } from "../scripts/rules/experience.js";
 import { normalizeDamage, normalizeResource } from "../scripts/rules/resources.js";
+import {
+  MAJOR_WEAPON_TRAITS,
+  MINOR_WEAPON_TRAITS,
+  WEAPON_PROPERTY_KEYS,
+  getWeaponCatalogEntry,
+  validateWeaponData
+} from "../scripts/rules/weapons.js";
 
 test("dice pools preserve success and critical-pair behavior", () => {
   assert.deepEqual(summarizeDicePool([10, 10, 6, 5]), { successes: 5 });
@@ -150,4 +157,42 @@ test("experience ledger keeps only complete distribution events", () => {
       createdBy: { id: "gm-1", name: "Narrator" }
     }]
   });
+});
+
+test("weapon catalogs expose the initial official characteristics", () => {
+  assert.deepEqual(WEAPON_PROPERTY_KEYS, ["minorTrait", "majorTrait"]);
+  assert.equal(getWeaponCatalogEntry(MINOR_WEAPON_TRAITS, "concealed")?.id, "concealed");
+  assert.equal(getWeaponCatalogEntry(MAJOR_WEAPON_TRAITS, "assassinate")?.id, "assassinate");
+});
+
+test("weapon validation requires official characteristics and roll configuration", () => {
+  assert.deepEqual(validateWeaponData({
+    damage: 1,
+    minorTrait: "concealed",
+    majorTrait: "assassinate",
+    rollAttribute: "dexterity",
+    rollSkill: "melee"
+  }), {
+    complete: true,
+    invalidFields: []
+  });
+
+  assert.deepEqual(validateWeaponData({
+    damage: 0,
+    minorTrait: "unknown",
+    majorTrait: "",
+    rollAttribute: "unknown",
+    rollSkill: ""
+  }), {
+    complete: false,
+    invalidFields: ["damage", "minorTrait", "majorTrait", "rollAttribute", "rollSkill"]
+  });
+
+  assert.deepEqual(validateWeaponData({
+    damage: 1,
+    minorTrait: "concealed",
+    majorTrait: "assassinate",
+    rollAttribute: "melee",
+    rollSkill: "dexterity"
+  }).invalidFields, ["rollAttribute", "rollSkill"]);
 });

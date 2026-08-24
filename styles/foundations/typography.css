@@ -1,0 +1,43 @@
+.astrael-rpg .astrael-ui-kicker {
+  margin: 0;
+  color: var(--astrael-bronze-light);
+  font-family: var(--astrael-font-technical);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .astrael-ui-title {
+  margin: 0;
+  color: var(--astrael-bone);
+  font-family: var(--astrael-font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  line-height: 1.2;
+}
+
+.astrael-rpg .astrael-ui-section-title {
+  margin: 0;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--astrael-border-strong);
+  color: var(--astrael-bone);
+  font-family: var(--astrael-font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .astrael-ui-label {
+  color: var(--astrael-muted);
+  font-family: var(--astrael-font-technical);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}

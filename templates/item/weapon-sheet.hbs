@@ -1,0 +1,198 @@
+<div class="astrael-weapon-sheet astrael-ui-frame {{#if editing}}is-editing{{else}}is-viewing{{/if}}">
+  <header class="astrael-weapon-header">
+    {{#if editing}}
+    <button type="button" class="astrael-weapon-image" data-action="change-weapon-image" aria-label="{{localize 'ASTRAEL.Weapon.ChangeImage'}}" title="{{localize 'ASTRAEL.Weapon.ChangeImage'}}">
+      <img src="{{weapon.img}}" alt="{{weapon.name}}">
+      <span><i class="fas fa-image" aria-hidden="true"></i></span>
+    </button>
+    <input type="hidden" name="img" value="{{weapon.img}}" data-weapon-image-input>
+    {{else}}
+    <div class="astrael-weapon-image">
+      <img src="{{weapon.img}}" alt="{{weapon.name}}">
+    </div>
+    {{/if}}
+
+    <div class="astrael-weapon-identity">
+      <div class="astrael-weapon-meta">
+        <p class="astrael-ui-kicker">{{localize "ASTRAEL.Weapon.Kicker"}}</p>
+        {{#unless weaponValidation.complete}}
+        <span class="astrael-ui-status" role="status">
+          <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+          {{localize "ASTRAEL.Weapon.Pending"}}
+        </span>
+        {{/unless}}
+      </div>
+      {{#if editing}}
+      <label class="astrael-ui-field astrael-weapon-name">
+        <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Name"}}</span>
+        <input class="astrael-ui-title" type="text" name="name" value="{{weapon.name}}" data-weapon-draft-field="name">
+      </label>
+      {{else}}
+      <div class="astrael-weapon-name astrael-weapon-name-display">
+        <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Name"}}</span>
+        <h1 class="astrael-ui-title">{{weapon.name}}</h1>
+      </div>
+      {{/if}}
+    </div>
+
+    {{#if editing}}
+    <label class="astrael-ui-field astrael-weapon-damage {{#if weaponValidation.damageInvalid}}is-invalid{{/if}}">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Damage"}}</span>
+      <input type="number" name="system.damage" value="{{system.damage}}" min="1" step="1" inputmode="numeric" aria-invalid="{{weaponValidation.damageInvalid}}" data-weapon-draft-field="damage">
+      {{#if weaponValidation.damageInvalid}}<small>{{localize "ASTRAEL.Weapon.RequiredField"}}</small>{{/if}}
+    </label>
+    {{else}}
+    <div class="astrael-weapon-damage">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Damage"}}</span>
+      <strong>{{system.damage}}</strong>
+    </div>
+    {{/if}}
+  </header>
+
+  <section class="astrael-weapon-combat-profile">
+    <div class="astrael-weapon-traits" aria-label="{{localize 'ASTRAEL.Weapon.Properties'}}">
+      {{#each weaponProperties as |property|}}
+      <article class="astrael-ui-property astrael-weapon-trait {{property.modifier}} {{#if property.invalid}}is-invalid{{/if}}">
+        {{#if ../editing}}
+        <input type="hidden" name="{{property.inputName}}" value="{{property.value}}" data-weapon-property-input="{{property.key}}">
+        {{/if}}
+
+        {{#if property.configured}}
+        <div class="astrael-weapon-trait-heading" tabindex="0" data-weapon-property-tag="{{property.key}}" aria-describedby="weapon-property-tooltip-{{../item.id}}-{{property.key}}" aria-invalid="{{property.invalid}}">
+          <span>{{property.category}}</span>
+          <strong>{{property.valueLabel}}</strong>
+          {{#if ../editing}}
+          <button type="button" data-action="remove-weapon-property" data-property="{{property.key}}" aria-label="{{localize 'ASTRAEL.Weapon.PropertyRemove' property=property.title}}" title="{{localize 'ASTRAEL.Weapon.PropertyRemove' property=property.title}}">
+            <i class="fas fa-xmark" aria-hidden="true"></i>
+          </button>
+          {{/if}}
+        </div>
+
+        <div class="astrael-ui-property-tooltip" id="weapon-property-tooltip-{{../item.id}}-{{property.key}}" role="tooltip">
+          <span>{{property.title}}</span>
+          <strong>{{property.valueLabel}}</strong>
+          <p>{{property.description}}</p>
+        </div>
+        {{else if ../editing}}
+        <div class="astrael-weapon-property-selector" data-weapon-property-selector>
+          <label>
+            <span>{{property.title}}</span>
+            <span class="astrael-weapon-property-search">
+              <input type="search" value="" autocomplete="off" data-action="search-weapon-property" data-property="{{property.key}}" placeholder="{{localize 'ASTRAEL.Weapon.PropertySearch'}}" aria-label="{{localize 'ASTRAEL.Weapon.PropertySearchLabel' property=property.title}}">
+            </span>
+          </label>
+          <div class="astrael-weapon-property-suggestions">
+            {{#each property.options as |option|}}
+            <button type="button" data-action="select-weapon-property" data-weapon-property-option data-property="{{property.key}}" data-option="{{option.id}}" data-search-text="{{option.searchText}}">
+              <strong>{{option.label}}</strong>
+              <small>{{option.description}}</small>
+            </button>
+            {{else}}
+            <p>{{localize "ASTRAEL.Weapon.PropertyNoMatches"}}</p>
+            {{/each}}
+            {{#if property.options}}
+            <p data-weapon-property-filter-empty hidden>{{localize "ASTRAEL.Weapon.PropertyNoMatches"}}</p>
+            {{/if}}
+          </div>
+        </div>
+        {{else}}
+        <div class="astrael-weapon-trait-heading" tabindex="0" data-weapon-property-tag="{{property.key}}" aria-describedby="weapon-property-tooltip-{{../item.id}}-{{property.key}}" aria-invalid="true">
+          <span>{{property.category}}</span>
+          <strong>{{property.valueLabel}}</strong>
+          <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+        </div>
+        <div class="astrael-ui-property-tooltip" id="weapon-property-tooltip-{{../item.id}}-{{property.key}}" role="tooltip">
+          <span>{{property.title}}</span>
+          <strong>{{property.valueLabel}}</strong>
+          <p>{{property.description}}</p>
+        </div>
+        {{/if}}
+      </article>
+      {{/each}}
+    </div>
+
+    <div class="astrael-weapon-combat-roll">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.DefaultRoll"}}</span>
+      {{#if editing}}
+      <div class="astrael-weapon-roll-fields">
+        <label class="astrael-ui-field {{#if weaponRoll.attribute.invalid}}is-invalid{{/if}}">
+          <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.RollAttribute"}}</span>
+          <select name="system.rollAttribute" data-weapon-draft-field="rollAttribute" aria-invalid="{{weaponRoll.attribute.invalid}}">
+            <option value="" disabled {{#if weaponRoll.attribute.empty}}selected{{/if}}>{{localize "ASTRAEL.Weapon.SelectAttribute"}}</option>
+            {{#if weaponRoll.attribute.unknown}}
+            <option value="{{weaponRoll.attribute.unknown.key}}" selected>{{weaponRoll.attribute.unknown.label}}</option>
+            {{/if}}
+            {{#each weaponRoll.attribute.options as |option|}}
+            <option value="{{option.key}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>
+            {{/each}}
+          </select>
+        </label>
+        <span class="astrael-weapon-roll-plus" aria-hidden="true">+</span>
+        <label class="astrael-ui-field {{#if weaponRoll.skill.invalid}}is-invalid{{/if}}">
+          <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.RollSkill"}}</span>
+          <select name="system.rollSkill" data-weapon-draft-field="rollSkill" aria-invalid="{{weaponRoll.skill.invalid}}">
+            <option value="" disabled {{#if weaponRoll.skill.empty}}selected{{/if}}>{{localize "ASTRAEL.Weapon.SelectSkill"}}</option>
+            {{#if weaponRoll.skill.unknown}}
+            <option value="{{weaponRoll.skill.unknown.key}}" selected>{{weaponRoll.skill.unknown.label}}</option>
+            {{/if}}
+            {{#each weaponRoll.skill.options as |option|}}
+            <option value="{{option.key}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>
+            {{/each}}
+          </select>
+        </label>
+      </div>
+      {{else}}
+      <div class="astrael-weapon-roll-summary {{#if weaponRoll.attribute.invalid}}is-invalid{{/if}} {{#if weaponRoll.skill.invalid}}is-invalid{{/if}}">
+        <strong>{{weaponRoll.attribute.valueLabel}}</strong>
+        <span aria-hidden="true">+</span>
+        <strong>{{weaponRoll.skill.valueLabel}}</strong>
+      </div>
+      {{/if}}
+    </div>
+  </section>
+
+  <main class="astrael-weapon-body">
+    <section class="astrael-weapon-details" aria-labelledby="astrael-weapon-description-title-{{item.id}}">
+      <h2 class="astrael-ui-section-title" id="astrael-weapon-description-title-{{item.id}}">{{localize "ASTRAEL.Weapon.Description"}}</h2>
+      {{#if editing}}
+      <div class="astrael-weapon-description-editor">
+        <prose-mirror
+          class="astrael-weapon-prosemirror"
+          name="system.description"
+          value="{{system.description}}"
+          data-document-uuid="{{item.uuid}}">
+          {{{enrichedDescription}}}
+        </prose-mirror>
+      </div>
+      {{else}}
+      <article class="astrael-ui-panel astrael-weapon-description-view">
+        {{#if system.description}}
+        {{{enrichedDescription}}}
+        {{else}}
+        <p class="is-empty">{{localize "ASTRAEL.Weapon.NoDescription"}}</p>
+        {{/if}}
+      </article>
+      {{/if}}
+    </section>
+  </main>
+
+  {{#if canEdit}}
+  <footer class="astrael-ui-actions astrael-weapon-actions">
+    {{#if editing}}
+    <button type="button" class="is-secondary" data-action="cancel-weapon-edit">
+      <i class="fas fa-xmark" aria-hidden="true"></i>
+      <span>{{localize "ASTRAEL.Weapon.Cancel"}}</span>
+    </button>
+    <button type="button" data-action="save-weapon">
+      <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+      <span>{{localize "ASTRAEL.Weapon.Save"}}</span>
+    </button>
+    {{else}}
+    <button type="button" data-action="edit-weapon">
+      <i class="fas fa-pen" aria-hidden="true"></i>
+      <span>{{localize "ASTRAEL.Weapon.Edit"}}</span>
+    </button>
+    {{/if}}
+  </footer>
+  {{/if}}
+</div>

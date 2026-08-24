@@ -50,3 +50,75 @@ html[data-input="pointer"] .astrael-character-sheet :focus-visible {
   outline: none;
 }
 
+.astrael-rpg .astrael-ui-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.astrael-rpg .astrael-ui-field input,
+.astrael-rpg .astrael-ui-field select,
+.astrael-rpg .astrael-ui-field textarea {
+  width: 100%;
+  border: 1px solid rgba(168, 111, 63, 0.58);
+  border-left: 2px solid var(--astrael-bronze-light);
+  border-radius: 0;
+  color: var(--astrael-text);
+  background:
+    linear-gradient(90deg, rgba(168, 111, 63, 0.08), transparent 42%),
+    #141b1e;
+  font-family: var(--astrael-font-ui);
+}
+
+.astrael-rpg .astrael-ui-field input:focus,
+.astrael-rpg .astrael-ui-field select:focus,
+.astrael-rpg .astrael-ui-field textarea:focus {
+  border-color: var(--astrael-bronze-light);
+  outline: 1px solid rgba(198, 163, 111, 0.3);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+.astrael-rpg .astrael-ui-field.is-invalid input,
+.astrael-rpg .astrael-ui-field.is-invalid select,
+.astrael-rpg .astrael-ui-field.is-invalid textarea {
+  border-color: var(--astrael-red-bright);
+  box-shadow: inset 3px 0 0 rgba(162, 68, 62, 0.72);
+}
+
+.astrael-rpg .astrael-ui-field.is-invalid .astrael-ui-label {
+  color: #d49a93;
+}
+
+.astrael-rpg .astrael-ui-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.astrael-rpg .astrael-ui-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 6px 13px;
+  border: 1px solid var(--astrael-bronze);
+  border-radius: 0;
+  color: var(--astrael-text);
+  background: rgba(155, 116, 69, 0.16);
+  font-family: var(--astrael-font-technical);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.astrael-rpg .astrael-ui-actions button:hover,
+.astrael-rpg .astrael-ui-actions button:focus-visible {
+  border-color: var(--astrael-bronze-light);
+  color: #f2e8d5;
+  background: rgba(155, 116, 69, 0.28);
+  outline: 1px solid rgba(198, 163, 111, 0.34);
+  outline-offset: 2px;
+}

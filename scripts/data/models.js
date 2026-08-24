@@ -161,6 +161,19 @@ class AstraelTraitData extends TypeDataModel {
   }
 }
 
+class AstraelWeaponData extends TypeDataModel {
+  static defineSchema() {
+    return {
+      description: stringField(),
+      damage: new NumberField({ required: true, integer: true, min: 1, initial: 1 }),
+      minorTrait: stringField(),
+      majorTrait: stringField(),
+      rollAttribute: stringField(),
+      rollSkill: stringField()
+    };
+  }
+}
+
 async function updateActorSheet(event, form, formData) {
   return this.actor.update(formData.object);
 }
@@ -183,4 +196,10 @@ function removeDeprecatedActorTypes() {
   }
 }
 
-export { AstraelCharacterData, AstraelTraitData, removeDeprecatedActorTypes, updateActorSheet };
+export {
+  AstraelCharacterData,
+  AstraelTraitData,
+  AstraelWeaponData,
+  removeDeprecatedActorTypes,
+  updateActorSheet
+};
