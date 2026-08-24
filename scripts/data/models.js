@@ -174,6 +174,14 @@ class AstraelWeaponData extends TypeDataModel {
   }
 }
 
+class AstraelItemData extends TypeDataModel {
+  static defineSchema() {
+    return {
+      description: stringField()
+    };
+  }
+}
+
 async function updateActorSheet(event, form, formData) {
   return this.actor.update(formData.object);
 }
@@ -198,6 +206,7 @@ function removeDeprecatedActorTypes() {
 
 export {
   AstraelCharacterData,
+  AstraelItemData,
   AstraelTraitData,
   AstraelWeaponData,
   removeDeprecatedActorTypes,

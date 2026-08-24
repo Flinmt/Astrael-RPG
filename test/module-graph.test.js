@@ -58,8 +58,9 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
   assert.ok(CONFIG.Actor.dataModels.character);
   assert.ok(CONFIG.Item.dataModels.trait);
   assert.ok(CONFIG.Item.dataModels.weapon);
-  assert.equal(registeredSheets.length, 2);
-  assert.deepEqual(registeredSheets.map(({ options }) => options.types), [["character"], ["weapon"]]);
+  assert.ok(CONFIG.Item.dataModels.item);
+  assert.equal(registeredSheets.length, 3);
+  assert.deepEqual(registeredSheets.map(({ options }) => options.types), [["character"], ["weapon"], ["item"]]);
   const weaponSheet = registeredSheets.find(({ options }) => options.types.includes("weapon"));
   assert.equal(weaponSheet.sheetClass.DEFAULT_OPTIONS.tag, "form");
 
@@ -88,6 +89,19 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
       rollAttribute: "dexterity",
       rollSkill: "melee"
     }
+  });
+
+  const { createItemDraft } = await import("../scripts/sheets/item-sheet.js");
+  assert.deepEqual(createItemDraft({
+    name: "Letter",
+    img: "letter.webp",
+    system: {
+      toObject: () => ({ description: "<p>Sealed correspondence</p>" })
+    }
+  }), {
+    name: "Letter",
+    img: "letter.webp",
+    system: { description: "<p>Sealed correspondence</p>" }
   });
 
 });

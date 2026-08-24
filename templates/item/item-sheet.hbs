@@ -1,0 +1,75 @@
+<div class="astrael-item-sheet astrael-ui-frame {{#if editing}}is-editing{{else}}is-viewing{{/if}}">
+  <header class="astrael-item-header">
+    {{#if editing}}
+    <button type="button" class="astrael-item-image" data-action="change-item-image" aria-label="{{localize 'ASTRAEL.Item.ChangeImage'}}" title="{{localize 'ASTRAEL.Item.ChangeImage'}}">
+      <img src="{{sheetItem.img}}" alt="{{sheetItem.name}}">
+      <span><i class="fas fa-image" aria-hidden="true"></i></span>
+    </button>
+    <input type="hidden" name="img" value="{{sheetItem.img}}" data-item-image-input>
+    {{else}}
+    <div class="astrael-item-image">
+      <img src="{{sheetItem.img}}" alt="{{sheetItem.name}}">
+    </div>
+    {{/if}}
+
+    <div class="astrael-item-identity">
+      <p class="astrael-ui-kicker">{{localize "ASTRAEL.Item.Kicker"}}</p>
+      {{#if editing}}
+      <label class="astrael-ui-field astrael-item-name">
+        <span class="astrael-ui-label">{{localize "ASTRAEL.Item.Name"}}</span>
+        <input class="astrael-ui-title" type="text" name="name" value="{{sheetItem.name}}" data-item-draft-field="name">
+      </label>
+      {{else}}
+      <div class="astrael-item-name astrael-item-name-display">
+        <span class="astrael-ui-label">{{localize "ASTRAEL.Item.Name"}}</span>
+        <h1 class="astrael-ui-title">{{sheetItem.name}}</h1>
+      </div>
+      {{/if}}
+    </div>
+  </header>
+
+  <main class="astrael-item-body">
+    <section class="astrael-item-details" aria-labelledby="astrael-item-description-title-{{item.id}}">
+      <h2 class="astrael-ui-section-title" id="astrael-item-description-title-{{item.id}}">{{localize "ASTRAEL.Item.Description"}}</h2>
+      {{#if editing}}
+      <div class="astrael-item-description-editor">
+        <prose-mirror
+          class="astrael-item-prosemirror"
+          name="system.description"
+          value="{{system.description}}"
+          data-document-uuid="{{item.uuid}}">
+          {{{enrichedDescription}}}
+        </prose-mirror>
+      </div>
+      {{else}}
+      <article class="astrael-ui-panel astrael-item-description-view">
+        {{#if system.description}}
+        {{{enrichedDescription}}}
+        {{else}}
+        <p class="is-empty">{{localize "ASTRAEL.Item.NoDescription"}}</p>
+        {{/if}}
+      </article>
+      {{/if}}
+    </section>
+  </main>
+
+  {{#if canEdit}}
+  <footer class="astrael-ui-actions astrael-item-actions">
+    {{#if editing}}
+    <button type="button" class="is-secondary" data-action="cancel-item-edit">
+      <i class="fas fa-xmark" aria-hidden="true"></i>
+      <span>{{localize "ASTRAEL.Item.Cancel"}}</span>
+    </button>
+    <button type="button" data-action="save-item">
+      <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+      <span>{{localize "ASTRAEL.Item.Save"}}</span>
+    </button>
+    {{else}}
+    <button type="button" data-action="edit-item">
+      <i class="fas fa-pen" aria-hidden="true"></i>
+      <span>{{localize "ASTRAEL.Item.Edit"}}</span>
+    </button>
+    {{/if}}
+  </footer>
+  {{/if}}
+</div>
