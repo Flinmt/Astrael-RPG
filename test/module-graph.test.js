@@ -72,9 +72,11 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
   });
   assert.equal(registeredSheets.length, 5);
   assert.deepEqual(registeredSheets.map(({ options }) => options.types), [["character"], ["weapon"], ["armor"], ["trait"], ["item"]]);
-  const weaponSheet = registeredSheets.find(({ options }) => options.types.includes("weapon"));
-  assert.equal(weaponSheet.sheetClass.DEFAULT_OPTIONS.tag, "form");
-  assert.equal(weaponSheet.sheetClass.DEFAULT_OPTIONS.position.height, 560);
+  for (const type of ["weapon", "armor", "trait", "item"]) {
+    const itemSheet = registeredSheets.find(({ options }) => options.types.includes(type));
+    assert.equal(itemSheet.sheetClass.DEFAULT_OPTIONS.tag, "form");
+    assert.deepEqual(itemSheet.sheetClass.DEFAULT_OPTIONS.position, { width: 500, height: 560 });
+  }
 
   const { createWeaponDraft } = await import("../scripts/sheets/weapon-sheet.js");
   assert.deepEqual(createWeaponDraft({

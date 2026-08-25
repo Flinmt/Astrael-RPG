@@ -32,7 +32,7 @@ class AstraelItemSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     classes: ["astrael-rpg", "sheet", "item", "item-sheet"],
     position: {
       width: 500,
-      height: 520
+      height: 560
     },
     form: {
       closeOnSubmit: false,
