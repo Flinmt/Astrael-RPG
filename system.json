@@ -64,6 +64,38 @@
       "system": "astrael-rpg",
       "path": "packs/gm-macros",
       "private": false
+    },
+    {
+      "name": "weapons",
+      "label": "ASTRAEL.Compendium.Weapons",
+      "type": "Item",
+      "system": "astrael-rpg",
+      "path": "packs/weapons",
+      "private": false
+    },
+    {
+      "name": "armors",
+      "label": "ASTRAEL.Compendium.Armors",
+      "type": "Item",
+      "system": "astrael-rpg",
+      "path": "packs/armors",
+      "private": false
+    },
+    {
+      "name": "traits",
+      "label": "ASTRAEL.Compendium.Traits",
+      "type": "Item",
+      "system": "astrael-rpg",
+      "path": "packs/traits",
+      "private": false
+    },
+    {
+      "name": "items",
+      "label": "ASTRAEL.Compendium.Items",
+      "type": "Item",
+      "system": "astrael-rpg",
+      "path": "packs/items",
+      "private": false
     }
   ],
   "socket": false,

@@ -1,5 +1,9 @@
 {
   "ASTRAEL.Actor.Character": "Character",
+  "ASTRAEL.Compendium.Weapons": "Weapons",
+  "ASTRAEL.Compendium.Armors": "Armor",
+  "ASTRAEL.Compendium.Traits": "Traits",
+  "ASTRAEL.Compendium.Items": "Items",
   "ASTRAEL.Item.Type.Weapon": "Weapon",
   "ASTRAEL.Item.Type.Armor": "Armor",
   "ASTRAEL.Item.Type.Trait": "Trait",

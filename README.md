@@ -35,16 +35,20 @@ Foundry.
 
 ## Compendios
 
-Os arquivos em `packs/gm-macros/` sao um banco LevelDB gerado e nao devem ser
-versionados. A fonte dos macros fica em `packs/_source/gm-macros/`.
+Os arquivos em `packs/<nome>/` sao bancos LevelDB gerados e nao devem ser
+versionados. As fontes versionadas ficam em `packs/_source/<nome>/`.
+
+Os compendios de Armas, Armaduras, Caracteristicas e Itens iniciam vazios e sao
+o local para cadastrar conteudo pronto para uso dos jogadores.
 
 Instale as dependencias de desenvolvimento com `npm install`. Com o Foundry
 parado, reconstrua ou exporte o pack:
 
 ```bash
-tools/foundry-pack.sh pack
-tools/foundry-pack.sh unpack
+npm run pack:build
+npm run pack:unpack
 ```
 
-Use `pack` depois de clonar o repositorio. Use `unpack` para promover alteracoes
-feitas no compendio pelo Foundry para os arquivos JSON versionados.
+Use `pack:build` depois de clonar o repositorio. Use `pack:unpack` para promover
+alteracoes feitas no compendio pelo Foundry para os arquivos JSON versionados.
+Os comandos aceitam opcionalmente um nome de pack: `node tools/foundry-pack.cjs pack weapons`.

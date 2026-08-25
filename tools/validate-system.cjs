@@ -15,6 +15,22 @@ for (const relativePath of [...manifest.esmodules, ...manifest.styles, ...manife
   if (!fs.existsSync(path.join(root, relativePath))) errors.push(`Missing manifest path: ${relativePath}`);
 }
 
+const packNames = new Set();
+for (const pack of manifest.packs ?? []) {
+  if (!pack.name || !pack.label || !pack.type || !pack.system || !pack.path) {
+    errors.push(`Incomplete pack configuration: ${JSON.stringify(pack)}`);
+    continue;
+  }
+  if (packNames.has(pack.name)) errors.push(`Duplicate pack name: ${pack.name}`);
+  packNames.add(pack.name);
+  if (!fs.existsSync(path.join(root, "packs", "_source", pack.name))) {
+    errors.push(`Missing pack source directory: packs/_source/${pack.name}`);
+  }
+  if (pack.label.startsWith("ASTRAEL.") && !Object.hasOwn(locales.en, pack.label)) {
+    errors.push(`Missing localization key for pack label: ${pack.label}`);
+  }
+}
+
 const [referenceLocale, ...otherLocales] = Object.entries(locales);
 const referenceKeys = Object.keys(referenceLocale[1]).sort();
 for (const [locale, messages] of otherLocales) {
