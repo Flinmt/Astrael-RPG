@@ -3,8 +3,9 @@ import { applyTokenPortraitsToActorDirectory } from "../core/utilities.js";
 import { getRollValues } from "../rules/dice.js";
 import { showRerollDialog } from "../chat/dice-pool.js";
 import { openExperienceDistributor } from "../applications/xp-distributor.js";
-import { AstraelCharacterData, AstraelItemData, AstraelTraitData, AstraelWeaponData, removeDeprecatedActorTypes } from "../data/models.js";
+import { AstraelArmorData, AstraelCharacterData, AstraelItemData, AstraelTraitData, AstraelWeaponData, removeDeprecatedActorTypes } from "../data/models.js";
 import { AstraelCharacterSheet } from "../sheets/character-sheet.js";
+import { AstraelArmorSheet } from "../sheets/armor-sheet.js";
 import { AstraelItemSheet } from "../sheets/item-sheet.js";
 import { AstraelTraitSheet } from "../sheets/trait-sheet.js";
 import { AstraelWeaponSheet } from "../sheets/weapon-sheet.js";
@@ -21,6 +22,14 @@ function registerSystemHooks() {
     CONFIG.Item.dataModels.trait = AstraelTraitData;
     CONFIG.Item.dataModels.weapon = AstraelWeaponData;
     CONFIG.Item.dataModels.item = AstraelItemData;
+    CONFIG.Item.dataModels.armor = AstraelArmorData;
+    CONFIG.Item.typeLabels ??= {};
+    Object.assign(CONFIG.Item.typeLabels, {
+      weapon: "ASTRAEL.Item.Type.Weapon",
+      armor: "ASTRAEL.Item.Type.Armor",
+      trait: "ASTRAEL.Item.Type.Trait",
+      item: "ASTRAEL.Item.Type.Item"
+    });
   
     foundry.applications.apps.DocumentSheetConfig.registerSheet(
       Actor,
@@ -41,6 +50,17 @@ function registerSystemHooks() {
         types: ["weapon"],
         makeDefault: true,
         label: game.i18n.localize("ASTRAEL.Sheet.Weapon")
+      }
+    );
+
+    foundry.applications.apps.DocumentSheetConfig.registerSheet(
+      Item,
+      SYSTEM_ID,
+      AstraelArmorSheet,
+      {
+        types: ["armor"],
+        makeDefault: true,
+        label: game.i18n.localize("ASTRAEL.Sheet.Armor")
       }
     );
 

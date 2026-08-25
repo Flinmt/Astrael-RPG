@@ -5,17 +5,106 @@
   box-shadow: none;
 }
 
-.application.astrael-rpg.item-sheet .window-header {
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 6px 4px 10px;
+  overflow: hidden;
   border: 1px solid #3d372e;
-  border-bottom-color: #5d4a32;
+  border-bottom: 1px solid #5d4a32;
   border-radius: 0;
   color: var(--astrael-bone);
   background:
     linear-gradient(90deg, rgba(155, 116, 69, 0.14), transparent 34%),
     linear-gradient(180deg, #171915, #0c0e0d);
+  box-shadow:
+    inset 0 1px rgba(216, 207, 188, 0.05),
+    inset 0 -1px rgba(0, 0, 0, 0.65);
 }
 
-.application.astrael-rpg.item-sheet .window-content {
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-header::after {
+  position: absolute;
+  right: 44px;
+  bottom: -1px;
+  width: 76px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--astrael-bronze-light));
+  content: "";
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-title {
+  display: flex;
+  align-items: center;
+  flex: 1 1 auto;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--astrael-bone);
+  font-family: var(--astrael-font-technical);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 2px #000;
+  white-space: nowrap;
+}
+
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-title::before {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 5px;
+  border: 1px solid var(--astrael-bronze-light);
+  background: #1d1b15;
+  content: "";
+  opacity: 0.8;
+  transform: rotate(45deg);
+}
+
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-header :is(.header-control, .window-control) {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  min-width: 23px;
+  min-height: 23px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0;
+  color: #aaa18f;
+  background: transparent;
+  box-shadow: none;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-header :is(.header-control, .window-control):is(:hover, :focus-visible) {
+  border-color: #6f5738;
+  color: #eadcc3;
+  background: rgba(155, 116, 69, 0.14);
+  outline: 0;
+}
+
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-header :is([data-action="close"], .close):is(:hover, :focus-visible) {
+  border-color: #75453e;
+  color: #d88b7e;
+  background: rgba(112, 66, 60, 0.18);
+}
+
+.application.astrael-rpg:is(.weapon-sheet, .item-sheet) .window-content {
   padding: 0;
   overflow: hidden;
   background: transparent;

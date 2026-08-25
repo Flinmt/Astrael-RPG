@@ -13,15 +13,7 @@
     {{/if}}
 
     <div class="astrael-weapon-identity">
-      <div class="astrael-weapon-meta">
-        <p class="astrael-ui-kicker">{{localize "ASTRAEL.Weapon.Kicker"}}</p>
-        {{#unless weaponValidation.complete}}
-        <span class="astrael-ui-status" role="status">
-          <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
-          {{localize "ASTRAEL.Weapon.Pending"}}
-        </span>
-        {{/unless}}
-      </div>
+      <p class="astrael-ui-kicker">{{localize "ASTRAEL.Weapon.Kicker"}}</p>
       {{#if editing}}
       <label class="astrael-ui-field astrael-weapon-name">
         <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Name"}}</span>
@@ -35,18 +27,6 @@
       {{/if}}
     </div>
 
-    {{#if editing}}
-    <label class="astrael-ui-field astrael-weapon-damage {{#if weaponValidation.damageInvalid}}is-invalid{{/if}}">
-      <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Damage"}}</span>
-      <input type="number" name="system.damage" value="{{system.damage}}" min="1" step="1" inputmode="numeric" aria-invalid="{{weaponValidation.damageInvalid}}" data-weapon-draft-field="damage">
-      {{#if weaponValidation.damageInvalid}}<small>{{localize "ASTRAEL.Weapon.RequiredField"}}</small>{{/if}}
-    </label>
-    {{else}}
-    <div class="astrael-weapon-damage">
-      <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Damage"}}</span>
-      <strong>{{system.damage}}</strong>
-    </div>
-    {{/if}}
   </header>
 
   <section class="astrael-weapon-combat-profile">
@@ -96,20 +76,27 @@
           </div>
         </div>
         {{else}}
-        <div class="astrael-weapon-trait-heading" tabindex="0" data-weapon-property-tag="{{property.key}}" aria-describedby="weapon-property-tooltip-{{../item.id}}-{{property.key}}" aria-invalid="true">
+        <div class="astrael-weapon-trait-heading">
           <span>{{property.category}}</span>
-          <strong>{{property.valueLabel}}</strong>
-          <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
-        </div>
-        <div class="astrael-ui-property-tooltip" id="weapon-property-tooltip-{{../item.id}}-{{property.key}}" role="tooltip">
-          <span>{{property.title}}</span>
-          <strong>{{property.valueLabel}}</strong>
-          <p>{{property.description}}</p>
+          <strong aria-label="{{property.title}}">-</strong>
         </div>
         {{/if}}
       </article>
       {{/each}}
     </div>
+
+    {{#if editing}}
+    <label class="astrael-ui-field astrael-weapon-damage {{#if weaponValidation.damageInvalid}}is-invalid{{/if}}">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Damage"}}</span>
+      <input type="number" name="system.damage" value="{{system.damage}}" min="1" step="1" inputmode="numeric" aria-invalid="{{weaponValidation.damageInvalid}}" data-weapon-draft-field="damage">
+      {{#if weaponValidation.damageInvalid}}<small>{{localize "ASTRAEL.Weapon.RequiredField"}}</small>{{/if}}
+    </label>
+    {{else}}
+    <div class="astrael-weapon-damage">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Weapon.Damage"}}</span>
+      <strong>{{system.damage}}</strong>
+    </div>
+    {{/if}}
 
   </section>
 

@@ -98,7 +98,7 @@ class AstraelWeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     classes: ["astrael-rpg", "sheet", "item", "weapon-sheet"],
     position: {
       width: 500,
-      height: 650
+      height: 560
     },
     form: {
       closeOnSubmit: false,

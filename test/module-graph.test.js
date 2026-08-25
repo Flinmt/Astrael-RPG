@@ -39,7 +39,7 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
   };
   globalThis.CONFIG = {
     Actor: { dataModels: {}, typeLabels: {} },
-    Item: { dataModels: {} }
+    Item: { dataModels: {}, typeLabels: {} }
   };
   globalThis.game = {
     i18n: { localize: (key) => key },
@@ -63,10 +63,18 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
   assert.ok(CONFIG.Item.dataModels.trait);
   assert.ok(CONFIG.Item.dataModels.weapon);
   assert.ok(CONFIG.Item.dataModels.item);
-  assert.equal(registeredSheets.length, 4);
-  assert.deepEqual(registeredSheets.map(({ options }) => options.types), [["character"], ["weapon"], ["trait"], ["item"]]);
+  assert.ok(CONFIG.Item.dataModels.armor);
+  assert.deepEqual(CONFIG.Item.typeLabels, {
+    weapon: "ASTRAEL.Item.Type.Weapon",
+    armor: "ASTRAEL.Item.Type.Armor",
+    trait: "ASTRAEL.Item.Type.Trait",
+    item: "ASTRAEL.Item.Type.Item"
+  });
+  assert.equal(registeredSheets.length, 5);
+  assert.deepEqual(registeredSheets.map(({ options }) => options.types), [["character"], ["weapon"], ["armor"], ["trait"], ["item"]]);
   const weaponSheet = registeredSheets.find(({ options }) => options.types.includes("weapon"));
   assert.equal(weaponSheet.sheetClass.DEFAULT_OPTIONS.tag, "form");
+  assert.equal(weaponSheet.sheetClass.DEFAULT_OPTIONS.position.height, 560);
 
   const { createWeaponDraft } = await import("../scripts/sheets/weapon-sheet.js");
   assert.deepEqual(createWeaponDraft({
@@ -102,6 +110,19 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
     name: "Letter",
     img: "letter.webp",
     system: { description: "<p>Sealed correspondence</p>" }
+  });
+
+  const { createArmorDraft } = await import("../scripts/sheets/armor-sheet.js");
+  assert.deepEqual(createArmorDraft({
+    name: "Tactical Vest",
+    img: "vest.webp",
+    system: {
+      toObject: () => ({ description: "<p>Layered protection.</p>", specialization: "", armor: 3 })
+    }
+  }), {
+    name: "Tactical Vest",
+    img: "vest.webp",
+    system: { description: "<p>Layered protection.</p>", specialization: "", armor: 3 }
   });
 
   const { createTraitDraft } = await import("../scripts/sheets/trait-sheet.js");

@@ -26,8 +26,8 @@ function validateWeaponData(source = {}) {
   const damage = Number(source.damage);
 
   if (!Number.isInteger(damage) || damage < 1) invalidFields.push("damage");
-  if (!getWeaponCatalogEntry(MINOR_WEAPON_TRAITS, source.minorTrait)) invalidFields.push("minorTrait");
-  if (!getWeaponCatalogEntry(MAJOR_WEAPON_TRAITS, source.majorTrait)) invalidFields.push("majorTrait");
+  if (String(source.minorTrait || "").trim() && !getWeaponCatalogEntry(MINOR_WEAPON_TRAITS, source.minorTrait)) invalidFields.push("minorTrait");
+  if (String(source.majorTrait || "").trim() && !getWeaponCatalogEntry(MAJOR_WEAPON_TRAITS, source.majorTrait)) invalidFields.push("majorTrait");
 
   return {
     complete: invalidFields.length === 0,

@@ -1,0 +1,127 @@
+.astrael-rpg .astrael-armor-sheet {
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+}
+
+.astrael-rpg .astrael-armor-profile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 112px;
+  gap: 1px;
+  margin: 12px 17px 0;
+  border: 1px solid #4b4234;
+  background: #4b4234;
+}
+
+.astrael-rpg .astrael-armor-specialization,
+.astrael-rpg .astrael-armor-value {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(155, 116, 69, 0.08), transparent 58%), #10120f;
+}
+
+.astrael-rpg .astrael-armor-specialization-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 8px;
+  border-left: 2px solid var(--astrael-bronze-light);
+  background: #151713;
+}
+
+.astrael-rpg .astrael-armor-specialization-heading > strong {
+  overflow: hidden;
+  color: var(--astrael-bone);
+  font-family: var(--astrael-font-display);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.astrael-rpg .astrael-armor-specialization-heading > button {
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #aaa18f;
+  background: transparent;
+  box-shadow: none;
+  font-size: 8px;
+}
+
+.astrael-rpg .astrael-armor-specialization-heading > button:hover,
+.astrael-rpg .astrael-armor-specialization-heading > button:focus-visible {
+  color: #d8aaa3;
+  background: rgba(112, 66, 60, 0.22);
+  outline: 1px solid rgba(162, 68, 62, 0.45);
+}
+
+.astrael-rpg .astrael-armor-specialization-heading > i {
+  color: #d49a93;
+  font-size: 8px;
+}
+
+.astrael-rpg .astrael-armor-specialization-heading:focus-visible {
+  outline: 1px solid var(--astrael-bronze-light);
+  outline-offset: 3px;
+}
+
+.astrael-rpg .astrael-armor-specialization.is-invalid .astrael-armor-specialization-heading {
+  border-color: var(--astrael-red-bright);
+}
+
+.astrael-rpg .astrael-armor-specialization-empty {
+  min-height: 38px;
+  margin: 0;
+  padding: 10px 8px;
+  border-left: 2px solid #4b4234;
+  color: #756f63;
+  background: #151713;
+  font-size: 9px;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.astrael-rpg .astrael-armor-value {
+  align-content: center;
+  text-align: center;
+}
+
+.astrael-rpg .astrael-armor-value input,
+.astrael-rpg .astrael-armor-value > strong {
+  min-height: 38px;
+  padding: 0;
+  border: 0;
+  color: var(--astrael-bronze-light);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--astrael-font-display);
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.astrael-rpg .astrael-armor-value input {
+  width: 100%;
+}
+
+.astrael-rpg .astrael-armor-value input:focus {
+  outline: 0;
+}
+
+.astrael-rpg .astrael-armor-value input[aria-invalid="true"] {
+  color: #d49a93;
+}
+
+@media (max-width: 420px) {
+  .astrael-rpg .astrael-armor-profile {
+    grid-template-columns: 1fr;
+  }
+}

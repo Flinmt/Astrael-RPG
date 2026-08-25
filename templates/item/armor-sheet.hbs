@@ -1,0 +1,95 @@
+<div class="astrael-item-sheet astrael-armor-sheet {{#if editing}}is-editing{{else}}is-viewing{{/if}}">
+  <header class="astrael-item-header">
+    {{#if editing}}
+    <button type="button" class="astrael-item-image" data-action="change-armor-image" aria-label="{{localize 'ASTRAEL.Armor.ChangeImage'}}" title="{{localize 'ASTRAEL.Armor.ChangeImage'}}">
+      <img src="{{armor.img}}" alt="{{armor.name}}">
+      <span><i class="fas fa-image" aria-hidden="true"></i></span>
+    </button>
+    <input type="hidden" name="img" value="{{armor.img}}" data-armor-image-input>
+    {{else}}
+    <div class="astrael-item-image">
+      <img src="{{armor.img}}" alt="{{armor.name}}">
+    </div>
+    {{/if}}
+
+    <div class="astrael-item-identity">
+      <p class="astrael-ui-kicker">{{localize "ASTRAEL.Armor.Kicker"}}</p>
+      {{#if editing}}
+      <label class="astrael-ui-field astrael-item-name">
+        <span class="astrael-ui-label">{{localize "ASTRAEL.Armor.Name"}}</span>
+        <input class="astrael-ui-title" type="text" name="name" value="{{armor.name}}" data-armor-draft-field="name">
+      </label>
+      {{else}}
+      <div class="astrael-item-name astrael-item-name-display">
+        <span class="astrael-ui-label">{{localize "ASTRAEL.Armor.Name"}}</span>
+        <h1 class="astrael-ui-title">{{armor.name}}</h1>
+      </div>
+      {{/if}}
+    </div>
+  </header>
+
+  <section class="astrael-armor-profile" aria-label="{{localize 'ASTRAEL.Armor.Profile'}}">
+    <div class="astrael-ui-property astrael-armor-specialization {{#if armorSpecialization.invalid}}is-invalid{{/if}}">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Armor.Specialization"}}</span>
+      {{#if armorSpecialization.configured}}
+      {{#if editing}}<input type="hidden" name="system.specialization" value="{{armorSpecialization.value}}">{{/if}}
+      <div class="astrael-armor-specialization-heading" tabindex="0" aria-describedby="armor-specialization-tooltip-{{item.id}}" aria-invalid="{{armorSpecialization.invalid}}">
+        <strong>{{armorSpecialization.label}}</strong>
+        {{#if editing}}
+        <button type="button" data-action="remove-armor-specialization" aria-label="{{localize 'ASTRAEL.Armor.RemoveSpecialization'}}" title="{{localize 'ASTRAEL.Armor.RemoveSpecialization'}}"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+        {{else if armorSpecialization.invalid}}
+        <i class="fas fa-triangle-exclamation" aria-hidden="true"></i>
+        {{/if}}
+      </div>
+      <div class="astrael-ui-property-tooltip" id="armor-specialization-tooltip-{{item.id}}" role="tooltip">
+        <span>{{localize "ASTRAEL.Armor.Specialization"}}</span>
+        <strong>{{armorSpecialization.label}}</strong>
+        <p>{{armorSpecialization.description}}</p>
+      </div>
+      {{else if editing}}
+      <p class="astrael-armor-specialization-empty">{{localize "ASTRAEL.Armor.NoSpecializations"}}</p>
+      {{else}}
+      <strong class="astrael-armor-specialization-empty">{{armorSpecialization.label}}</strong>
+      {{/if}}
+    </div>
+
+    <div class="astrael-armor-value">
+      <span class="astrael-ui-label">{{localize "ASTRAEL.Armor.Value"}}</span>
+      {{#if editing}}
+      <input type="number" name="system.armor" value="{{system.armor}}" min="0" step="1" inputmode="numeric" aria-invalid="{{armorValidation.armorInvalid}}" data-armor-draft-field="armor">
+      {{else}}
+      <strong>{{system.armor}}</strong>
+      {{/if}}
+    </div>
+  </section>
+
+  <main class="astrael-item-body">
+    <section class="astrael-item-details" aria-labelledby="astrael-armor-description-title-{{item.id}}">
+      <h2 class="astrael-ui-section-title" id="astrael-armor-description-title-{{item.id}}">{{localize "ASTRAEL.Armor.Description"}}</h2>
+      {{#if editing}}
+      <div class="astrael-item-description-editor">
+        <prose-mirror class="astrael-item-prosemirror" name="system.description" value="{{system.description}}" data-document-uuid="{{item.uuid}}">{{{enrichedDescription}}}</prose-mirror>
+      </div>
+      {{else}}
+      <article class="astrael-ui-panel astrael-item-description-view">
+        {{#if system.description}}
+        {{{enrichedDescription}}}
+        {{else}}
+        <p class="is-empty">{{localize "ASTRAEL.Armor.NoDescription"}}</p>
+        {{/if}}
+      </article>
+      {{/if}}
+    </section>
+  </main>
+
+  {{#if canEdit}}
+  <footer class="astrael-ui-actions astrael-item-actions">
+    {{#if editing}}
+    <button type="button" class="is-secondary" data-action="cancel-armor-edit"><i class="fas fa-xmark" aria-hidden="true"></i><span>{{localize "ASTRAEL.Armor.Cancel"}}</span></button>
+    <button type="button" data-action="save-armor"><i class="fas fa-floppy-disk" aria-hidden="true"></i><span>{{localize "ASTRAEL.Armor.Save"}}</span></button>
+    {{else}}
+    <button type="button" data-action="edit-armor"><i class="fas fa-pen" aria-hidden="true"></i><span>{{localize "ASTRAEL.Armor.Edit"}}</span></button>
+    {{/if}}
+  </footer>
+  {{/if}}
+</div>

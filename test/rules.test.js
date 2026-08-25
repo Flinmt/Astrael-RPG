@@ -16,6 +16,7 @@ import {
   removeExperienceDistribution
 } from "../scripts/rules/experience.js";
 import { normalizeDamage, normalizeResource } from "../scripts/rules/resources.js";
+import { ARMOR_SPECIALIZATIONS, validateArmorData } from "../scripts/rules/armors.js";
 import {
   MAJOR_WEAPON_TRAITS,
   MINOR_WEAPON_TRAITS,
@@ -165,11 +166,32 @@ test("weapon catalogs expose the initial official characteristics", () => {
   assert.equal(getWeaponCatalogEntry(MAJOR_WEAPON_TRAITS, "assassinate")?.id, "assassinate");
 });
 
-test("weapon validation requires damage and official characteristics", () => {
+test("armor specializations are optional and have no initial catalog entries", () => {
+  assert.deepEqual(ARMOR_SPECIALIZATIONS, []);
+  assert.deepEqual(validateArmorData({ armor: 0, specialization: "" }), {
+    complete: true,
+    invalidFields: []
+  });
+  assert.deepEqual(validateArmorData({ armor: -1, specialization: "unknown" }), {
+    complete: false,
+    invalidFields: ["armor", "specialization"]
+  });
+});
+
+test("weapon validation requires damage and accepts optional official characteristics", () => {
   assert.deepEqual(validateWeaponData({
     damage: 1,
     minorTrait: "concealed",
     majorTrait: "assassinate"
+  }), {
+    complete: true,
+    invalidFields: []
+  });
+
+  assert.deepEqual(validateWeaponData({
+    damage: 1,
+    minorTrait: "",
+    majorTrait: ""
   }), {
     complete: true,
     invalidFields: []
@@ -181,6 +203,6 @@ test("weapon validation requires damage and official characteristics", () => {
     majorTrait: ""
   }), {
     complete: false,
-    invalidFields: ["damage", "minorTrait", "majorTrait"]
+    invalidFields: ["damage", "minorTrait"]
   });
 });

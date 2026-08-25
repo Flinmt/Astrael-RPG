@@ -188,6 +188,16 @@ class AstraelItemData extends TypeDataModel {
   }
 }
 
+class AstraelArmorData extends TypeDataModel {
+  static defineSchema() {
+    return {
+      description: stringField(),
+      specialization: stringField(),
+      armor: new NumberField({ required: true, integer: true, min: 0, initial: 0 })
+    };
+  }
+}
+
 async function updateActorSheet(event, form, formData) {
   return this.actor.update(formData.object);
 }
@@ -212,6 +222,7 @@ function removeDeprecatedActorTypes() {
 
 export {
   AstraelCharacterData,
+  AstraelArmorData,
   AstraelItemData,
   AstraelTraitData,
   AstraelWeaponData,
