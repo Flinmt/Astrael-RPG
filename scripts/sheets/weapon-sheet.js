@@ -154,7 +154,6 @@ class AstraelWeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   async _onRender(context, options) {
     await super._onRender(context, options);
-    this.element.querySelector("[data-action='change-weapon-image']")?.addEventListener("click", this.#onChangeImage.bind(this));
     this.element.querySelector("[data-action='save-weapon']")?.addEventListener("click", this.#onSave.bind(this));
     this.element.querySelectorAll("[data-action='edit-weapon']").forEach((button) => {
       button.addEventListener("click", this.#onEdit.bind(this));
@@ -201,8 +200,6 @@ class AstraelWeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       descriptionEditor.save();
       this.#setDraftValue("description", descriptionEditor.value);
     }
-    const image = this.element.querySelector("[data-weapon-image-input]");
-    if (image) this._weaponDraft.img = image.value;
   }
 
   #setDraftValue(field, value) {
@@ -292,23 +289,6 @@ class AstraelWeaponSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     firstOption.click();
   }
 
-  #onChangeImage(event) {
-    event.preventDefault();
-    if (this.item.isOwner !== true || this._weaponEditMode !== true || !this._weaponDraft) return;
-
-    const imageInput = this.element.querySelector("[data-weapon-image-input]");
-    const picker = new FilePicker({
-      type: "image",
-      current: imageInput?.value || this._weaponDraft.img,
-      callback: (path) => {
-        const image = this.element.querySelector("[data-action='change-weapon-image'] img");
-        if (image) image.src = path;
-        if (imageInput) imageInput.value = path;
-        this._weaponDraft.img = path;
-      }
-    });
-    return picker.browse();
-  }
 }
 
 export { AstraelWeaponSheet, createWeaponDraft };

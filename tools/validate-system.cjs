@@ -25,6 +25,28 @@ for (const pack of manifest.packs ?? []) {
   packNames.add(pack.name);
   if (!fs.existsSync(path.join(root, "packs", "_source", pack.name))) {
     errors.push(`Missing pack source directory: packs/_source/${pack.name}`);
+  } else {
+    for (const entry of fs.readdirSync(path.join(root, "packs", "_source", pack.name))) {
+      if (!entry.endsWith(".json")) continue;
+      const recordPath = `packs/_source/${pack.name}/${entry}`;
+      let record = null;
+      try {
+        record = readJson(recordPath);
+      } catch {
+        errors.push(`Invalid pack source JSON: ${recordPath}`);
+        continue;
+      }
+      for (const field of ["_key", "_id", "name", "type"]) {
+        if (!record[field]) errors.push(`Missing ${field} in ${recordPath}`);
+      }
+      if (record.type) {
+        const allowedTypes = manifest.documentTypes?.[pack.type];
+        const typeList = Array.isArray(allowedTypes) ? allowedTypes : Object.keys(allowedTypes ?? {});
+        if (typeList.length && !typeList.includes(record.type)) {
+          errors.push(`Pack source type mismatch in ${recordPath}: ${record.type}`);
+        }
+      }
+    }
   }
   if (pack.label.startsWith("ASTRAEL.") && !Object.hasOwn(locales.en, pack.label)) {
     errors.push(`Missing localization key for pack label: ${pack.label}`);

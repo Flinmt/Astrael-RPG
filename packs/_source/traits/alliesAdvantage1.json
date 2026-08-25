@@ -1,0 +1,36 @@
+{
+  "_key": "!items!alliesAdvantage1",
+  "name": "Allies",
+  "type": "trait",
+  "img": "systems/astrael-rpg/assets/icons/especialidades.svg",
+  "system": {
+    "description": "<p>A group of people or an organization that will support or aid the character. They may be family, friends, allies, or any group with loyalty to the character. Build them between (•–••••) Effectiveness and (•–•••) Reliability, with a maximum of 6 total points. Effectiveness defines how proficient they are at a task. Reliability determines how dependable they are.</p>",
+    "category": "advantage",
+    "level": 1
+  },
+  "_id": "alliesAdvantage1",
+  "folder": null,
+  "sort": 0,
+  "ownership": {
+    "default": 0
+  },
+  "flags": {
+    "astrael-rpg": {
+      "i18n": {
+        "nameKey": "ASTRAEL.Trait.Allies.Name",
+        "descriptionKey": "ASTRAEL.Trait.Allies.Description"
+      }
+    }
+  },
+  "_stats": {
+    "coreVersion": "14.363",
+    "systemId": "astrael-rpg",
+    "systemVersion": "0.1.2",
+    "createdTime": 1787671653384,
+    "modifiedTime": 1787671653384,
+    "lastModifiedBy": null,
+    "compendiumSource": null,
+    "duplicateSource": null,
+    "exportSource": null
+  }
+}

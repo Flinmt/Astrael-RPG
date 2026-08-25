@@ -10,6 +10,7 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
   class Field {}
   const HandlebarsApplicationMixin = (Parent) => class extends Parent {};
   const onceHooks = new Map();
+  const persistentHooks = new Map();
   const registeredSheets = [];
 
   globalThis.foundry = {
@@ -50,7 +51,9 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
     once(event, callback) {
       onceHooks.set(event, callback);
     },
-    on() {}
+    on(event, callback) {
+      persistentHooks.set(event, callback);
+    }
   };
   globalThis.Actor = class {};
   globalThis.Item = class {};
@@ -70,6 +73,14 @@ test("the Foundry entrypoint loads the complete module graph", async () => {
     trait: "ASTRAEL.Item.Type.Trait",
     item: "ASTRAEL.Item.Type.Item"
   });
+  let traitSource = null;
+  persistentHooks.get("preCreateItem")({
+    type: "trait",
+    updateSource(source) {
+      traitSource = source;
+    }
+  });
+  assert.deepEqual(traitSource, { img: "systems/astrael-rpg/assets/icons/especialidades.svg" });
   assert.equal(registeredSheets.length, 5);
   assert.deepEqual(registeredSheets.map(({ options }) => options.types), [["character"], ["weapon"], ["armor"], ["trait"], ["item"]]);
   for (const type of ["weapon", "armor", "trait", "item"]) {

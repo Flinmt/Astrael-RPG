@@ -1,4 +1,4 @@
-import { TRAIT_SHEET_TEMPLATE } from "../core/constants.js";
+import { SYSTEM_ID, TRAIT_SHEET_TEMPLATE } from "../core/constants.js";
 import { clampNumber } from "../core/utilities.js";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -20,6 +20,7 @@ function createTraitDraft(item) {
   const system = item.system?.toObject?.() ?? item.system ?? {};
   const level = clampNumber(system.level ?? system.value ?? 1, 1, 5);
   const category = normalizeTraitCategory(system.category);
+  const i18n = item.getFlag?.(SYSTEM_ID, "i18n") ?? null;
   return {
     name: String(item.name || ""),
     img: String(item.img || ""),
@@ -30,7 +31,20 @@ function createTraitDraft(item) {
     },
     category,
     isFlaw: category === "flaw",
-    levels: buildLevels(level)
+    levels: buildLevels(level),
+    ...(i18n ? { i18n } : {})
+  };
+}
+
+function resolveLocalizedTrait(draft) {
+  if (!draft.i18n) return draft;
+  return {
+    ...draft,
+    name: draft.i18n.nameKey ? game.i18n.localize(draft.i18n.nameKey) : draft.name,
+    system: {
+      ...draft.system,
+      description: draft.i18n.descriptionKey ? game.i18n.localize(draft.i18n.descriptionKey) : draft.system.description
+    }
   };
 }
 
@@ -72,7 +86,9 @@ class AstraelTraitSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
   };
 
   get title() {
-    return `${game.i18n.localize("ASTRAEL.Trait.Title")}: ${this.item.name}`;
+    const i18n = this.item.getFlag?.(SYSTEM_ID, "i18n");
+    const name = i18n?.nameKey ? game.i18n.localize(i18n.nameKey) : this.item.name;
+    return `${game.i18n.localize("ASTRAEL.Trait.Title")}: ${name}`;
   }
 
   async _prepareContext(options) {
@@ -80,7 +96,7 @@ class AstraelTraitSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     const canEdit = this.item.isOwner === true;
     const editing = canEdit && this._traitEditMode === true;
     if (editing && !this._traitDraft) this._traitDraft = createTraitDraft(this.item);
-    const trait = editing ? this._traitDraft : createTraitDraft(this.item);
+    const trait = editing ? this._traitDraft : resolveLocalizedTrait(createTraitDraft(this.item));
 
     context.item = this.item;
     context.trait = trait;
@@ -97,7 +113,6 @@ class AstraelTraitSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   async _onRender(context, options) {
     await super._onRender(context, options);
-    this.element.querySelector("[data-action='change-trait-image']")?.addEventListener("click", this.#onChangeImage.bind(this));
     this.element.querySelector("[data-action='save-trait']")?.addEventListener("click", this.#onSave.bind(this));
     this.element.querySelectorAll("[data-action='edit-trait']").forEach((button) => {
       button.addEventListener("click", this.#onEdit.bind(this));
@@ -130,8 +145,6 @@ class AstraelTraitSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       descriptionEditor.save();
       this.#setDraftValue("description", descriptionEditor.value);
     }
-    const image = this.element.querySelector("[data-trait-image-input]");
-    if (image) this._traitDraft.img = image.value;
   }
 
   #setDraftValue(field, value) {
@@ -198,23 +211,6 @@ class AstraelTraitSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     return this.render({ force: true });
   }
 
-  #onChangeImage(event) {
-    event.preventDefault();
-    if (this.item.isOwner !== true || this._traitEditMode !== true || !this._traitDraft) return;
-
-    const imageInput = this.element.querySelector("[data-trait-image-input]");
-    const picker = new FilePicker({
-      type: "image",
-      current: imageInput?.value || this._traitDraft.img,
-      callback: (path) => {
-        const image = this.element.querySelector("[data-action='change-trait-image'] img");
-        if (image) image.src = path;
-        if (imageInput) imageInput.value = path;
-        this._traitDraft.img = path;
-      }
-    });
-    return picker.browse();
-  }
 }
 
 export { AstraelTraitSheet, createTraitDraft };

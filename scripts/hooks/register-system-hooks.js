@@ -12,6 +12,21 @@ import { AstraelWeaponSheet } from "../sheets/weapon-sheet.js";
 import { addExperienceDistributorToActorDirectory } from "./actor-directory.js";
 
 const FOCUS_NAVIGATION_KEYS = ["Tab", "Enter", " ", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+const DEFAULT_TRAIT_IMAGE = `systems/${SYSTEM_ID}/assets/icons/especialidades.svg`;
+
+function hideItemCompendiumImages(application, element) {
+  const documentName = application.documentName
+    ?? application.documentClass?.documentName
+    ?? application.collection?.documentName
+    ?? application.collection?.metadata?.type;
+  if (documentName !== "Item") return;
+  const root = element instanceof HTMLElement ? element : element?.[0];
+  if (!root) return;
+  root.classList.add("astrael-item-compendium");
+  root.querySelectorAll(".directory-item.entry.document > img.thumbnail").forEach((image) => {
+    image.hidden = true;
+  });
+}
 
 function registerSystemHooks() {
   Hooks.once("init", () => {
@@ -119,6 +134,11 @@ function registerSystemHooks() {
   
   Hooks.on("renderApplicationV2", applyTokenPortraitsToActorDirectory);
   Hooks.on("renderApplicationV2", addExperienceDistributorToActorDirectory);
+  Hooks.on("renderApplicationV2", hideItemCompendiumImages);
+
+  Hooks.on("preCreateItem", (item) => {
+    if (item.type === "trait") item.updateSource({ img: DEFAULT_TRAIT_IMAGE });
+  });
   
   Hooks.on("updateActor", (actor, changes) => {
     const tokenImageChanged = foundry.utils.hasProperty(changes, "prototypeToken.texture.src")

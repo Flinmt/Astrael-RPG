@@ -107,7 +107,6 @@ class AstraelArmorSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
 
   async _onRender(context, options) {
     await super._onRender(context, options);
-    this.element.querySelector("[data-action='change-armor-image']")?.addEventListener("click", this.#onChangeImage.bind(this));
     this.element.querySelector("[data-action='save-armor']")?.addEventListener("click", this.#onSave.bind(this));
     this.element.querySelectorAll("[data-action='edit-armor']").forEach((button) => {
       button.addEventListener("click", this.#onEdit.bind(this));
@@ -135,8 +134,6 @@ class AstraelArmorSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
       descriptionEditor.save();
       this.#setDraftValue("description", descriptionEditor.value);
     }
-    const image = this.element.querySelector("[data-armor-image-input]");
-    if (image) this._armorDraft.img = image.value;
   }
 
   #setDraftValue(field, value) {
@@ -183,23 +180,6 @@ class AstraelArmorSheet extends HandlebarsApplicationMixin(ItemSheetV2) {
     return this.render({ force: true });
   }
 
-  #onChangeImage(event) {
-    event.preventDefault();
-    if (this.item.isOwner !== true || this._armorEditMode !== true || !this._armorDraft) return;
-
-    const imageInput = this.element.querySelector("[data-armor-image-input]");
-    const picker = new FilePicker({
-      type: "image",
-      current: imageInput?.value || this._armorDraft.img,
-      callback: (path) => {
-        const image = this.element.querySelector("[data-action='change-armor-image'] img");
-        if (image) image.src = path;
-        if (imageInput) imageInput.value = path;
-        this._armorDraft.img = path;
-      }
-    });
-    return picker.browse();
-  }
 }
 
 export { AstraelArmorSheet, createArmorDraft };

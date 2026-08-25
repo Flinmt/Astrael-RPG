@@ -32,6 +32,7 @@ async function unpack(pack) {
 
   let count = 0;
   try {
+    await db.open();
     for await (const [key, rawValue] of db.iterator()) {
       const value = JSON.parse(rawValue);
       const id = value._id ?? key.replace(/^.*!/, "");
@@ -43,7 +44,7 @@ async function unpack(pack) {
     await db.close();
   }
 
-  if (!count) fs.writeFileSync(path.join(temporaryPath, ".gitkeep"), "");
+  fs.writeFileSync(path.join(temporaryPath, ".gitkeep"), "");
   fs.rmSync(pack.sourcePath, { recursive: true, force: true });
   fs.renameSync(temporaryPath, pack.sourcePath);
   console.log(`Exported ${count} record(s) to packs/_source/${pack.name}.`);

@@ -1,17 +1,5 @@
 <div class="astrael-weapon-sheet astrael-ui-frame {{#if editing}}is-editing{{else}}is-viewing{{/if}}">
   <header class="astrael-weapon-header">
-    {{#if editing}}
-    <button type="button" class="astrael-weapon-image" data-action="change-weapon-image" aria-label="{{localize 'ASTRAEL.Weapon.ChangeImage'}}" title="{{localize 'ASTRAEL.Weapon.ChangeImage'}}">
-      <img src="{{weapon.img}}" alt="{{weapon.name}}">
-      <span><i class="fas fa-image" aria-hidden="true"></i></span>
-    </button>
-    <input type="hidden" name="img" value="{{weapon.img}}" data-weapon-image-input>
-    {{else}}
-    <div class="astrael-weapon-image">
-      <img src="{{weapon.img}}" alt="{{weapon.name}}">
-    </div>
-    {{/if}}
-
     <div class="astrael-weapon-identity">
       <p class="astrael-ui-kicker">{{localize "ASTRAEL.Weapon.Kicker"}}</p>
       {{#if editing}}

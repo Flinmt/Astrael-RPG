@@ -1,17 +1,5 @@
 <div class="astrael-item-sheet astrael-ui-frame {{#if editing}}is-editing{{else}}is-viewing{{/if}}">
   <header class="astrael-item-header">
-    {{#if editing}}
-    <button type="button" class="astrael-item-image" data-action="change-item-image" aria-label="{{localize 'ASTRAEL.Item.ChangeImage'}}" title="{{localize 'ASTRAEL.Item.ChangeImage'}}">
-      <img src="{{sheetItem.img}}" alt="{{sheetItem.name}}">
-      <span><i class="fas fa-image" aria-hidden="true"></i></span>
-    </button>
-    <input type="hidden" name="img" value="{{sheetItem.img}}" data-item-image-input>
-    {{else}}
-    <div class="astrael-item-image">
-      <img src="{{sheetItem.img}}" alt="{{sheetItem.name}}">
-    </div>
-    {{/if}}
-
     <div class="astrael-item-identity">
       <p class="astrael-ui-kicker">{{localize "ASTRAEL.Item.Kicker"}}</p>
       {{#if editing}}
